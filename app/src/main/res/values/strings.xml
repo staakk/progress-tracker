@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">ProgressTracker</string>
+
+    <string name="done">Done</string>
+    <string name="cancel">Cancel</string>
+    <string name="go_back">Go back</string>
+
+    <string name="exercises_list_search_label">Search exercises</string>
+
+    <string name="edit_exercise_header_edit">Edit exercise</string>
+    <string name="edit_exercise_header_create">Create new exercise</string>
+    <string name="edit_exercise_label_name">Name</string>
+    <string name="edit_exercise_error">Something went wrong :(</string>
+    <string name="edit_exercise_saving">Saving</string>
+    <string name="edit_exercise_saved">Saved</string>
+    <string name="edit_exercise_error_name_already_exists">Exercise with that name already exists</string>
+    <string name="edit_exercise_error_unknown_exercise">Exercise doesn\'t exist!</string>
+
+    <string name="edit_set_exercise_label">Exercise</string>
+    <string name="edit_set_reps_label">Repetitions</string>
+    <string name="edit_set_weight_label">Weight</string>
+
+    <string name="journal_add_round">Add round</string>
+    <string name="journal_exercise_label">Exercise</string>
+    <string name="journal_sets_label">Sets</string>
+    <string name="journal_max_weight_label">Max weight</string>
+    <string name="journal_no_round">No rounds yet for this day.</string>
+</resources>
