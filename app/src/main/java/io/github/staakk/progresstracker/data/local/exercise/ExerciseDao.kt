@@ -10,16 +10,16 @@ interface ExerciseDao {
     fun create(exercise: Exercise)
 
     @Update
-    fun update(exercise: Exercise)
+    fun update(exercise: Exercise): Int
 
     @Delete
-    fun delete(exercise: Exercise)
+    fun delete(exercise: Exercise): Int
 
     @Query("SELECT * FROM exercise")
     fun getAll(): List<Exercise>
 
     @Query("SELECT * FROM exercise WHERE id == :id")
-    fun getById(id: String): Exercise
+    fun getById(id: String): Exercise?
 
     @Query("SELECT * FROM exercise WHERE name LIKE :name")
     fun findByName(name: String): List<Exercise>

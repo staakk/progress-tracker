@@ -1,11 +1,13 @@
 package io.github.staakk.progresstracker.domain.exercise
 
+import io.github.staakk.progresstracker.data.UpdateError
 import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.data.exercise.ExerciseDataSource
 import io.github.staakk.progresstracker.util.functional.Either
 import io.github.staakk.progresstracker.util.functional.left
 import io.github.staakk.progresstracker.util.functional.right
 import timber.log.Timber
+import java.lang.Error
 import javax.inject.Inject
 
 class UpdateExercise @Inject constructor(
@@ -21,10 +23,15 @@ class UpdateExercise @Inject constructor(
             return Error.NameAlreadyExists.left()
         }
 
-        return exerciseDataSource.update(exercise.copy(name = name)).right()
+        return exerciseDataSource.update(exercise.copy(name = name)).mapLeft {
+            when (it) {
+                is UpdateError.ResourceDoesNotExist -> Error.ExerciseDoesnNotExist
+            }
+        }
     }
 
     sealed class Error {
         object NameAlreadyExists : Error()
+        object ExerciseDoesnNotExist : Error()
     }
 }

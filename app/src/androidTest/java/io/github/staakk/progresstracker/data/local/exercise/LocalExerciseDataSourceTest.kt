@@ -1,27 +1,130 @@
 package io.github.staakk.progresstracker.data.local.exercise
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.github.staakk.progresstracker.case.DatabaseTestCase
+import io.github.staakk.progresstracker.data.CreationError
+import io.github.staakk.progresstracker.data.DeletionError
+import io.github.staakk.progresstracker.data.QueryError
+import io.github.staakk.progresstracker.data.UpdateError
 import io.github.staakk.progresstracker.data.exercise.Exercise
-import io.github.staakk.progresstracker.data.round.RoomRound
-import io.github.staakk.progresstracker.data.round.RoomSet
-import org.junit.Assert.*
+import io.github.staakk.progresstracker.util.functional.Left
+import io.github.staakk.progresstracker.util.functional.Right
+import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.junit.runner.RunWith
+import java.util.*
 
-@RunWith(AndroidJUnit4::class)
 class LocalExerciseDataSourceTest : DatabaseTestCase() {
 
-    @Test
-    fun testFind() {
-        val exercise = Exercise(id = "id1", name = "test")
-        exerciseDao.create(exercise)
-        assertEquals("test", exerciseDao.findByName("%est%")[0].name)
-        assertEquals("test", exerciseDao.findByName("%es%")[0].name)
-        assertEquals("test", exerciseDao.findByName("%tes%")[0].name)
+    private val exercises = listOf(
+        Exercise(name = "test 1"),
+        Exercise(name = "test 2"),
+        Exercise(name = "test 3"),
+        Exercise(name = "test 4"),
+    )
+
+    private lateinit var tested: LocalExerciseDataSource
+
+    override fun setUp() {
+        super.setUp()
+        exercises.forEach { exerciseDao.create(it) }
+        tested = LocalExerciseDataSource(exerciseDao)
     }
 
     @Test
-    fun test() {
+    fun shouldCreateExercise() {
+        val newExercise = Exercise(name = "new exercise")
+        tested.create(newExercise)
+        assertEquals(newExercise, exerciseDao.getById(newExercise.id))
+    }
+
+    @Test
+    fun shouldReturnErrorWhenExerciseWithExistingIdIsCreated() {
+        val exercise = exercises[0]
+        val result = tested.create(exercise)
+        assert(result is Left)
+        assertEquals(CreationError.IdAlreadyExists, (result as Left).value)
+    }
+
+    @Test
+    fun shouldUpdateExercise() {
+        val exercise = exercises[0]
+        val updatedExercise = exercise.copy(name = "changed")
+        tested.update(updatedExercise)
+        val result = exerciseDao.getById(exercise.id)!!.name
+
+        assertEquals("changed", result)
+    }
+
+    @Test
+    fun shouldReturnErrorWhenNotExistingExerciseUpdated() {
+        val newExercise = Exercise(name = "new exercise")
+        val result = tested.update(newExercise)
+
+        assert(result is Left)
+        assertEquals(
+            UpdateError.ResourceDoesNotExist,
+            (result as Left).value
+        )
+    }
+
+    @Test
+    fun shouldDeleteExercise() {
+        val exercise = exercises[0]
+        val result = tested.delete(exercise)
+        assert(result is Right)
+    }
+
+    @Test
+    fun shouldReturnErrorWhenNotExistingExerciseDeleted() {
+        val newExercise = Exercise(name = "new exercise")
+        val result = tested.delete(newExercise)
+
+        assert(result is Left)
+        assertEquals(
+            DeletionError.CannotDeleteResource,
+            (result as Left).value
+        )
+    }
+
+    @Test
+    fun shouldGetExerciseById() {
+        val exercise = exercises[0]
+        val result = tested.getById(exercise.id)
+
+        assert(result is Right)
+        assertEquals(exercise, (result as Right).value)
+    }
+
+    @Test
+    fun shouldReturnErrorWhenExerciseDoesNotExist() {
+        val newId = UUID.randomUUID().toString()
+        val result = tested.getById(newId)
+
+        assert(result is Left)
+        assertEquals(QueryError.ResourceNotFound, (result as Left).value)
+    }
+
+    @Test
+    fun shouldFindExerciseByNameSubstring() {
+        val exercise = exercises[0]
+        val result = tested.findByName("est 1")
+
+        assert(result.size == 1)
+        assertEquals(result[0], exercise)
+    }
+
+    @Test
+    fun shouldFindMultipleExercisesMatching() {
+        val result = tested.findByName("est")
+
+        assert(result.size == exercises.size)
+        assert(result.containsAll(exercises))
+    }
+
+    @Test
+    fun shouldFetchAllExercises() {
+        val result = tested.getAll()
+
+        assert(result.size == exercises.size)
+        assert(result.containsAll(exercises))
     }
 }

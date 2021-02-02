@@ -45,5 +45,5 @@ object Try {
 data class Left<out E>(val value: E) : Either<E, Nothing>()
 data class Right<out A>(val value: A) : Either<Nothing, A>()
 
-fun <E> E.left() = Left(this)
-fun <A> A.right() = Right(this)
+fun <E, A> E.left(): Either<E, A> = Left(this)
+fun <E, A> A.right(): Either<E, A> = Right(this)
