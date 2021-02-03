@@ -11,11 +11,9 @@ import io.github.staakk.progresstracker.data.local.AppDatabase
 import io.github.staakk.progresstracker.data.local.exercise.ExerciseDao
 import io.github.staakk.progresstracker.data.local.exercise.LocalExerciseDataSource
 import io.github.staakk.progresstracker.data.local.round.LocalRoundDataSource
-import io.github.staakk.progresstracker.data.local.round.LocalSetDataSource
 import io.github.staakk.progresstracker.data.local.round.RoundDao
 import io.github.staakk.progresstracker.data.local.round.SetDao
 import io.github.staakk.progresstracker.data.round.RoundDataSource
-import io.github.staakk.progresstracker.data.round.SetDataSource
 import io.github.staakk.progresstracker.ui.App
 import javax.inject.Singleton
 
@@ -42,11 +40,7 @@ class DataModule {
         LocalExerciseDataSource(dao)
 
     @Provides
-    fun provideRoundDataSource(dao: RoundDao): RoundDataSource =
-        LocalRoundDataSource(dao)
-
-    @Provides
-    fun provideSetDataSource(dao: SetDao): SetDataSource =
-        LocalSetDataSource(dao)
+    fun provideRoundDataSource(roundDao: RoundDao, setDao: SetDao): RoundDataSource =
+        LocalRoundDataSource(roundDao, setDao)
 
 }

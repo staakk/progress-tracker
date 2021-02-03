@@ -11,8 +11,8 @@ interface SetDao {
     fun create(set: RoomSet)
 
     @Update
-    fun update(set: RoomSet)
+    fun update(set: RoomSet) : Int
 
     @Delete
-    fun delete(set: RoomSet)
+    fun delete(set: RoomSet) : Int
 }

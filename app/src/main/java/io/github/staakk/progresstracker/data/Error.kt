@@ -2,6 +2,7 @@ package io.github.staakk.progresstracker.data
 
 interface Error
 
+// TODO make it specific per aggregate/function
 sealed class CreationError : Error {
     object IdAlreadyExists : CreationError()
 }

@@ -16,9 +16,11 @@ interface RoundDao {
     @Delete
     fun delete(round: RoomRound)
 
+    @Transaction
     @Query("SELECT * FROM round WHERE id == :id")
     fun getById(id: String): RoomRoundWithSets?
 
+    @Transaction
     @Query("SELECT * FROM round WHERE created_at BETWEEN :from AND :to")
     fun getByDate(from: Long, to: Long): List<RoomRoundWithSets>
 

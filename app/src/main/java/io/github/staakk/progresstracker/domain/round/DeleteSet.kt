@@ -5,11 +5,11 @@ import io.github.staakk.progresstracker.data.round.Set
 import javax.inject.Inject
 
 class DeleteSet @Inject constructor(
-    private val setDataSource: SetDataSource
+    private val roundDataSource: RoundDataSource
 ) {
 
     operator fun invoke(round: Round, set: Set): Round {
-        setDataSource.delete(set, round.id)
+        roundDataSource.deleteSet(set, round.id)
         return round.copy(sets = round.sets - set)
     }
 }

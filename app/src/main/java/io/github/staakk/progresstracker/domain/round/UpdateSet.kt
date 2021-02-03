@@ -1,12 +1,14 @@
 package io.github.staakk.progresstracker.domain.round
 
+import io.github.staakk.progresstracker.data.UpdateError
 import io.github.staakk.progresstracker.data.round.Round
+import io.github.staakk.progresstracker.data.round.RoundDataSource
 import io.github.staakk.progresstracker.data.round.Set
-import io.github.staakk.progresstracker.data.round.SetDataSource
+import io.github.staakk.progresstracker.util.functional.Either
 import javax.inject.Inject
 
 class UpdateSet @Inject constructor(
-    private val setDataSource: SetDataSource
+    private val roundDataSource: RoundDataSource,
 ) {
 
     fun invoke(
@@ -14,24 +16,32 @@ class UpdateSet @Inject constructor(
         set: Set,
         reps: Int? = null,
         weight: Int? = null,
-    ): Result {
-        val updatedSet = setDataSource.update(
+    ): Either<Error, Result> {
+        return roundDataSource.updateSet(
             set.copy(
                 reps = reps ?: set.reps,
                 weight = weight ?: set.weight,
             ),
             round.id
         )
-        val updatedSets = round.sets.filter { it.id != set.id } + updatedSet
-        val updatedRound = round.copy(sets = updatedSets)
-        return Result(
-            updatedRound,
-            updatedSet
-        )
+            .map { updatedSet ->
+                val updatedSets = round.sets.filter { it.id != set.id } + updatedSet
+                val updatedRound = round.copy(sets = updatedSets)
+                Result(updatedRound, updatedSet)
+            }
+            .mapLeft {
+                when (it) {
+                    UpdateError.ResourceDoesNotExist -> Error.SetDoesNotExist
+                }
+            }
     }
 
     data class Result(
         val round: Round,
-        val set: Set
+        val set: Set,
     )
+
+    sealed class Error {
+        object SetDoesNotExist : Error()
+    }
 }

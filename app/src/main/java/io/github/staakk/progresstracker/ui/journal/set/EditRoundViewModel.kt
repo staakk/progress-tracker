@@ -78,9 +78,13 @@ class EditRoundViewModel @ViewModelInject constructor(
 
     fun updateSet(set: Set) {
         viewModelScope.launch {
-            _round.value = withContext(Dispatchers.IO) {
-                updateSet.invoke(_round.value!!, set, set.reps, set.weight).round
+            val result = withContext(Dispatchers.IO) {
+                updateSet.invoke(_round.value!!, set, set.reps, set.weight)
             }
+            result.fold(
+                { Timber.e("Error during set update.") },
+                { _round.value }
+            )
         }
     }
 

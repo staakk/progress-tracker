@@ -1,6 +1,7 @@
 package io.github.staakk.progresstracker.case
 
 import android.content.Context
+import androidx.annotation.CallSuper
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import io.github.staakk.progresstracker.data.local.AppDatabase
@@ -20,12 +21,14 @@ open class DatabaseTestCase {
     protected val setDao
         get() = database.setDao()
 
+    @CallSuper
     @Before
     open fun setUp() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         database = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
     }
 
+    @CallSuper
     @After
     open fun tearDown() {
         database.close()

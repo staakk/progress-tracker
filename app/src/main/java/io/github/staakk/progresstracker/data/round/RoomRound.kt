@@ -6,6 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import io.github.staakk.progresstracker.data.exercise.Exercise
 import org.threeten.bp.ZoneOffset
+import java.util.*
 
 @Entity(
     tableName = "Round",
@@ -19,7 +20,7 @@ import org.threeten.bp.ZoneOffset
     ]
 )
 data class RoomRound(
-    @PrimaryKey val id: String,
+    @PrimaryKey val id: String = UUID.randomUUID().toString(),
     @ColumnInfo(name = "exercise_id") val exerciseId: String,
     @ColumnInfo(name = "created_at") val createdAt: Long,
 ) {
