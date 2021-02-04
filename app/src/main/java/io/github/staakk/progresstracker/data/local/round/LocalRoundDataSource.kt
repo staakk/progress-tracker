@@ -22,6 +22,7 @@ class LocalRoundDataSource @Inject constructor(
     private val roundDao: RoundDao,
     private val setDao: SetDao,
 ) : RoundDataSource {
+
     override fun create(round: Round): Either<RoundAlreadyExists, Round> {
         return try {
             roundDao.create(round.toRoomRound())
@@ -89,15 +90,19 @@ class LocalRoundDataSource @Inject constructor(
     }
 
     override fun updateSet(set: Set, roundId: String): Either<UpdateSetError, Set> {
-        return if (setDao.update(set.toRoomSet(roundId)) == 1) {
-            set.right()
-        } else {
-            UpdateSetError.SetNotFound.left()
+        return try {
+            if (setDao.update(set.toRoomSet(roundId)) == 1) {
+                set.right()
+            } else {
+                UpdateSetError.SetNotFound.left()
+            }
+        } catch (e: SQLiteConstraintException) {
+            UpdateSetError.RoundNotFound.left()
         }
     }
 
-    override fun deleteSet(set: Set, roundId: String): Either<DeleteSetError, Set> {
-        return if (setDao.delete(set.toRoomSet(roundId)) == 1) {
+    override fun deleteSet(set: Set): Either<DeleteSetError, Set> {
+        return if (setDao.delete(set.toRoomSet("not required")) == 1) {
             set.right()
         } else {
             DeleteSetError.SetNotFound.left()

@@ -10,10 +10,9 @@ class DeleteSet @Inject constructor(
 ) {
 
     operator fun invoke(round: Round, set: Set): Either<Error, Round> {
-        return roundDataSource.deleteSet(set, round.id)
+        return roundDataSource.deleteSet(set)
             .mapLeft {
                 when (it) {
-                    RoundDataSource.Error.DeleteSetError.RoundNotFound -> Error.RoundNotFound
                     RoundDataSource.Error.DeleteSetError.SetNotFound -> Error.SetNotFound
                 }
             }
@@ -21,7 +20,6 @@ class DeleteSet @Inject constructor(
     }
 
     sealed class Error {
-        object RoundNotFound : Error()
         object SetNotFound : Error()
     }
 }

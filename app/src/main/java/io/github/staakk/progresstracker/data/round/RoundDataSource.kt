@@ -22,7 +22,7 @@ interface RoundDataSource {
 
     fun updateSet(set: Set, roundId: String): Either<Error.UpdateSetError, Set>
 
-    fun deleteSet(set: Set, roundId: String): Either<Error.DeleteSetError, Set>
+    fun deleteSet(set: Set): Either<Error.DeleteSetError, Set>
 
     interface Error {
         object RoundAlreadyExists : Error
@@ -41,7 +41,6 @@ interface RoundDataSource {
 
         sealed class DeleteSetError : Error {
             object SetNotFound : DeleteSetError()
-            object RoundNotFound : DeleteSetError()
         }
     }
 }

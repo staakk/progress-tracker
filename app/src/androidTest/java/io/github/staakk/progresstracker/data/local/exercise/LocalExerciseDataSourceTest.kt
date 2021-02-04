@@ -1,11 +1,9 @@
 package io.github.staakk.progresstracker.data.local.exercise
 
 import io.github.staakk.progresstracker.case.DatabaseTestCase
-import io.github.staakk.progresstracker.data.CreationError
-import io.github.staakk.progresstracker.data.DeletionError
-import io.github.staakk.progresstracker.data.QueryError
-import io.github.staakk.progresstracker.data.UpdateError
 import io.github.staakk.progresstracker.data.exercise.Exercise
+import io.github.staakk.progresstracker.data.exercise.ExerciseDataSource.Error.ExerciseNotFound
+import io.github.staakk.progresstracker.data.exercise.ExerciseDataSource.Error.IdAlreadyExists
 import io.github.staakk.progresstracker.util.functional.Left
 import io.github.staakk.progresstracker.util.functional.Right
 import org.junit.Assert.assertEquals
@@ -41,7 +39,7 @@ class LocalExerciseDataSourceTest : DatabaseTestCase() {
         val exercise = exercises[0]
         val result = tested.create(exercise)
         assert(result is Left)
-        assertEquals(CreationError.IdAlreadyExists, (result as Left).value)
+        assertEquals(IdAlreadyExists, (result as Left).value)
     }
 
     @Test
@@ -61,7 +59,7 @@ class LocalExerciseDataSourceTest : DatabaseTestCase() {
 
         assert(result is Left)
         assertEquals(
-            UpdateError.ResourceDoesNotExist,
+            ExerciseNotFound,
             (result as Left).value
         )
     }
@@ -80,7 +78,7 @@ class LocalExerciseDataSourceTest : DatabaseTestCase() {
 
         assert(result is Left)
         assertEquals(
-            DeletionError.CannotDeleteResource,
+            ExerciseNotFound,
             (result as Left).value
         )
     }
@@ -100,7 +98,7 @@ class LocalExerciseDataSourceTest : DatabaseTestCase() {
         val result = tested.getById(newId)
 
         assert(result is Left)
-        assertEquals(QueryError.ResourceNotFound, (result as Left).value)
+        assertEquals(ExerciseNotFound, (result as Left).value)
     }
 
     @Test
