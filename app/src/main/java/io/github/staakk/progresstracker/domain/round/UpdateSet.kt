@@ -1,8 +1,9 @@
 package io.github.staakk.progresstracker.domain.round
 
-import io.github.staakk.progresstracker.data.UpdateError
 import io.github.staakk.progresstracker.data.round.Round
 import io.github.staakk.progresstracker.data.round.RoundDataSource
+import io.github.staakk.progresstracker.data.round.RoundDataSource.Error.UpdateSetError.RoundNotFound
+import io.github.staakk.progresstracker.data.round.RoundDataSource.Error.UpdateSetError.SetNotFound
 import io.github.staakk.progresstracker.data.round.Set
 import io.github.staakk.progresstracker.util.functional.Either
 import javax.inject.Inject
@@ -31,7 +32,8 @@ class UpdateSet @Inject constructor(
             }
             .mapLeft {
                 when (it) {
-                    UpdateError.ResourceDoesNotExist -> Error.SetDoesNotExist
+                    RoundNotFound -> Error.RoundNotFound
+                    SetNotFound -> Error.SetNotFound
                 }
             }
     }
@@ -42,6 +44,7 @@ class UpdateSet @Inject constructor(
     )
 
     sealed class Error {
-        object SetDoesNotExist : Error()
+        object RoundNotFound : Error()
+        object SetNotFound : Error()
     }
 }

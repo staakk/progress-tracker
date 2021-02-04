@@ -11,10 +11,10 @@ interface RoundDao {
     fun create(round: RoomRound)
 
     @Update
-    fun update(round: RoomRound)
+    fun update(round: RoomRound): Int
 
     @Delete
-    fun delete(round: RoomRound)
+    fun delete(round: RoomRound): Int
 
     @Transaction
     @Query("SELECT * FROM round WHERE id == :id")

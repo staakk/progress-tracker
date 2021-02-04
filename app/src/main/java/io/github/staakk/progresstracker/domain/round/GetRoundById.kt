@@ -13,12 +13,13 @@ class GetRoundById @Inject constructor(
 
     operator fun invoke(id: String): Either<Error, Round> {
         return roundDataSource.getById(id)
-            ?.withPositionSortedSets()
-            ?.right()
-            ?: Error.IdNotFound.left()
+            .fold(
+                { Error.RoundNotFound.left() },
+                { it.withPositionSortedSets().right() }
+            )
     }
 
     sealed class Error {
-        object IdNotFound: Error()
+        object RoundNotFound: Error()
     }
 }

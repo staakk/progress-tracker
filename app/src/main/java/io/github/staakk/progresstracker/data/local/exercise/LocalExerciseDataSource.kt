@@ -1,12 +1,10 @@
 package io.github.staakk.progresstracker.data.local.exercise
 
 import android.database.sqlite.SQLiteConstraintException
-import io.github.staakk.progresstracker.data.CreationError
-import io.github.staakk.progresstracker.data.DeletionError
-import io.github.staakk.progresstracker.data.QueryError
-import io.github.staakk.progresstracker.data.UpdateError
 import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.data.exercise.ExerciseDataSource
+import io.github.staakk.progresstracker.data.exercise.ExerciseDataSource.Error.ExerciseNotFound
+import io.github.staakk.progresstracker.data.exercise.ExerciseDataSource.Error.IdAlreadyExists
 import io.github.staakk.progresstracker.util.functional.Either
 import io.github.staakk.progresstracker.util.functional.left
 import io.github.staakk.progresstracker.util.functional.right
@@ -17,36 +15,36 @@ class LocalExerciseDataSource @Inject constructor(
     private val exerciseDao: ExerciseDao
 ) : ExerciseDataSource {
 
-    override fun create(exercise: Exercise): Either<CreationError, Exercise> {
+    override fun create(exercise: Exercise): Either<IdAlreadyExists, Exercise> {
         return try {
             exerciseDao.create(exercise)
             exercise.right()
         } catch (e: SQLiteConstraintException) {
             Timber.e(e, "Cannot create exercise. Id ${exercise.id} already exists")
-            CreationError.IdAlreadyExists.left()
+            IdAlreadyExists.left()
         }
     }
 
-    override fun update(exercise: Exercise): Either<UpdateError, Exercise> {
+    override fun update(exercise: Exercise): Either<ExerciseNotFound, Exercise> {
         return if (exerciseDao.update(exercise) == 1) {
             exercise.right()
         } else {
-            UpdateError.ResourceDoesNotExist.left()
+            ExerciseNotFound.left()
         }
     }
 
-    override fun delete(exercise: Exercise): Either<DeletionError, Exercise> {
+    override fun delete(exercise: Exercise): Either<ExerciseNotFound, Exercise> {
         return if (exerciseDao.delete(exercise) == 1) {
             return exercise.right()
         } else {
-            DeletionError.CannotDeleteResource.left()
+            ExerciseNotFound.left()
         }
     }
 
-    override fun getById(id: String): Either<QueryError, Exercise> {
+    override fun getById(id: String): Either<ExerciseNotFound, Exercise> {
         return exerciseDao.getById(id)
             ?.right()
-            ?: QueryError.ResourceNotFound.left()
+            ?: ExerciseNotFound.left()
     }
 
     override fun findByName(name: String): List<Exercise> {

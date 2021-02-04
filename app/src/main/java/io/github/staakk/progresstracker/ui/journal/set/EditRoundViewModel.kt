@@ -62,49 +62,46 @@ class EditRoundViewModel @ViewModelInject constructor(
         _roundDeleted.value = false
         viewModelScope.launch {
             loadExercises()
-            _round.value = withContext(Dispatchers.IO) {
-                createRound(createdAt, _exercises.value!![0])
-            }
+            withContext(Dispatchers.IO) { createRound(createdAt, _exercises.value!![0]) }
+                .fold({ Timber.e(it.toString()) }, { _round.value = it })
         }
     }
 
     fun updateExercise(exercise: Exercise) {
         viewModelScope.launch {
-            _round.value = withContext(Dispatchers.IO) {
-                updateRound(_round.value!!, exercise = exercise)
-            }
+            withContext(Dispatchers.IO) { updateRound(_round.value!!, exercise = exercise) }
+                .fold({ Timber.e(it.toString()) }, { _round.value = it })
         }
     }
 
     fun updateSet(set: Set) {
         viewModelScope.launch {
-            val result = withContext(Dispatchers.IO) {
-                updateSet.invoke(_round.value!!, set, set.reps, set.weight)
+            withContext(Dispatchers.IO) {
+                updateSet.invoke(_round.value!!,
+                    set,
+                    set.reps,
+                    set.weight)
             }
-            result.fold(
-                { Timber.e("Error during set update.") },
-                { _round.value }
-            )
+                .fold({ Timber.e(it.toString()) }, { _round.value })
         }
     }
 
     fun createNewSet() {
         viewModelScope.launch {
-            _round.value = withContext(Dispatchers.IO) {
+            withContext(Dispatchers.IO) {
                 createSet(
                     _round.value!!,
                     Set(reps = 0,
                         weight = 0,
                         position = _round.value!!.sets.lastOrNull()?.position?.plus(1) ?: 0))
-            }
+            }.fold({ Timber.e(it.toString()) }, { _round.value = it })
         }
     }
 
     fun deleteSet(set: Set) {
         viewModelScope.launch {
-            _round.value = withContext(Dispatchers.IO) {
-                deleteSet.invoke(_round.value!!, set)
-            }
+            withContext(Dispatchers.IO) { deleteSet.invoke(_round.value!!, set) }
+                .fold({ Timber.e(it.toString()) }, { _round.value = it })
         }
     }
 

@@ -1,16 +1,25 @@
 package io.github.staakk.progresstracker.domain.round
 
+import io.github.staakk.progresstracker.data.round.Round
 import io.github.staakk.progresstracker.data.round.RoundDataSource
+import io.github.staakk.progresstracker.util.log.format
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
+import timber.log.Timber
 import javax.inject.Inject
 
 class GetRoundsByDateTime @Inject constructor(
-    private val roundDataSource: RoundDataSource
+    private val roundDataSource: RoundDataSource,
 ) {
 
-    operator fun invoke(from: LocalDateTime, to: LocalDateTime) =
-        roundDataSource.getByDate(from, to).map { it.withPositionSortedSets() }
+    operator fun invoke(from: LocalDateTime, to: LocalDateTime): List<Round> {
+        if (to.isBefore(from)) {
+            Timber.w("`to` date (${to.format()} before `from` date (${from.format()}")
+            return emptyList()
+        }
+        return roundDataSource.getByDate(from, to)
+            .map { it.withPositionSortedSets() }
+    }
 
     operator fun invoke(day: LocalDate) =
         invoke(day.atStartOfDay(), day.atStartOfDay().plusHours(24))

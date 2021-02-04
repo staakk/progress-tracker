@@ -1,6 +1,5 @@
 package io.github.staakk.progresstracker.domain.exercise
 
-import io.github.staakk.progresstracker.data.CreationError
 import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.data.exercise.ExerciseDataSource
 import io.github.staakk.progresstracker.util.functional.Either
@@ -9,10 +8,10 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class CreateExercise @Inject constructor(
-    private val exerciseDataSource: ExerciseDataSource
+    private val exerciseDataSource: ExerciseDataSource,
 ) {
 
-    operator fun invoke(exercise: Exercise) : Either<Error, Exercise> {
+    operator fun invoke(exercise: Exercise): Either<Error, Exercise> {
         val resultFound = exerciseDataSource.findByName(exercise.name)
             .isNotEmpty()
 
@@ -22,11 +21,7 @@ class CreateExercise @Inject constructor(
         }
 
         return exerciseDataSource.create(exercise)
-            .mapLeft {
-                when (it) {
-                   CreationError.IdAlreadyExists -> Error.ExerciseWithIdAlreadyExists
-                }
-            }
+            .mapLeft { Error.ExerciseWithIdAlreadyExists }
     }
 
     sealed class Error {
