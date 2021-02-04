@@ -17,7 +17,7 @@ class CreateExercise @Inject constructor(
 
         if (resultFound) {
             Timber.e("Exercise with name ${exercise.name} already exists.")
-            return Error.ExerciseWithNameAlreadyExists(exercise.name).left()
+            return Error.ExerciseWithNameAlreadyExists.left()
         }
 
         return exerciseDataSource.create(exercise)
@@ -25,7 +25,7 @@ class CreateExercise @Inject constructor(
     }
 
     sealed class Error {
-        data class ExerciseWithNameAlreadyExists(val name: String) : Error()
+        object ExerciseWithNameAlreadyExists : Error()
         object ExerciseWithIdAlreadyExists : Error()
     }
 }

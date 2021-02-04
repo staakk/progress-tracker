@@ -20,9 +20,8 @@ class UpdateExercise @Inject constructor(
             return Error.NameAlreadyExists.left()
         }
 
-        return exerciseDataSource.update(exercise.copy(name = name)).mapLeft {
-            Error.ExerciseNotFound
-        }
+        return exerciseDataSource.update(exercise.copy(name = name))
+            .mapLeft { Error.ExerciseNotFound }
     }
 
     sealed class Error {
