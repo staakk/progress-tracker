@@ -62,7 +62,7 @@ class EditExerciseViewModel @ViewModelInject constructor(
                 }
                 ?: run {
                     _screenState.value =
-                        withContext(Dispatchers.IO) { createExercise(Exercise(name = name)) }
+                        withContext(Dispatchers.IO) { createExercise(name) }
                             .fold(
                                 { ScreenState.Error(ErrorType.NameAlreadyExists) },
                                 { ScreenState.Saved })

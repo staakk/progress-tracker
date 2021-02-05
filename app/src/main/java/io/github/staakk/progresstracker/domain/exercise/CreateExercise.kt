@@ -11,16 +11,16 @@ class CreateExercise @Inject constructor(
     private val exerciseDataSource: ExerciseDataSource,
 ) {
 
-    operator fun invoke(exercise: Exercise): Either<Error, Exercise> {
-        val resultFound = exerciseDataSource.findByName(exercise.name)
+    operator fun invoke(name: String): Either<Error, Exercise> {
+        val resultFound = exerciseDataSource.findByName(name)
             .isNotEmpty()
 
         if (resultFound) {
-            Timber.e("Exercise with name ${exercise.name} already exists.")
+            Timber.e("Exercise with name $name already exists.")
             return Error.ExerciseWithNameAlreadyExists.left()
         }
 
-        return exerciseDataSource.create(exercise)
+        return exerciseDataSource.create(Exercise(name = name))
             .mapLeft { Error.ExerciseWithIdAlreadyExists }
     }
 

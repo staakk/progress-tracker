@@ -63,7 +63,10 @@ class EditRoundViewModel @ViewModelInject constructor(
         _roundDeleted.value = false
         viewModelScope.launch {
             loadExercises()
-            withContext(Dispatchers.IO) { createRound(createdAt.atTime(LocalTime.now()), _exercises.value!![0]) }
+            withContext(Dispatchers.IO) {
+                createRound(createdAt.atTime(LocalTime.now()),
+                    _exercises.value!![0])
+            }
                 .fold({ Timber.e(it.toString()) }, { _round.value = it })
         }
     }
@@ -92,9 +95,10 @@ class EditRoundViewModel @ViewModelInject constructor(
             withContext(Dispatchers.IO) {
                 createSet(
                     _round.value!!,
-                    RoundSet(reps = 0,
-                        weight = 0,
-                        position = _round.value!!.roundSets.lastOrNull()?.position?.plus(1) ?: 0))
+                    reps = 0,
+                    weight = 0,
+                    position = _round.value!!.roundSets.lastOrNull()?.position?.plus(1) ?: 0
+                )
             }.fold({ Timber.e(it.toString()) }, { _round.value = it })
         }
     }

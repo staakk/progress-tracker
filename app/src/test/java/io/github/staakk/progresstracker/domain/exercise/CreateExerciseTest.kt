@@ -18,24 +18,24 @@ class CreateExerciseTest {
 
     private val tested = CreateExercise(mockExerciseDataSource)
 
+    private val exercise = Exercise(name = "test")
+
     @Test
     fun `should create exercise`() {
-        val exercise = Exercise(name = "test")
-        every { mockExerciseDataSource.findByName(any()) } returns emptyList()
+        every { mockExerciseDataSource.findByName(exercise.name) } returns emptyList()
         every { mockExerciseDataSource.create(any()) } returns exercise.right()
 
-        val result = tested(exercise)
-        verify { mockExerciseDataSource.create(exercise) }
+        val result = tested(exercise.name)
+        verify { mockExerciseDataSource.create(match { it.name == exercise.name }) }
         assertEquals(result, exercise.right<CreateExercise.Error, Exercise>())
     }
 
     @Test
     fun `should return error when exercise name already exists`() {
-        val exercise = Exercise(name = "test")
-        every { mockExerciseDataSource.findByName(any()) } returns listOf(exercise)
+        every { mockExerciseDataSource.findByName(exercise.name) } returns listOf(exercise)
 
-        val result = tested(exercise)
-        verify(exactly = 0) { mockExerciseDataSource.create(exercise) }
+        val result = tested(exercise.name)
+        verify(exactly = 0) { mockExerciseDataSource.create(match { it.name == exercise.name }) }
         assertEquals(
             result,
             ExerciseWithNameAlreadyExists.left<CreateExercise.Error, Exercise>()
@@ -44,12 +44,11 @@ class CreateExerciseTest {
 
     @Test
     fun `should return error when exercise already exists`() {
-        val exercise = Exercise(name = "test")
         every { mockExerciseDataSource.findByName(any()) } returns emptyList()
         every { mockExerciseDataSource.create(any()) } returns ExerciseDataSource.Error.IdAlreadyExists.left()
 
-        val result = tested(exercise)
-        verify { mockExerciseDataSource.create(exercise) }
+        val result = tested(exercise.name)
+        verify { mockExerciseDataSource.create(match { it.name == exercise.name }) }
         assertEquals(
             result,
             ExerciseWithIdAlreadyExists.left<CreateExercise.Error, Exercise>()

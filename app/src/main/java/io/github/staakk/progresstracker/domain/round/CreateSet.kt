@@ -10,8 +10,11 @@ class CreateSet @Inject constructor(
     private val roundDataSource: RoundDataSource,
 ) {
 
-    operator fun invoke(round: Round, roundSet: RoundSet): Either<Error, Round> {
-        return roundDataSource.createSet(roundSet, round.id)
+    operator fun invoke(round: Round, position: Int, reps: Int, weight: Int): Either<Error, Round> {
+        return roundDataSource.createSet(
+            RoundSet(position = position, reps = reps, weight = weight),
+            round.id,
+        )
             .mapLeft {
                 when (it) {
                     RoundDataSource.Error.CreateSetError.RoundNotFound -> Error.RoundNotFound
