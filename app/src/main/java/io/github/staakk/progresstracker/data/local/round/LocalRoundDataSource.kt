@@ -1,13 +1,12 @@
 package io.github.staakk.progresstracker.data.local.round
 
 import android.database.sqlite.SQLiteConstraintException
-import io.github.staakk.progresstracker.data.exercise.ExerciseDataSource
 import io.github.staakk.progresstracker.data.round.RoomRound.Companion.toRoomRound
 import io.github.staakk.progresstracker.data.round.RoomSet.Companion.toRoomSet
 import io.github.staakk.progresstracker.data.round.Round
 import io.github.staakk.progresstracker.data.round.RoundDataSource
 import io.github.staakk.progresstracker.data.round.RoundDataSource.Error.*
-import io.github.staakk.progresstracker.data.round.Set
+import io.github.staakk.progresstracker.data.round.RoundSet
 import io.github.staakk.progresstracker.util.functional.Either
 import io.github.staakk.progresstracker.util.functional.left
 import io.github.staakk.progresstracker.util.functional.right
@@ -76,10 +75,10 @@ class LocalRoundDataSource @Inject constructor(
         }
     }
 
-    override fun createSet(set: Set, roundId: String): Either<CreateSetError, Set> {
+    override fun createSet(roundSet: RoundSet, roundId: String): Either<CreateSetError, RoundSet> {
         return try {
-            setDao.create(set.toRoomSet(roundId))
-            set.right()
+            setDao.create(roundSet.toRoomSet(roundId))
+            roundSet.right()
         } catch (e: SQLiteConstraintException) {
             getById(roundId)
                 .fold(
@@ -89,10 +88,10 @@ class LocalRoundDataSource @Inject constructor(
         }
     }
 
-    override fun updateSet(set: Set, roundId: String): Either<UpdateSetError, Set> {
+    override fun updateSet(roundSet: RoundSet, roundId: String): Either<UpdateSetError, RoundSet> {
         return try {
-            if (setDao.update(set.toRoomSet(roundId)) == 1) {
-                set.right()
+            if (setDao.update(roundSet.toRoomSet(roundId)) == 1) {
+                roundSet.right()
             } else {
                 UpdateSetError.SetNotFound.left()
             }
@@ -101,9 +100,9 @@ class LocalRoundDataSource @Inject constructor(
         }
     }
 
-    override fun deleteSet(set: Set): Either<DeleteSetError, Set> {
-        return if (setDao.delete(set.toRoomSet("not required")) == 1) {
-            set.right()
+    override fun deleteSet(roundSet: RoundSet): Either<DeleteSetError, RoundSet> {
+        return if (setDao.delete(roundSet.toRoomSet("not required")) == 1) {
+            roundSet.right()
         } else {
             DeleteSetError.SetNotFound.left()
         }

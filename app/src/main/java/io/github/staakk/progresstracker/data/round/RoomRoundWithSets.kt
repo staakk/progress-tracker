@@ -29,6 +29,6 @@ data class RoomRoundWithSets(
         createdAt = LocalDateTime.ofEpochSecond(round.createdAt, 0, ZoneOffset.UTC)
             .atZone(ZoneId.systemDefault())
             .toLocalDateTime(),
-        sets = sets.map { it.toSet() },
+        roundSets = sets.map { it.toSet() },
     )
 }

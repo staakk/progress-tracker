@@ -5,7 +5,7 @@ import java.util.*
 /**
  * Represents one set of some exercise.
  */
-data class Set(
+data class RoundSet(
     /**
      * Unique identifier of this set. If `null` then it wasn't persisted yet.
      */

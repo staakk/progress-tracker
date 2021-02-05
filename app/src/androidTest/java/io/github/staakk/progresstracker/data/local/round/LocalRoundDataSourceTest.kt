@@ -5,7 +5,7 @@ import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.data.round.RoomRound.Companion.toRoomRound
 import io.github.staakk.progresstracker.data.round.Round
 import io.github.staakk.progresstracker.data.round.RoundDataSource.Error.*
-import io.github.staakk.progresstracker.data.round.Set
+import io.github.staakk.progresstracker.data.round.RoundSet
 import io.github.staakk.progresstracker.util.functional.Left
 import io.github.staakk.progresstracker.util.functional.Right
 import org.junit.Assert.*
@@ -154,7 +154,7 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
 
     @Test
     fun shouldCreateSet() {
-        val set = Set(position = 1, reps = 2, weight = 3)
+        val set = RoundSet(position = 1, reps = 2, weight = 3)
         val round = rounds.first()
 
         val result = tested.createSet(set, round.id)
@@ -164,14 +164,14 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
 
         val queriedRound = tested.getById(round.id)
         assert(queriedRound is Right)
-        val sets = (queriedRound as Right).value.sets
+        val sets = (queriedRound as Right).value.roundSets
         assert(sets.isNotEmpty())
         assertEquals(sets, listOf(set))
     }
 
     @Test
     fun shouldReturnErrorWhenSetIsCreatedForNotExistingRound() {
-        val set = Set(position = 1, reps = 2, weight = 3)
+        val set = RoundSet(position = 1, reps = 2, weight = 3)
         val newRound = Round(exercise = exercises.first(), createdAt = LocalDateTime.now())
 
         val result = tested.createSet(set, newRound.id)
@@ -181,7 +181,7 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
 
     @Test
     fun shouldReturnErrorWhenSetIsCreatedSecondTime() {
-        val set = Set(position = 1, reps = 2, weight = 3)
+        val set = RoundSet(position = 1, reps = 2, weight = 3)
         val round = rounds.first()
         tested.createSet(set, round.id)
         val result = tested.createSet(set, round.id)
@@ -192,7 +192,7 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
 
     @Test
     fun shouldUpdateSet() {
-        val set = Set(position = 1, reps = 2, weight = 3)
+        val set = RoundSet(position = 1, reps = 2, weight = 3)
         val round = rounds.first()
         tested.createSet(set, round.id)
         val updatedSet = set.copy(reps = 3)
@@ -204,7 +204,7 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
 
     @Test
     fun shouldReturnErrorWhenSetIsUpdatedWithWrongRoundId() {
-        val set = Set(position = 1, reps = 2, weight = 3)
+        val set = RoundSet(position = 1, reps = 2, weight = 3)
         val round = rounds.first()
         tested.createSet(set, round.id)
         val updatedSet = set.copy(reps = 3)
@@ -216,7 +216,7 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
 
     @Test
     fun shouldReturnErrorWhenNotExistingSetIsUpdated() {
-        val set = Set(position = 1, reps = 2, weight = 3)
+        val set = RoundSet(position = 1, reps = 2, weight = 3)
         val round = rounds.first()
         val result = tested.updateSet(set, round.id)
 
@@ -226,18 +226,18 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
 
     @Test
     fun shouldDeleteSet() {
-        val set = Set(position = 1, reps = 2, weight = 3)
+        val set = RoundSet(position = 1, reps = 2, weight = 3)
         val round = rounds.first()
         tested.createSet(set, round.id)
 
         val result = tested.deleteSet(set)
         assert(result is Right)
-        assert((tested.getById(round.id) as Right).value.sets.isEmpty())
+        assert((tested.getById(round.id) as Right).value.roundSets.isEmpty())
     }
 
     @Test
     fun shouldReturnErrorWhenNotExistingSetDeleted() {
-        val set = Set(position = 1, reps = 2, weight = 3)
+        val set = RoundSet(position = 1, reps = 2, weight = 3)
 
         val result = tested.deleteSet(set)
         assert(result is Left)

@@ -18,11 +18,11 @@ interface RoundDataSource {
 
     fun getDaysWithRound(start: LocalDateTime, end: LocalDateTime): List<LocalDate>
 
-    fun createSet(set: Set, roundId: String): Either<Error.CreateSetError, Set>
+    fun createSet(roundSet: RoundSet, roundId: String): Either<Error.CreateSetError, RoundSet>
 
-    fun updateSet(set: Set, roundId: String): Either<Error.UpdateSetError, Set>
+    fun updateSet(roundSet: RoundSet, roundId: String): Either<Error.UpdateSetError, RoundSet>
 
-    fun deleteSet(set: Set): Either<Error.DeleteSetError, Set>
+    fun deleteSet(roundSet: RoundSet): Either<Error.DeleteSetError, RoundSet>
 
     interface Error {
         object RoundAlreadyExists : Error

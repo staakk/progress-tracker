@@ -37,7 +37,6 @@ import io.github.staakk.progresstracker.ui.theme.Dimensions
 import io.github.staakk.progresstracker.ui.theme.ProgressTrackerTheme
 import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
-import org.threeten.bp.format.DateTimeFormatter
 
 @Composable
 fun Journal(
@@ -290,11 +289,11 @@ fun RoundsList(
                     )
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = it.sets.size.toString()
+                        text = it.roundSets.size.toString()
                     )
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = it.sets.maxByOrNull { it.weight }
+                        text = it.roundSets.maxByOrNull { it.weight }
                             ?.let { it.weight.toString() + " kg" } ?: "0"
                     )
                 }

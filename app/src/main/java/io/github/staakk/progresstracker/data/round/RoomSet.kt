@@ -30,7 +30,7 @@ data class RoomSet(
 
     @ColumnInfo(name = "round_id") val roundId: String,
 ) {
-    fun toSet() = Set(
+    fun toSet() = RoundSet(
         id = id,
         position = position,
         reps = reps,
@@ -38,7 +38,7 @@ data class RoomSet(
     )
 
     companion object {
-        fun Set.toRoomSet(roundId: String) = RoomSet(
+        fun RoundSet.toRoomSet(roundId: String) = RoomSet(
             id = id,
             position = position,
             reps = reps,

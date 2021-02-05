@@ -4,7 +4,7 @@ import io.github.staakk.progresstracker.data.round.Round
 import io.github.staakk.progresstracker.data.round.RoundDataSource
 import io.github.staakk.progresstracker.data.round.RoundDataSource.Error.UpdateSetError.RoundNotFound
 import io.github.staakk.progresstracker.data.round.RoundDataSource.Error.UpdateSetError.SetNotFound
-import io.github.staakk.progresstracker.data.round.Set
+import io.github.staakk.progresstracker.data.round.RoundSet
 import io.github.staakk.progresstracker.util.functional.Either
 import javax.inject.Inject
 
@@ -12,22 +12,24 @@ class UpdateSet @Inject constructor(
     private val roundDataSource: RoundDataSource,
 ) {
 
-    fun invoke(
+    operator fun invoke(
         round: Round,
-        set: Set,
+        roundSet: RoundSet,
+        position: Int? = null,
         reps: Int? = null,
         weight: Int? = null,
     ): Either<Error, Result> {
         return roundDataSource.updateSet(
-            set.copy(
-                reps = reps ?: set.reps,
-                weight = weight ?: set.weight,
+            roundSet.copy(
+                position = position ?: roundSet.position,
+                reps = reps ?: roundSet.reps,
+                weight = weight ?: roundSet.weight,
             ),
             round.id
         )
             .map { updatedSet ->
-                val updatedSets = round.sets.filter { it.id != set.id } + updatedSet
-                val updatedRound = round.copy(sets = updatedSets)
+                val updatedSets = round.roundSets.filter { it.id != roundSet.id } + updatedSet
+                val updatedRound = round.copy(roundSets = updatedSets).withPositionSortedSets()
                 Result(updatedRound, updatedSet)
             }
             .mapLeft {
@@ -40,7 +42,7 @@ class UpdateSet @Inject constructor(
 
     data class Result(
         val round: Round,
-        val set: Set,
+        val roundSet: RoundSet,
     )
 
     sealed class Error {

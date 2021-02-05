@@ -17,10 +17,10 @@ data class Round(
     /**
      * Sets in this round.
      */
-    val sets: List<Set> = emptyList(),
+    val roundSets: List<RoundSet> = emptyList(),
 ) {
 
     fun withPositionSortedSets() = copy(
-        sets = sets.sortedBy { it.position }
+        roundSets = roundSets.sortedBy { it.position }
     )
 }

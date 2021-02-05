@@ -4,7 +4,7 @@ import io.github.staakk.progresstracker.data.round.RoundDataSource
 import org.threeten.bp.YearMonth
 import javax.inject.Inject
 
-class GetDaysWithRound @Inject constructor(
+class GetDaysWithRoundNearMonth @Inject constructor(
     private val roundDataSource: RoundDataSource
 ) {
 

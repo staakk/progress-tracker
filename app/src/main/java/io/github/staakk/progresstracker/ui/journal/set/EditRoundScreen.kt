@@ -28,7 +28,7 @@ import androidx.lifecycle.MutableLiveData
 import io.github.staakk.progresstracker.R
 import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.data.round.Round
-import io.github.staakk.progresstracker.data.round.Set
+import io.github.staakk.progresstracker.data.round.RoundSet
 import io.github.staakk.progresstracker.ui.common.Formatters
 import io.github.staakk.progresstracker.ui.common.Header
 import io.github.staakk.progresstracker.ui.common.SimpleIconButton
@@ -36,7 +36,6 @@ import io.github.staakk.progresstracker.ui.common.SuffixTransformation
 import io.github.staakk.progresstracker.ui.theme.Dimensions
 import io.github.staakk.progresstracker.ui.theme.ProgressTrackerTheme
 import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalDateTime
 
 @Composable
 fun EditRound(
@@ -81,10 +80,10 @@ fun EditRoundScreen(
     round: LiveData<Round?>,
     exercises: LiveData<List<Exercise>>,
     onExerciseSelected: (Exercise) -> Unit,
-    onSetUpdated: (Set) -> Unit,
+    onSetUpdated: (RoundSet) -> Unit,
     createSet: () -> Unit,
     deleteRound: () -> Unit,
-    deleteSet: (Set) -> Unit,
+    deleteSet: (RoundSet) -> Unit,
 ) {
     ProgressTrackerTheme {
         Surface(Modifier.fillMaxSize()) {
@@ -149,11 +148,11 @@ private fun BodyContent(
     round: LiveData<Round?>,
     exercises: LiveData<List<Exercise>>,
     onExerciseSelected: (Exercise) -> Unit,
-    onSetUpdated: (Set) -> Unit,
-    deleteSet: (Set) -> Unit,
+    onSetUpdated: (RoundSet) -> Unit,
+    deleteSet: (RoundSet) -> Unit,
 ) {
     val roundState = round.observeAsState()
-    val sets = roundState.value?.sets ?: emptyList()
+    val sets = roundState.value?.roundSets ?: emptyList()
     Column(modifier = Modifier.padding(16.dp)) {
         Header(text = roundState.value
             ?.createdAt

@@ -4,7 +4,7 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import androidx.lifecycle.Transformations.switchMap
 import io.github.staakk.progresstracker.data.round.Round
-import io.github.staakk.progresstracker.domain.round.GetDaysWithRound
+import io.github.staakk.progresstracker.domain.round.GetDaysWithRoundNearMonth
 import io.github.staakk.progresstracker.domain.round.GetRoundsByDateTime
 import kotlinx.coroutines.Dispatchers
 import org.threeten.bp.LocalDate
@@ -12,7 +12,7 @@ import org.threeten.bp.YearMonth
 
 class JournalViewModel @ViewModelInject constructor(
     private val getRoundsByDateTime: GetRoundsByDateTime,
-    private val getDaysWithRound: GetDaysWithRound,
+    private val getDaysWithRoundNearMonth: GetDaysWithRoundNearMonth,
 ) : ViewModel() {
 
     private val _date = MutableLiveData<LocalDate>()
@@ -31,7 +31,7 @@ class JournalViewModel @ViewModelInject constructor(
     private val _daysWithRound = switchMap(_yearMonth) { yearMonth ->
         liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
             emit(
-                getDaysWithRound(yearMonth)
+                getDaysWithRoundNearMonth(yearMonth)
             )
         }
     }

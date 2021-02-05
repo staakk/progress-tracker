@@ -7,13 +7,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.data.round.Round
-import io.github.staakk.progresstracker.data.round.Set
+import io.github.staakk.progresstracker.data.round.RoundSet
 import io.github.staakk.progresstracker.domain.exercise.GetExercises
 import io.github.staakk.progresstracker.domain.round.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalTime
 import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
 
@@ -62,7 +63,7 @@ class EditRoundViewModel @ViewModelInject constructor(
         _roundDeleted.value = false
         viewModelScope.launch {
             loadExercises()
-            withContext(Dispatchers.IO) { createRound(createdAt, _exercises.value!![0]) }
+            withContext(Dispatchers.IO) { createRound(createdAt.atTime(LocalTime.now()), _exercises.value!![0]) }
                 .fold({ Timber.e(it.toString()) }, { _round.value = it })
         }
     }
@@ -74,13 +75,13 @@ class EditRoundViewModel @ViewModelInject constructor(
         }
     }
 
-    fun updateSet(set: Set) {
+    fun updateSet(roundSet: RoundSet) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                updateSet.invoke(_round.value!!,
-                    set,
-                    set.reps,
-                    set.weight)
+                updateSet(_round.value!!,
+                    roundSet,
+                    reps = roundSet.reps,
+                    weight = roundSet.weight)
             }
                 .fold({ Timber.e(it.toString()) }, { _round.value })
         }
@@ -91,16 +92,16 @@ class EditRoundViewModel @ViewModelInject constructor(
             withContext(Dispatchers.IO) {
                 createSet(
                     _round.value!!,
-                    Set(reps = 0,
+                    RoundSet(reps = 0,
                         weight = 0,
-                        position = _round.value!!.sets.lastOrNull()?.position?.plus(1) ?: 0))
+                        position = _round.value!!.roundSets.lastOrNull()?.position?.plus(1) ?: 0))
             }.fold({ Timber.e(it.toString()) }, { _round.value = it })
         }
     }
 
-    fun deleteSet(set: Set) {
+    fun deleteSet(roundSet: RoundSet) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) { deleteSet.invoke(_round.value!!, set) }
+            withContext(Dispatchers.IO) { deleteSet.invoke(_round.value!!, roundSet) }
                 .fold({ Timber.e(it.toString()) }, { _round.value = it })
         }
     }
