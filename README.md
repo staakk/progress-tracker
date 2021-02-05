@@ -10,3 +10,8 @@ This app explores Jetpack Compose concepts and how they can be combined with oth
 
 `dev:` - contains changes not related to the user experience
 
+## TODO
+
+1. Add confirmation dialog for delete actions
+1. Add UI tests
+1. Add plotting progress
