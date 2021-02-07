@@ -1,16 +1,18 @@
 package io.github.staakk.progresstracker.ui.journal
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import androidx.lifecycle.Transformations.switchMap
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.staakk.progresstracker.data.round.Round
 import io.github.staakk.progresstracker.domain.round.GetDaysWithRoundNearMonth
 import io.github.staakk.progresstracker.domain.round.GetRoundsByDateTime
 import kotlinx.coroutines.Dispatchers
 import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
+import javax.inject.Inject
 
-class JournalViewModel @ViewModelInject constructor(
+@HiltViewModel
+class JournalViewModel @Inject constructor(
     private val getRoundsByDateTime: GetRoundsByDateTime,
     private val getDaysWithRoundNearMonth: GetDaysWithRoundNearMonth,
 ) : ViewModel() {

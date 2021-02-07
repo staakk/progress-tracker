@@ -1,7 +1,7 @@
 package io.github.staakk.progresstracker.ui.exercise.editexercise
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.domain.exercise.CreateExercise
 import io.github.staakk.progresstracker.domain.exercise.GetExerciseById
@@ -9,8 +9,10 @@ import io.github.staakk.progresstracker.domain.exercise.UpdateExercise
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class EditExerciseViewModel @ViewModelInject constructor(
+@HiltViewModel
+class EditExerciseViewModel @Inject constructor(
     private val getExerciseById: GetExerciseById,
     private val createExercise: CreateExercise,
     private val updateExercise: UpdateExercise

@@ -1,10 +1,10 @@
 package io.github.staakk.progresstracker.ui.journal.set
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.data.round.Round
 import io.github.staakk.progresstracker.data.round.RoundSet
@@ -17,8 +17,10 @@ import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalTime
 import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
+import javax.inject.Inject
 
-class EditRoundViewModel @ViewModelInject constructor(
+@HiltViewModel
+class EditRoundViewModel @Inject constructor(
     private val getExercises: GetExercises,
     private val getRoundById: GetRoundById,
     private val createRound: CreateRound,
