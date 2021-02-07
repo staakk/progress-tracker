@@ -3,6 +3,7 @@ package io.github.staakk.progresstracker.ui.journal.set
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -104,7 +105,11 @@ fun EditRoundScreen(
                     FloatingActionButton(
                         onClick = createSet,
                     ) {
-                        Icon(Icons.Filled.Add, tint = MaterialTheme.colors.onSecondary)
+                        Icon(
+                            Icons.Filled.Add,
+                            tint = MaterialTheme.colors.onSecondary,
+                            contentDescription = stringResource(id = R.string.edit_round_content_desc_fab_add_set)
+                        )
                     }
                 },
                 bottomBar = {
@@ -125,6 +130,7 @@ fun EditRoundScreen(
                                 onClick = navigateUp,
                                 imageVector = Icons.Filled.ArrowBack,
                                 tint = MaterialTheme.colors.onPrimary,
+                                contentDescription = stringResource(id = R.string.edit_round_content_desc_go_back)
                             )
                             SimpleIconButton(
                                 modifier = Modifier.constrainAs(deleteRef) {
@@ -133,6 +139,7 @@ fun EditRoundScreen(
                                 onClick = deleteRound,
                                 imageVector = Icons.Filled.DeleteForever,
                                 tint = MaterialTheme.colors.onPrimary,
+                                contentDescription = stringResource(id = R.string.edit_round_content_desc_delete_round)
                             )
                         }
                     }
@@ -224,6 +231,7 @@ private fun BodyContent(
                             onClick = { deleteSet(set) },
                             imageVector = Icons.Filled.RemoveCircleOutline,
                             tint = MaterialTheme.colors.primary,
+                            contentDescription = stringResource(id = R.string.edit_round_content_desc_delete_set)
                         )
                     }
                 }
@@ -252,7 +260,10 @@ fun ExerciseSelector(
         toggle = {
             TextField(
                 value = if (items.isEmpty()) "" else items[selectedIndex.value].name,
-                trailingIcon = { Icon(Icons.Filled.ArrowDropDown) },
+                trailingIcon = {
+                    Icon(Icons.Filled.ArrowDropDown,
+                        stringResource(id = R.string.edit_round_content_desc_expand_exercises_drop_down))
+                },
                 modifier = Modifier
                     .onFocusChanged {
                         expanded.value = when (it) {

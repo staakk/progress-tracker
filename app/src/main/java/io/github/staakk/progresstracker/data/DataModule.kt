@@ -3,9 +3,10 @@ package io.github.staakk.progresstracker.data
 import android.content.Context
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.DefineComponent
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import io.github.staakk.progresstracker.data.exercise.ExerciseDataSource
 import io.github.staakk.progresstracker.data.local.AppDatabase
 import io.github.staakk.progresstracker.data.local.exercise.ExerciseDao
@@ -17,7 +18,7 @@ import io.github.staakk.progresstracker.data.round.RoundDataSource
 import io.github.staakk.progresstracker.ui.App
 import javax.inject.Singleton
 
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 @Module
 class DataModule {
 

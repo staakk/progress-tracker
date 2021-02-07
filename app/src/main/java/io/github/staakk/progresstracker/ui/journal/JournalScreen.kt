@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -104,6 +105,7 @@ fun JournalScreen(
                                 onClick = navigateUp,
                                 imageVector = Icons.Filled.ArrowBack,
                                 tint = MaterialTheme.colors.onPrimary,
+                                contentDescription = stringResource(id = R.string.journal_content_desc_go_back)
                             )
                         }
                     }
@@ -120,7 +122,8 @@ fun JournalScreen(
                         icon = {
                             Icon(
                                 Icons.Filled.Add,
-                                tint = MaterialTheme.colors.onSecondary
+                                tint = MaterialTheme.colors.onSecondary,
+                                contentDescription = null,
                             )
                         },
                     )
@@ -174,7 +177,8 @@ private fun BodyContent(
 
         if (roundsState.value.isEmpty()) {
             Text(
-                modifier = Modifier.weight(2f)
+                modifier = Modifier
+                    .weight(2f)
                     .padding(Dimensions.padding),
                 text = stringResource(id = R.string.journal_no_round),
                 style = MaterialTheme.typography.h6
@@ -219,7 +223,8 @@ private fun Header(
             Icon(
                 modifier = Modifier.rotate(180f),
                 imageVector = Icons.Filled.ArrowRightAlt,
-                tint = MaterialTheme.colors.primary
+                tint = MaterialTheme.colors.primary,
+                contentDescription = stringResource(id = R.string.journal_content_desc_prev_day),
             )
         }
         SimpleIconButton(
@@ -228,7 +233,8 @@ private fun Header(
             },
             onClick = toggleCalendar,
             imageVector = Icons.Filled.CalendarToday,
-            tint = MaterialTheme.colors.primary
+            tint = MaterialTheme.colors.primary,
+            contentDescription = stringResource(id = R.string.journal_content_desc_toggle_callendar)
         )
         SimpleIconButton(
             modifier = Modifier.constrainAs(nextDayRef) {
@@ -236,7 +242,8 @@ private fun Header(
             },
             onClick = nextDay,
             imageVector = Icons.Filled.ArrowRightAlt,
-            tint = MaterialTheme.colors.primary
+            tint = MaterialTheme.colors.primary,
+            contentDescription = stringResource(id = R.string.journal_content_desc_next_day),
         )
     }
 }

@@ -3,6 +3,7 @@ package io.github.staakk.progresstracker.ui.exercise
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -69,7 +70,11 @@ private fun ExerciseListScreen(
                             .padding(16.dp),
                         backgroundColor = MaterialTheme.colors.primary
                     ) {
-                        Icon(Icons.Filled.Add, tint = MaterialTheme.colors.onPrimary)
+                        Icon(
+                            Icons.Filled.Add,
+                            tint = MaterialTheme.colors.onPrimary,
+                            contentDescription = stringResource(id = R.string.exercises_list_content_desc_add_new_exercise),
+                        )
                     }
                 }
             }
@@ -96,7 +101,7 @@ private fun PreviewExerciseListScreen() {
 @Composable
 private fun ExerciseItem(
     exercise: Exercise,
-    onItemClick: (String) -> Unit
+    onItemClick: (String) -> Unit,
 ) {
     Row(
         Modifier
@@ -117,7 +122,7 @@ private fun SearchView(initialSearchValue: String, onValueChanged: (String) -> U
     TextField(
         modifier = Modifier.fillMaxWidth(),
         value = text,
-        leadingIcon = { Icon(Icons.Filled.Search) },
+        leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
         onValueChange = {
             text = it
             onValueChanged(it.text)

@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.AmbientContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jakewharton.threetenabp.AndroidThreeTen
+import io.github.staakk.progresstracker.R
 import io.github.staakk.progresstracker.ui.theme.ProgressTrackerTheme
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
@@ -54,7 +56,11 @@ fun Calendar(
             IconButton(onClick = {
                 onMonthChanged(currentMonth.value.minusMonths(1))
             }) {
-                Icon(Icons.Filled.ArrowLeft, tint = MaterialTheme.colors.primary)
+                Icon(
+                    Icons.Filled.ArrowLeft,
+                    tint = MaterialTheme.colors.primary,
+                    contentDescription = stringResource(id = R.string.calendar_previous_month)
+                )
             }
             Text(
                 modifier = Modifier.align(Alignment.CenterVertically),
@@ -66,7 +72,11 @@ fun Calendar(
             IconButton(onClick = {
                 onMonthChanged(currentMonth.value.plusMonths(1))
             }) {
-                Icon(Icons.Filled.ArrowRight, tint = MaterialTheme.colors.primary)
+                Icon(
+                    Icons.Filled.ArrowRight,
+                    tint = MaterialTheme.colors.primary,
+                    contentDescription = stringResource(id = R.string.calendar_next_month)
+                )
             }
         }
         Row(
