@@ -86,7 +86,7 @@ class EditRoundViewModel @ViewModelInject constructor(
                     reps = roundSet.reps,
                     weight = roundSet.weight)
             }
-                .fold({ Timber.e(it.toString()) }, { _round.value })
+                .fold({ Timber.e(it.toString()) }, { _round.value = it.round})
         }
     }
 
