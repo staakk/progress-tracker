@@ -37,4 +37,6 @@
     <string name="edit_round_content_desc_delete_round">Delete round</string>
     <string name="edit_round_content_desc_delete_set">Delete set</string>
     <string name="edit_round_content_desc_expand_exercises_drop_down">Show available exercises</string>
+    <string name="home_browse_exercises">Browse exercises</string>
+    <string name="home_view_exercises_journal">View exercises journal</string>
 </resources>
