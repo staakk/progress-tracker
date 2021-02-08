@@ -1,6 +1,6 @@
 package io.github.staakk.progresstracker.data.local.exercise
 
-import io.github.staakk.progresstracker.case.DatabaseTestCase
+import io.github.staakk.progresstracker.testcase.DatabaseTestCase
 import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.data.exercise.ExerciseDataSource.Error.ExerciseNotFound
 import io.github.staakk.progresstracker.data.exercise.ExerciseDataSource.Error.IdAlreadyExists

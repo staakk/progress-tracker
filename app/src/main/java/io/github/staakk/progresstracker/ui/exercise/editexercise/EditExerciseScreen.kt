@@ -5,6 +5,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.viewModel
@@ -16,6 +17,10 @@ import io.github.staakk.progresstracker.R
 import io.github.staakk.progresstracker.ui.common.Header
 import io.github.staakk.progresstracker.ui.common.LoadingIndicator
 import io.github.staakk.progresstracker.ui.exercise.editexercise.EditExerciseViewModel.*
+
+enum class EditExerciseScreenTags {
+    NAME
+}
 
 @Composable
 fun EditExercise(
@@ -63,7 +68,8 @@ fun EditExerciseScreen(
 
                 val name = exerciseName.observeAsState(initial = "")
                 TextField(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth()
+                        .testTag(EditExerciseScreenTags.NAME.name),
                     value = name.value,
                     onValueChange = { onNameChanged(it) },
                     label = { Text(stringResource(R.string.edit_exercise_label_name)) },

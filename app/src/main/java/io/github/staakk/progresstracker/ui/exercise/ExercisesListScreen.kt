@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -23,14 +24,18 @@ import io.github.staakk.progresstracker.R
 import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.ui.theme.ProgressTrackerTheme
 
+enum class ExercisesListTestTags {
+    SEARCH,
+    LIST_ITEM,
+    FAB
+}
+
 @Composable
 fun ExercisesList(
     editExerciseAction: (String) -> Unit,
     newExerciseAction: () -> Unit,
 ) {
-    val viewModel: ExercisesListViewModel = viewModel(
-        ExercisesListViewModel::class.simpleName
-    )
+    val viewModel: ExercisesListViewModel = viewModel()
     viewModel.setSearchValue(viewModel.getSearchValue())
     ExerciseListScreen(
         exercises = viewModel.exercises,
@@ -67,7 +72,8 @@ private fun ExerciseListScreen(
                         onClick = onNewExerciseClick,
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
-                            .padding(16.dp),
+                            .padding(16.dp)
+                            .testTag(ExercisesListTestTags.FAB.name),
                         backgroundColor = MaterialTheme.colors.primary
                     ) {
                         Icon(
@@ -107,6 +113,7 @@ private fun ExerciseItem(
         Modifier
             .fillMaxWidth()
             .clickable(onClick = { onItemClick(exercise.id) })
+            .testTag(ExercisesListTestTags.LIST_ITEM.name)
     ) {
         Text(
             text = exercise.name,
@@ -120,7 +127,8 @@ private fun ExerciseItem(
 private fun SearchView(initialSearchValue: String, onValueChanged: (String) -> Unit) {
     var text by remember { mutableStateOf(TextFieldValue(initialSearchValue)) }
     TextField(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
+            .testTag(ExercisesListTestTags.SEARCH.name),
         value = text,
         leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
         onValueChange = {

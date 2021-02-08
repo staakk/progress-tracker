@@ -1,6 +1,9 @@
 package io.github.staakk.progresstracker.data
 
 import android.content.Context
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.DefineComponent
@@ -16,6 +19,8 @@ import io.github.staakk.progresstracker.data.local.round.RoundDao
 import io.github.staakk.progresstracker.data.local.round.SetDao
 import io.github.staakk.progresstracker.data.round.RoundDataSource
 import io.github.staakk.progresstracker.ui.App
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -24,8 +29,13 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideAppDatabase(@ApplicationContext appContext: Context) =
-        (appContext as App).database
+    fun provideAppDatabase(
+        @ApplicationContext appContext: Context,
+        @PopulateDatabaseQualifier populateDatabaseCallback: RoomDatabase.Callback
+    ) =
+        Room.databaseBuilder(appContext, AppDatabase::class.java, AppDatabase.DB_NAME)
+            .addCallback(populateDatabaseCallback)
+            .build()
 
     @Provides
     fun provideExerciseDao(appDatabase: AppDatabase) = appDatabase.exerciseDao()

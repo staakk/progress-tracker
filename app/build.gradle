@@ -14,7 +14,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "io.github.staakk.progresstracker.HiltTestRunner"
     }
 
     buildTypes {
@@ -78,14 +78,15 @@ dependencies {
     implementation "androidx.compose.animation:animation:$compose_version"
 
     androidTestImplementation "androidx.compose.ui:ui-test:$compose_version"
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
 
     // Hilt
     def hilt_version = "2.31.2-alpha"
 
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
-    implementation 'androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03'
-    kapt 'androidx.hilt:hilt-compiler:1.0.0-alpha03'
+    androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
+    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hilt_version"
 
     // Other
     implementation 'com.jakewharton.timber:timber:4.7.1'
@@ -94,6 +95,9 @@ dependencies {
 
     testImplementation "io.mockk:mockk:1.10.5"
     testImplementation "org.threeten:threetenbp:1.5.0"
+
+    implementation 'androidx.test.espresso:espresso-idling-resource:3.3.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }
 
 kapt {

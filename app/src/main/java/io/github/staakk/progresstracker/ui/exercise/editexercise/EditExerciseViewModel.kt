@@ -6,6 +6,8 @@ import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.domain.exercise.CreateExercise
 import io.github.staakk.progresstracker.domain.exercise.GetExerciseById
 import io.github.staakk.progresstracker.domain.exercise.UpdateExercise
+import io.github.staakk.progresstracker.util.EspressoIdlingResource
+import io.github.staakk.progresstracker.util.wrapIdlingResource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -15,7 +17,7 @@ import javax.inject.Inject
 class EditExerciseViewModel @Inject constructor(
     private val getExerciseById: GetExerciseById,
     private val createExercise: CreateExercise,
-    private val updateExercise: UpdateExercise
+    private val updateExercise: UpdateExercise,
 ) : ViewModel() {
 
     private val exercise = MutableLiveData<Exercise?>()
@@ -35,14 +37,16 @@ class EditExerciseViewModel @Inject constructor(
 
         if (id == null) return
         viewModelScope.launch {
-            withContext(Dispatchers.IO) { getExerciseById(id) }
-                .fold(
-                    { _screenState.value = ScreenState.Error(ErrorType.UnknownExerciseId) },
-                    {
-                        exercise.value = it
-                        _exerciseName.value = it.name
-                    }
-                )
+            wrapIdlingResource {
+                withContext(Dispatchers.IO) { getExerciseById(id) }
+                    .fold(
+                        { _screenState.value = ScreenState.Error(ErrorType.UnknownExerciseId) },
+                        {
+                            exercise.value = it
+                            _exerciseName.value = it.name
+                        }
+                    )
+            }
         }
     }
 
@@ -53,22 +57,24 @@ class EditExerciseViewModel @Inject constructor(
     fun saveExercise() {
         _screenState.value = ScreenState.Saving
         viewModelScope.launch {
-            val name = _exerciseName.value!!
-            exercise.value
-                ?.let {
-                    _screenState.value =
-                        withContext(Dispatchers.IO) { updateExercise(it, name) }
-                            .fold(
-                                { ScreenState.Error(ErrorType.NameAlreadyExists) },
-                                { ScreenState.Saved })
-                }
-                ?: run {
-                    _screenState.value =
-                        withContext(Dispatchers.IO) { createExercise(name) }
-                            .fold(
-                                { ScreenState.Error(ErrorType.NameAlreadyExists) },
-                                { ScreenState.Saved })
-                }
+            wrapIdlingResource {
+                val name = _exerciseName.value!!
+                exercise.value
+                    ?.let {
+                        _screenState.value =
+                            withContext(Dispatchers.IO) { updateExercise(it, name) }
+                                .fold(
+                                    { ScreenState.Error(ErrorType.NameAlreadyExists) },
+                                    { ScreenState.Saved })
+                    }
+                    ?: run {
+                        _screenState.value =
+                            withContext(Dispatchers.IO) { createExercise(name) }
+                                .fold(
+                                    { ScreenState.Error(ErrorType.NameAlreadyExists) },
+                                    { ScreenState.Saved })
+                    }
+            }
         }
     }
 

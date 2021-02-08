@@ -1,4 +1,4 @@
-package io.github.staakk.progresstracker.case
+package io.github.staakk.progresstracker.testcase
 
 import android.content.Context
 import androidx.annotation.CallSuper

@@ -21,6 +21,10 @@ interface RoundDao {
     fun getById(id: String): RoomRoundWithSets?
 
     @Transaction
+    @Query("SELECT * FROM round")
+    fun getAll(): List<RoomRoundWithSets>
+
+    @Transaction
     @Query("SELECT * FROM round WHERE created_at BETWEEN :from AND :to")
     fun getByDate(from: Long, to: Long): List<RoomRoundWithSets>
 

@@ -1,6 +1,6 @@
 package io.github.staakk.progresstracker.data.local.round
 
-import io.github.staakk.progresstracker.case.DatabaseTestCase
+import io.github.staakk.progresstracker.testcase.DatabaseTestCase
 import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.data.round.RoomRound.Companion.toRoomRound
 import io.github.staakk.progresstracker.data.round.Round
