@@ -14,4 +14,10 @@ class HomeTestScreen(
             .performClick()
         return ExercisesListTestScreen(context)
     }
+
+    fun openJournal(): JournalTestScreen {
+        rule.onNodeWithText(context.getString(R.string.home_view_exercises_journal))
+            .performClick()
+        return JournalTestScreen(context)
+    }
 }

@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.AmbientContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -36,8 +37,16 @@ import io.github.staakk.progresstracker.ui.common.Selection
 import io.github.staakk.progresstracker.ui.common.SimpleIconButton
 import io.github.staakk.progresstracker.ui.theme.Dimensions
 import io.github.staakk.progresstracker.ui.theme.ProgressTrackerTheme
+import io.github.staakk.progresstracker.util.datetime.AmbientDateTimeProvider
 import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
+
+enum class JournalTestTags {
+    CALENDAR,
+    CALENDAR_TOGGLE_BUTTON,
+    PREV_DAY,
+    NEXT_DAY,
+}
 
 @Composable
 fun Journal(
@@ -46,8 +55,10 @@ fun Journal(
     navigateUp: () -> Unit,
 ) {
     val viewModel: JournalViewModel = viewModel()
-    viewModel.loadRounds(LocalDate.now())
-    viewModel.loadMonth(YearMonth.now())
+    val dateTimeProvider = AmbientDateTimeProvider.current
+    viewModel.loadRounds(viewModel.date.value ?: dateTimeProvider.currentDate())
+    viewModel.loadMonth(viewModel.date.value?.let(YearMonth::from)
+        ?: dateTimeProvider.currentYearMonth())
     JournalScreen(
         date = viewModel.date,
         rounds = viewModel.rounds,
@@ -71,7 +82,7 @@ fun JournalScreen(
     onDateChanged: (LocalDate) -> Unit,
     onMonthChanged: (YearMonth) -> Unit,
 ) {
-    val dateState = date.observeAsState(LocalDate.now())
+    val dateState = date.observeAsState(AmbientDateTimeProvider.current.currentDate())
     ProgressTrackerTheme {
         Surface(Modifier.fillMaxSize()) {
             Scaffold(
@@ -143,7 +154,7 @@ private fun BodyContent(
     onMonthChanged: (YearMonth) -> Unit,
 ) {
     val selectionColor = MaterialTheme.colors.primary
-    val dateState = date.observeAsState(LocalDate.now())
+    val dateState = date.observeAsState(AmbientDateTimeProvider.current.currentDate())
     val roundsState = rounds.observeAsState(listOf())
     val daysWithRoundState = daysWithRound.observeAsState(listOf())
     val calendarCollapsed = remember { mutableStateOf(true) }
@@ -163,6 +174,7 @@ private fun BodyContent(
 
         if (!calendarCollapsed.value) {
             Calendar(
+                modifier = Modifier.testTag(JournalTestTags.CALENDAR.name),
                 currentMonth = calendarYearMonth,
                 onDaySelected = onDateChanged,
                 selectedItems = selectedItems,
@@ -215,9 +227,8 @@ private fun Header(
         )
         IconButton(
             modifier = Modifier
-                .constrainAs(prevDayRef) {
-                    end.linkTo(toggleCalendarRef.start)
-                },
+                .testTag(JournalTestTags.PREV_DAY.name)
+                .constrainAs(prevDayRef) { end.linkTo(toggleCalendarRef.start) },
             onClick = previousDay,
         ) {
             Icon(
@@ -228,18 +239,18 @@ private fun Header(
             )
         }
         SimpleIconButton(
-            modifier = Modifier.constrainAs(toggleCalendarRef) {
-                end.linkTo(nextDayRef.start)
-            },
+            modifier = Modifier
+                .testTag(JournalTestTags.CALENDAR_TOGGLE_BUTTON.name)
+                .constrainAs(toggleCalendarRef) { end.linkTo(nextDayRef.start) },
             onClick = toggleCalendar,
             imageVector = Icons.Filled.CalendarToday,
             tint = MaterialTheme.colors.primary,
             contentDescription = stringResource(id = R.string.journal_content_desc_toggle_callendar)
         )
         SimpleIconButton(
-            modifier = Modifier.constrainAs(nextDayRef) {
-                end.linkTo(parent.end)
-            },
+            modifier = Modifier
+                .testTag(JournalTestTags.NEXT_DAY.name)
+                .constrainAs(nextDayRef) { end.linkTo(parent.end) },
             onClick = nextDay,
             imageVector = Icons.Filled.ArrowRightAlt,
             tint = MaterialTheme.colors.primary,
@@ -301,7 +312,7 @@ fun RoundsList(
                     Text(
                         modifier = Modifier.weight(1f),
                         text = it.roundSets.maxByOrNull { it.weight }
-                            ?.let { it.weight.toString() + " kg" } ?: "0"
+                            ?.let { it.weight.toString() + " kg" } ?: "0 kg"
                     )
                 }
             }

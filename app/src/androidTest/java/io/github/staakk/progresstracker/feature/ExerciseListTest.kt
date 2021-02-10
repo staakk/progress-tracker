@@ -1,45 +1,27 @@
 package io.github.staakk.progresstracker.feature
 
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.github.staakk.progresstracker.ComposeIdlingResource
-import io.github.staakk.progresstracker.DbHelper
-import io.github.staakk.progresstracker.data.local.AppDatabase
+import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.feature.screen.HomeTestScreen
 import io.github.staakk.progresstracker.feature.screen.ScreenContext
-import io.github.staakk.progresstracker.ui.MainActivity
-import io.github.staakk.progresstracker.util.EspressoIdlingResource
-import org.junit.After
+import io.github.staakk.progresstracker.initDatabase
+import io.github.staakk.progresstracker.testcase.ScreenTestCase
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import javax.inject.Inject
+
+private val EXERCISES = listOf(
+    Exercise(name = "Dead lift"),
+    Exercise(name = "Low bar squat"),
+    Exercise(name = "Bench press")
+)
 
 @HiltAndroidTest
-class ExerciseListTest {
-
-    @get:Rule
-    val hiltRule = HiltAndroidRule(this)
-
-    @get:Rule
-    val composeTestRule = createAndroidComposeRule<MainActivity>()
-
-    @Inject
-    lateinit var database: AppDatabase
-
-    private val composeIdlingResource = ComposeIdlingResource(EspressoIdlingResource.countingIdlingResource)
+class ExerciseListTest : ScreenTestCase() {
 
     @Before
-    fun setUp() {
-        composeTestRule.registerIdlingResource(composeIdlingResource)
-        hiltRule.inject()
-        DbHelper.initDatabase(database)
-    }
-
-    @After
-    fun tearDown() {
-        composeTestRule.unregisterIdlingResource(composeIdlingResource)
+    override fun setUp() {
+        super.setUp()
+        database.initDatabase(EXERCISES)
     }
 
     /**

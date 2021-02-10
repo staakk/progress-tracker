@@ -1,4 +1,4 @@
-package io.github.staakk.progresstracker.ui.journal.set
+package io.github.staakk.progresstracker.ui.journal.round
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -10,6 +10,7 @@ import io.github.staakk.progresstracker.data.round.Round
 import io.github.staakk.progresstracker.data.round.RoundSet
 import io.github.staakk.progresstracker.domain.exercise.GetExercises
 import io.github.staakk.progresstracker.domain.round.*
+import io.github.staakk.progresstracker.util.wrapIdlingResource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -48,14 +49,16 @@ class EditRoundViewModel @Inject constructor(
 
         _roundDeleted.value = false
         viewModelScope.launch {
-            loadExercises()
-            val result = withContext(Dispatchers.IO) {
-                getRoundById(roundId)
+            wrapIdlingResource {
+                loadExercises()
+                val result = withContext(Dispatchers.IO) {
+                    getRoundById(roundId)
+                }
+                result.fold(
+                    {},
+                    { _round.value = it }
+                )
             }
-            result.fold(
-                {},
-                { _round.value = it }
-            )
         }
     }
 
@@ -64,61 +67,76 @@ class EditRoundViewModel @Inject constructor(
 
         _roundDeleted.value = false
         viewModelScope.launch {
-            loadExercises()
-            withContext(Dispatchers.IO) {
-                createRound(createdAt.atTime(LocalTime.now()),
-                    _exercises.value!![0])
+            wrapIdlingResource {
+                loadExercises()
+                withContext(Dispatchers.IO) {
+                    createRound(createdAt.atTime(LocalTime.now()),
+                        _exercises.value!![0])
+                }
+                    .fold({ Timber.e(it.toString()) }, { _round.value = it })
             }
-                .fold({ Timber.e(it.toString()) }, { _round.value = it })
         }
     }
 
     fun updateExercise(exercise: Exercise) {
+        Timber.d("Update exercise $exercise")
         viewModelScope.launch {
-            withContext(Dispatchers.IO) { updateRound(_round.value!!, exercise = exercise) }
-                .fold({ Timber.e(it.toString()) }, { _round.value = it })
+            wrapIdlingResource {
+                withContext(Dispatchers.IO) { updateRound(_round.value!!, exercise = exercise) }
+                    .fold({ Timber.e(it.toString()) }, { _round.value = it })
+            }
         }
     }
 
     fun updateSet(roundSet: RoundSet) {
+        Timber.d("Update set $roundSet")
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                updateSet(_round.value!!,
-                    roundSet,
-                    reps = roundSet.reps,
-                    weight = roundSet.weight)
+            wrapIdlingResource {
+                withContext(Dispatchers.IO) {
+                    updateSet(_round.value!!,
+                        roundSet,
+                        reps = roundSet.reps,
+                        weight = roundSet.weight)
+                }
+                    .fold({ Timber.e(it.toString()) }, { _round.value = it.round })
             }
-                .fold({ Timber.e(it.toString()) }, { _round.value = it.round})
         }
     }
 
     fun createNewSet() {
+        Timber.d("Create new set")
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                createSet(
-                    _round.value!!,
-                    reps = 0,
-                    weight = 0,
-                    position = _round.value!!.roundSets.lastOrNull()?.position?.plus(1) ?: 0
-                )
-            }.fold({ Timber.e(it.toString()) }, { _round.value = it })
+            wrapIdlingResource {
+                withContext(Dispatchers.IO) {
+                    createSet(
+                        _round.value!!,
+                        reps = 0,
+                        weight = 0,
+                        position = _round.value!!.roundSets.lastOrNull()?.position?.plus(1) ?: 0
+                    )
+                }.fold({ Timber.e(it.toString()) }, { _round.value = it })
+            }
         }
     }
 
     fun deleteSet(roundSet: RoundSet) {
+        Timber.d("Delete set $roundSet")
         viewModelScope.launch {
-            withContext(Dispatchers.IO) { deleteSet.invoke(_round.value!!, roundSet) }
-                .fold({ Timber.e(it.toString()) }, { _round.value = it })
+            wrapIdlingResource {
+                withContext(Dispatchers.IO) { deleteSet.invoke(_round.value!!, roundSet) }
+                    .fold({ Timber.e(it.toString()) }, { _round.value = it })
+            }
         }
     }
 
     fun deleteCurrentRound() {
+        Timber.d("Delete current round ${_round.value}")
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                deleteRound(_round.value!!)
+            wrapIdlingResource {
+                withContext(Dispatchers.IO) { deleteRound(_round.value!!) }
+                _round.value = null
+                _roundDeleted.value = true
             }
-            _round.value = null
-            _roundDeleted.value = true
         }
     }
 

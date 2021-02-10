@@ -5,43 +5,29 @@ import io.github.staakk.progresstracker.data.local.AppDatabase
 import io.github.staakk.progresstracker.data.round.RoomRound
 import io.github.staakk.progresstracker.data.round.RoomSet
 
-object DbHelper {
+fun AppDatabase.initDatabase(
+    exercises: List<Exercise> = emptyList(),
+    rounds: List<RoomRound> = emptyList(),
+    sets: List<RoomSet> = emptyList(),
+) {
+    clearDatabase()
+    val exerciseDao = exerciseDao()
+    exercises.forEach(exerciseDao::create)
+    val roundDao = roundDao()
+    rounds.forEach(roundDao::create)
+    val setDao = setDao()
+    sets.forEach(setDao::create)
+}
 
-    private val EXERCISES = listOf(
-        Exercise(name = "Dead lift"),
-        Exercise(name = "Low bar squat"),
-        Exercise(name = "Bench press")
-    )
-
-    fun initDatabase(
-        db: AppDatabase,
-        exercises: List<Exercise> = EXERCISES,
-        rounds: List<RoomRound> = emptyList(),
-        sets: List<RoomSet> = emptyList()
-    ) {
-        clearDatabase(db)
-        db.exerciseDao().apply {
-            exercises.forEach(this::create)
-        }
-        db.roundDao().apply {
-            rounds.forEach(this::create)
-        }
-        db.setDao().apply {
-            sets.forEach(this::create)
-
+fun AppDatabase.clearDatabase() {
+    roundDao().apply {
+        getAll().forEach {
+            delete(it.round)
         }
     }
-
-    fun clearDatabase(db: AppDatabase) {
-        db.roundDao().apply {
-            getAll().forEach {
-                delete(it.round)
-            }
-        }
-        db.exerciseDao().apply {
-            getAll().forEach {
-                delete(it)
-            }
+    exerciseDao().apply {
+        getAll().forEach {
+            delete(it)
         }
     }
 }

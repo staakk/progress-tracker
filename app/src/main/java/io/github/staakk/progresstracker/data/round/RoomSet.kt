@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import java.util.*
 
 @Entity(
     tableName = "Set",
@@ -17,7 +18,7 @@ import androidx.room.PrimaryKey
     ],
 )
 data class RoomSet(
-    @PrimaryKey val id: String,
+    @PrimaryKey val id: String = UUID.randomUUID().toString(),
 
     val position: Int,
 

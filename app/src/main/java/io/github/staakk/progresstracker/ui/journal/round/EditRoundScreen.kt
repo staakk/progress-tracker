@@ -1,4 +1,4 @@
-package io.github.staakk.progresstracker.ui.journal.set
+package io.github.staakk.progresstracker.ui.journal.round
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.AmbientFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -37,6 +38,19 @@ import io.github.staakk.progresstracker.ui.common.SuffixTransformation
 import io.github.staakk.progresstracker.ui.theme.Dimensions
 import io.github.staakk.progresstracker.ui.theme.ProgressTrackerTheme
 import org.threeten.bp.LocalDate
+import timber.log.Timber
+
+enum class EditRoundTags {
+    EDIT_REPS,
+    EDIT_WEIGHT,
+    EXERCISE_DROP_DOWN,
+    EXERCISE_DROP_DOWN_ITEM,
+    BACK,
+    DELETE_ROUND,
+    DELETE_SET,
+    ADD_SET,
+    SET,
+}
 
 @Composable
 fun EditRound(
@@ -103,6 +117,7 @@ fun EditRoundScreen(
                 floatingActionButtonPosition = FabPosition.Center,
                 floatingActionButton = {
                     FloatingActionButton(
+                        modifier = Modifier.testTag(EditRoundTags.ADD_SET.name),
                         onClick = createSet,
                     ) {
                         Icon(
@@ -124,18 +139,18 @@ fun EditRoundScreen(
                         ) {
                             val (deleteRef, navigateUpRef) = createRefs()
                             SimpleIconButton(
-                                modifier = Modifier.constrainAs(navigateUpRef) {
-                                    start.linkTo(parent.start)
-                                },
+                                modifier = Modifier
+                                    .testTag(EditRoundTags.BACK.name)
+                                    .constrainAs(navigateUpRef) { start.linkTo(parent.start) },
                                 onClick = navigateUp,
                                 imageVector = Icons.Filled.ArrowBack,
                                 tint = MaterialTheme.colors.onPrimary,
                                 contentDescription = stringResource(id = R.string.edit_round_content_desc_go_back)
                             )
                             SimpleIconButton(
-                                modifier = Modifier.constrainAs(deleteRef) {
-                                    end.linkTo(parent.end)
-                                },
+                                modifier = Modifier
+                                    .testTag(EditRoundTags.DELETE_ROUND.name)
+                                    .constrainAs(deleteRef) { end.linkTo(parent.end) },
                                 onClick = deleteRound,
                                 imageVector = Icons.Filled.DeleteForever,
                                 tint = MaterialTheme.colors.onPrimary,
@@ -197,6 +212,7 @@ private fun BodyContent(
                 items(sets) { set ->
                     Row(
                         modifier = Modifier
+                            .testTag(EditRoundTags.SET.name)
                             .fillMaxWidth()
                             .padding(bottom = Dimensions.padding),
                         horizontalArrangement = Arrangement.spacedBy(Dimensions.padding),
@@ -206,7 +222,9 @@ private fun BodyContent(
                             onValueChange = {
                                 onSetUpdated(set.copy(reps = it.toIntOrNull() ?: 0))
                             },
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag(EditRoundTags.EDIT_REPS.name),
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Number
@@ -221,13 +239,16 @@ private fun BodyContent(
                             onValueChange = {
                                 onSetUpdated(set.copy(weight = it.toIntOrNull() ?: 0))
                             },
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag(EditRoundTags.EDIT_WEIGHT.name),
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Number
                             )
                         )
                         SimpleIconButton(
+                            modifier = Modifier.testTag(EditRoundTags.DELETE_SET.name),
                             onClick = { deleteSet(set) },
                             imageVector = Icons.Filled.RemoveCircleOutline,
                             tint = MaterialTheme.colors.primary,
@@ -259,25 +280,26 @@ fun ExerciseSelector(
     DropdownMenu(
         toggle = {
             TextField(
+                modifier = Modifier
+                    .testTag(EditRoundTags.EXERCISE_DROP_DOWN.name)
+                    .onFocusChanged {
+                        expanded.value = when (it) {
+                            FocusState.Captured,
+                            FocusState.Active,
+                            FocusState.ActiveParent
+                            -> true
+                            FocusState.Disabled,
+                            FocusState.Inactive
+                            -> false
+                        }
+                    }
+                    .fillMaxWidth(),
                 value = if (items.isEmpty()) "" else items[selectedIndex.value].name,
                 trailingIcon = {
                     Icon(Icons.Filled.ArrowDropDown,
                         stringResource(id = R.string.edit_round_content_desc_expand_exercises_drop_down))
                 },
-                modifier = Modifier
-                    .onFocusChanged {
-                        expanded.value = when (it) {
-                            FocusState.Captured,
-                            FocusState.Active,
-                            -> true
-                            FocusState.ActiveParent,
-                            FocusState.Disabled,
-                            FocusState.Inactive,
-                            -> false
-                        }
-                    }
-                    .fillMaxWidth(),
-                onValueChange = {},
+                onValueChange = { Timber.v("") },
                 readOnly = true,
                 label = { Text(stringResource(R.string.edit_set_exercise_label)) },
             )
@@ -292,6 +314,7 @@ fun ExerciseSelector(
     ) {
         items.forEach { exercise ->
             DropdownMenuItem(
+                modifier = Modifier.testTag(EditRoundTags.EXERCISE_DROP_DOWN_ITEM.name),
                 onClick = {
                     expanded.value = false
                     focusManager.clearFocus()
