@@ -16,7 +16,7 @@ fun SimpleIconButton(
     interactionState: InteractionState = remember { InteractionState() },
     imageVector: ImageVector,
     contentDescription: String,
-    tint: Color = AmbientContentColor.current.copy(alpha = AmbientContentAlpha.current),
+    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current),
 ) {
     IconButton(
         onClick = onClick,

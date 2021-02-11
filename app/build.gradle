@@ -35,7 +35,7 @@ android {
 
     composeOptions {
         kotlinCompilerVersion "$kotlin_version"
-        kotlinCompilerExtensionVersion '1.0.0-alpha11'
+        kotlinCompilerExtensionVersion '1.0.0-alpha12'
     }
 
     packagingOptions {
@@ -54,8 +54,8 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     // Lifecycle
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0'
 
     // Room
     def room_version = "2.2.6"
@@ -66,7 +66,7 @@ dependencies {
     testImplementation "androidx.room:room-testing:$room_version"
 
     // Android Compose
-    def compose_version = "1.0.0-alpha11"
+    def compose_version = "1.0.0-alpha12"
 
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.ui:ui-tooling:$compose_version"
@@ -76,6 +76,8 @@ dependencies {
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
     implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
     implementation "androidx.compose.animation:animation:$compose_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha01"
+    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha02"
 
     androidTestImplementation "androidx.compose.ui:ui-test:$compose_version"
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"

@@ -20,7 +20,7 @@ import android.os.Parcelable
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
 import androidx.compose.runtime.*
-import androidx.compose.runtime.savedinstancestate.listSaver
+import androidx.compose.runtime.saveable.listSaver
 
 /**
  * A simple navigator which maintains a back stack.
@@ -72,7 +72,7 @@ class Navigator<T : Parcelable> private constructor(
  * An effect for handling presses of the device back button.
  */
 @Composable
-fun backHandler(
+fun BackHandler(
     enabled: Boolean = true,
     onBack: () -> Unit
 ) {
@@ -87,7 +87,7 @@ fun backHandler(
         backCallback.isEnabled = enabled
     }
 
-    val dispatcher = AmbientBackDispatcher.current
+    val dispatcher = LocalBackDispatcher.current
     DisposableEffect(backCallback) {
         dispatcher.addCallback(backCallback)
         onDispose {
@@ -100,6 +100,6 @@ fun backHandler(
  * An [androidx.compose.runtime.Ambient] providing the current [OnBackPressedDispatcher]. You must
  * [provide][androidx.compose.runtime.Providers] a value before use.
  */
-internal val AmbientBackDispatcher = staticAmbientOf<OnBackPressedDispatcher> {
+internal val LocalBackDispatcher = staticCompositionLocalOf<OnBackPressedDispatcher> {
     error("No Back Dispatcher provided")
 }

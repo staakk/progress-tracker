@@ -15,7 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.platform.AmbientFocusManager
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -24,7 +24,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.viewModel
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.github.staakk.progresstracker.R
@@ -233,7 +234,7 @@ private fun BodyContent(
                         TextField(
                             visualTransformation = SuffixTransformation(AnnotatedString(
                                 " kg",
-                                SpanStyle(AmbientTextStyle.current.color.copy(alpha = 0.4f))
+                                SpanStyle(LocalTextStyle.current.color.copy(alpha = 0.4f))
                             )),
                             value = set.weight.toString(),
                             onValueChange = {
@@ -276,52 +277,50 @@ fun ExerciseSelector(
         }
     }
     val expanded = remember { mutableStateOf(false) }
-    val focusManager = AmbientFocusManager.current
-    DropdownMenu(
-        toggle = {
-            TextField(
-                modifier = Modifier
-                    .testTag(EditRoundTags.EXERCISE_DROP_DOWN.name)
-                    .onFocusChanged {
-                        expanded.value = when (it) {
-                            FocusState.Captured,
-                            FocusState.Active,
-                            FocusState.ActiveParent
-                            -> true
-                            FocusState.Disabled,
-                            FocusState.Inactive
-                            -> false
-                        }
+    val focusManager = LocalFocusManager.current
+    Box {
+        TextField(
+            modifier = Modifier
+                .testTag(EditRoundTags.EXERCISE_DROP_DOWN.name)
+                .onFocusChanged {
+                    expanded.value = when (it) {
+                        FocusState.Captured,
+                        FocusState.Active,
+                        FocusState.ActiveParent,
+                        -> true
+                        FocusState.Disabled,
+                        FocusState.Inactive,
+                        -> false
                     }
-                    .fillMaxWidth(),
-                value = if (items.isEmpty()) "" else items[selectedIndex.value].name,
-                trailingIcon = {
-                    Icon(Icons.Filled.ArrowDropDown,
-                        stringResource(id = R.string.edit_round_content_desc_expand_exercises_drop_down))
-                },
-                onValueChange = { Timber.v("") },
-                readOnly = true,
-                label = { Text(stringResource(R.string.edit_set_exercise_label)) },
-            )
-        },
-        expanded = expanded.value,
-        onDismissRequest = {
-            expanded.value = false
-            focusManager.clearFocus()
-        },
-        toggleModifier = Modifier.fillMaxWidth(),
-        dropdownModifier = Modifier.fillMaxWidth()
-    ) {
-        items.forEach { exercise ->
-            DropdownMenuItem(
-                modifier = Modifier.testTag(EditRoundTags.EXERCISE_DROP_DOWN_ITEM.name),
-                onClick = {
-                    expanded.value = false
-                    focusManager.clearFocus()
-                    onExerciseSelected(exercise)
                 }
-            ) {
-                Text(text = exercise.name)
+                .fillMaxWidth(),
+            value = if (items.isEmpty()) "" else items[selectedIndex.value].name,
+            trailingIcon = {
+                Icon(Icons.Filled.ArrowDropDown,
+                    stringResource(id = R.string.edit_round_content_desc_expand_exercises_drop_down))
+            },
+            onValueChange = { Timber.v("") },
+            readOnly = true,
+            label = { Text(stringResource(R.string.edit_set_exercise_label)) },
+        )
+        DropdownMenu(
+            expanded = expanded.value,
+            onDismissRequest = {
+                expanded.value = false
+                focusManager.clearFocus()
+            },
+        ) {
+            items.forEach { exercise ->
+                DropdownMenuItem(
+                    modifier = Modifier.testTag(EditRoundTags.EXERCISE_DROP_DOWN_ITEM.name),
+                    onClick = {
+                        expanded.value = false
+                        focusManager.clearFocus()
+                        onExerciseSelected(exercise)
+                    }
+                ) {
+                    Text(text = exercise.name)
+                }
             }
         }
     }

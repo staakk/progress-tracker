@@ -16,10 +16,10 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.viewModel
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.staakk.progresstracker.R
 import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.ui.theme.ProgressTrackerTheme

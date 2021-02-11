@@ -2,7 +2,7 @@ package io.github.staakk.progresstracker.util.datetime
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Providers
-import androidx.compose.runtime.staticAmbientOf
+import androidx.compose.runtime.staticCompositionLocalOf
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.YearMonth
@@ -21,9 +21,9 @@ class DateTimeProviderImpl : DateTimeProvider {
 
 @Composable
 fun ProvideDateTimeProvider(dateTimeProvider: DateTimeProvider, content: @Composable () -> Unit) {
-    Providers(AmbientDateTimeProvider provides dateTimeProvider, content = content)
+    Providers(LocalDateTimeProvider provides dateTimeProvider, content = content)
 }
 
-internal val AmbientDateTimeProvider = staticAmbientOf<DateTimeProvider> {
+internal val LocalDateTimeProvider = staticCompositionLocalOf<DateTimeProvider> {
     DateTimeProviderImpl()
 }

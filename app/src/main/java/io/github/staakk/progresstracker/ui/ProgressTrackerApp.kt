@@ -5,20 +5,20 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Providers
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.savedinstancestate.rememberSavedInstanceState
+import androidx.compose.runtime.saveable.rememberSaveable
 import io.github.staakk.progresstracker.ui.exercise.ExercisesList
 import io.github.staakk.progresstracker.ui.exercise.editexercise.EditExercise
 import io.github.staakk.progresstracker.ui.home.Home
 import io.github.staakk.progresstracker.ui.journal.Journal
 import io.github.staakk.progresstracker.ui.journal.round.EditRound
 import io.github.staakk.progresstracker.ui.navigation.Actions
-import io.github.staakk.progresstracker.ui.navigation.AmbientBackDispatcher
+import io.github.staakk.progresstracker.ui.navigation.LocalBackDispatcher
 import io.github.staakk.progresstracker.ui.navigation.Destination
 import io.github.staakk.progresstracker.ui.navigation.Navigator
 
 @Composable
 fun ProgressTrackerApp(backDispatcher: OnBackPressedDispatcher) {
-    val navigator: Navigator<Destination> = rememberSavedInstanceState(
+    val navigator: Navigator<Destination> = rememberSaveable(
         saver = Navigator.saver(backDispatcher)
     ) {
         Navigator(Destination.Home, backDispatcher)
@@ -26,7 +26,7 @@ fun ProgressTrackerApp(backDispatcher: OnBackPressedDispatcher) {
 
     val actions = remember(navigator) { Actions(navigator) }
 
-    Providers(AmbientBackDispatcher provides backDispatcher) {
+    Providers(LocalBackDispatcher provides backDispatcher) {
         Crossfade(navigator.current) {
             when (it) {
                 Destination.Home -> Home(

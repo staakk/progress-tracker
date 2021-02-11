@@ -14,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.platform.AmbientContext
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -120,7 +120,7 @@ private fun Day(
     } else {
         Modifier
     }
-    Providers(AmbientContentAlpha provides alpha) {
+    Providers(LocalContentAlpha provides alpha) {
         Box(
             modifier = Modifier
                 .clickable(onClick = { onClick(day) })
@@ -171,7 +171,7 @@ private fun getDays(month: YearMonth): List<LocalDate> {
 @Preview
 @Composable
 fun PreviewCalendar() {
-    AndroidThreeTen.init(AmbientContext.current.applicationContext)
+    AndroidThreeTen.init(LocalContext.current.applicationContext)
     val month = remember { mutableStateOf(YearMonth.now()) }
     val color = MaterialTheme.colors.primary
     val selectedItems = remember { mutableStateOf(listOf(

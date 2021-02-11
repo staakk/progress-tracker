@@ -17,7 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.AmbientContext
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -25,9 +25,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.viewModel
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jakewharton.threetenabp.AndroidThreeTen
 import io.github.staakk.progresstracker.R
 import io.github.staakk.progresstracker.data.round.Round
@@ -37,7 +38,7 @@ import io.github.staakk.progresstracker.ui.common.Selection
 import io.github.staakk.progresstracker.ui.common.SimpleIconButton
 import io.github.staakk.progresstracker.ui.theme.Dimensions
 import io.github.staakk.progresstracker.ui.theme.ProgressTrackerTheme
-import io.github.staakk.progresstracker.util.datetime.AmbientDateTimeProvider
+import io.github.staakk.progresstracker.util.datetime.LocalDateTimeProvider
 import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
 
@@ -55,7 +56,7 @@ fun Journal(
     navigateUp: () -> Unit,
 ) {
     val viewModel: JournalViewModel = viewModel()
-    val dateTimeProvider = AmbientDateTimeProvider.current
+    val dateTimeProvider = LocalDateTimeProvider.current
     viewModel.loadRounds(viewModel.date.value ?: dateTimeProvider.currentDate())
     viewModel.loadMonth(viewModel.date.value?.let(YearMonth::from)
         ?: dateTimeProvider.currentYearMonth())
@@ -82,7 +83,7 @@ fun JournalScreen(
     onDateChanged: (LocalDate) -> Unit,
     onMonthChanged: (YearMonth) -> Unit,
 ) {
-    val dateState = date.observeAsState(AmbientDateTimeProvider.current.currentDate())
+    val dateState = date.observeAsState(LocalDateTimeProvider.current.currentDate())
     ProgressTrackerTheme {
         Surface(Modifier.fillMaxSize()) {
             Scaffold(
@@ -154,7 +155,7 @@ private fun BodyContent(
     onMonthChanged: (YearMonth) -> Unit,
 ) {
     val selectionColor = MaterialTheme.colors.primary
-    val dateState = date.observeAsState(AmbientDateTimeProvider.current.currentDate())
+    val dateState = date.observeAsState(LocalDateTimeProvider.current.currentDate())
     val roundsState = rounds.observeAsState(listOf())
     val daysWithRoundState = daysWithRound.observeAsState(listOf())
     val calendarCollapsed = remember { mutableStateOf(true) }
@@ -324,7 +325,7 @@ fun RoundsList(
 @Preview
 @Composable
 fun PreviewJournalScreen() {
-    AndroidThreeTen.init(AmbientContext.current.applicationContext)
+    AndroidThreeTen.init(LocalContext.current.applicationContext)
     JournalScreen(
         navigateUp = {},
         date = MutableLiveData(),
