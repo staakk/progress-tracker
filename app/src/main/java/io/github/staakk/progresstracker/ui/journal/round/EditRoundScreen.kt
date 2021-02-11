@@ -67,7 +67,7 @@ fun EditRound(
     val dismissed = remember { mutableStateOf(false) }
     when {
         roundDeleted.value && !dismissed.value -> {
-            onActive { navigateUp() }
+            SideEffect { navigateUp() }
             dismissed.value = true
             return
         }

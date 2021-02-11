@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.onActive
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,7 +25,7 @@ fun LoadingIndicator(
 ) {
     val sinPeriod = 2 * PI.toFloat()
     val animatedSize = animatedFloat(initVal = sinPeriod)
-    onActive {
+    SideEffect {
         animatedSize.animateTo(
             targetValue = 0f,
             anim = infiniteRepeatable(tween(1200, easing = LinearEasing), RepeatMode.Restart)

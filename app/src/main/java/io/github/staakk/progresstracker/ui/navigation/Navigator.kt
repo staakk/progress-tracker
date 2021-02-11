@@ -83,12 +83,12 @@ fun backHandler(
             }
         }
     }
-    onCommit(enabled) {
+    SideEffect {
         backCallback.isEnabled = enabled
     }
 
     val dispatcher = AmbientBackDispatcher.current
-    onCommit(backCallback) {
+    DisposableEffect(backCallback) {
         dispatcher.addCallback(backCallback)
         onDispose {
             backCallback.remove()

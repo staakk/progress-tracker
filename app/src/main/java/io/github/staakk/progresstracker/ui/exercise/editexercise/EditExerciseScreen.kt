@@ -55,7 +55,7 @@ fun EditExerciseScreen(
         ) {
             val state = screenState.observeAsState(ScreenState.Editing).value
             if (state == ScreenState.Saved) {
-                onActive { navigateUp() }
+                SideEffect { navigateUp() }
                 return@Surface
             }
             Column(
