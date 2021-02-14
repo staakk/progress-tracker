@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jakewharton.threetenabp.AndroidThreeTen
 import io.github.staakk.progresstracker.R
 import io.github.staakk.progresstracker.data.round.Round
@@ -41,6 +40,7 @@ import io.github.staakk.progresstracker.ui.theme.ProgressTrackerTheme
 import io.github.staakk.progresstracker.util.datetime.LocalDateTimeProvider
 import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
+import timber.log.Timber
 
 enum class JournalTestTags {
     CALENDAR,
@@ -51,21 +51,23 @@ enum class JournalTestTags {
 
 @Composable
 fun Journal(
+    viewModel: JournalViewModel,
     editSet: (String) -> Unit,
     newSet: (LocalDate) -> Unit,
     navigateUp: () -> Unit,
 ) {
-    val viewModel: JournalViewModel = viewModel()
     val dateTimeProvider = LocalDateTimeProvider.current
+
     viewModel.loadRounds(viewModel.date.value ?: dateTimeProvider.currentDate())
     viewModel.loadMonth(viewModel.date.value?.let(YearMonth::from)
         ?: dateTimeProvider.currentYearMonth())
+
     JournalScreen(
         date = viewModel.date,
         rounds = viewModel.rounds,
         daysWithRound = viewModel.daysWithRound,
         editSet = editSet,
-        newSet = newSet,
+        newRound = newSet,
         navigateUp = navigateUp,
         onDateChanged = viewModel::loadRounds,
         onMonthChanged = viewModel::loadMonth
@@ -79,11 +81,10 @@ fun JournalScreen(
     rounds: LiveData<List<Round>>,
     daysWithRound: LiveData<List<LocalDate>>,
     editSet: (String) -> Unit,
-    newSet: (LocalDate) -> Unit,
+    newRound: (LocalDate) -> Unit,
     onDateChanged: (LocalDate) -> Unit,
     onMonthChanged: (YearMonth) -> Unit,
 ) {
-    val dateState = date.observeAsState(LocalDateTimeProvider.current.currentDate())
     ProgressTrackerTheme {
         Surface(Modifier.fillMaxSize()) {
             Scaffold(
@@ -123,8 +124,12 @@ fun JournalScreen(
                     }
                 },
                 floatingActionButton = {
+                    val dateState = date.observeAsState(LocalDateTimeProvider.current.currentDate())
                     ExtendedFloatingActionButton(
-                        onClick = { newSet(dateState.value) },
+                        onClick = {
+                        Timber.d("New round on click")
+                            newRound(dateState.value)
+                                  },
                         text = {
                             Text(
                                 text = stringResource(R.string.journal_add_round),

@@ -36,7 +36,7 @@ class EditRoundViewModel @Inject constructor(
 
     val exercises: LiveData<List<Exercise>> = _exercises
 
-    private val _round = MutableLiveData<Round>(null)
+    private val _round = MutableLiveData<Round?>(null)
 
     private val _roundDeleted = MutableLiveData(false)
 
@@ -55,7 +55,7 @@ class EditRoundViewModel @Inject constructor(
                     getRoundById(roundId)
                 }
                 result.fold(
-                    {},
+                    { Timber.e(it.toString()) },
                     { _round.value = it }
                 )
             }
@@ -63,7 +63,7 @@ class EditRoundViewModel @Inject constructor(
     }
 
     fun createNewRound(createdAt: LocalDate) {
-        Timber.d("Create new round with date ${createdAt.format(DateTimeFormatter.BASIC_ISO_DATE)}")
+        Timber.d("Create new round with date ${createdAt.format(DateTimeFormatter.ISO_DATE)}")
 
         _roundDeleted.value = false
         viewModelScope.launch {
@@ -134,8 +134,10 @@ class EditRoundViewModel @Inject constructor(
         viewModelScope.launch {
             wrapIdlingResource {
                 withContext(Dispatchers.IO) { deleteRound(_round.value!!) }
-                _round.value = null
-                _roundDeleted.value = true
+                    .fold({ Timber.e(it.toString()) }, {
+                        _round.value = null
+                        _roundDeleted.value = true
+                    })
             }
         }
     }
@@ -143,5 +145,4 @@ class EditRoundViewModel @Inject constructor(
     private suspend fun loadExercises() {
         _exercises.value = withContext(Dispatchers.IO) { getExercises() }
     }
-
 }

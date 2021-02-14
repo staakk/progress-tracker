@@ -24,10 +24,10 @@ enum class EditExerciseScreenTags {
 
 @Composable
 fun EditExercise(
+    viewModel: EditExerciseViewModel,
     exerciseId: String? = null,
     navigateUp: () -> Unit
 ) {
-    val viewModel: EditExerciseViewModel = viewModel()
     viewModel.loadExercise(exerciseId)
 
     EditExerciseScreen(

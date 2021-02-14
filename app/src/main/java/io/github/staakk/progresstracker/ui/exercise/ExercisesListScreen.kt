@@ -32,10 +32,10 @@ enum class ExercisesListTestTags {
 
 @Composable
 fun ExercisesList(
+    viewModel: ExercisesListViewModel,
     editExerciseAction: (String) -> Unit,
     newExerciseAction: () -> Unit,
 ) {
-    val viewModel: ExercisesListViewModel = viewModel()
     viewModel.setSearchValue(viewModel.getSearchValue())
     ExerciseListScreen(
         exercises = viewModel.exercises,

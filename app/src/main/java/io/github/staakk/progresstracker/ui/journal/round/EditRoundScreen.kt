@@ -25,7 +25,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.github.staakk.progresstracker.R
@@ -38,6 +37,7 @@ import io.github.staakk.progresstracker.ui.common.SimpleIconButton
 import io.github.staakk.progresstracker.ui.common.SuffixTransformation
 import io.github.staakk.progresstracker.ui.theme.Dimensions
 import io.github.staakk.progresstracker.ui.theme.ProgressTrackerTheme
+import io.github.staakk.progresstracker.util.effect.OnceEffect
 import org.threeten.bp.LocalDate
 import timber.log.Timber
 
@@ -55,28 +55,21 @@ enum class EditRoundTags {
 
 @Composable
 fun EditRound(
+    viewModel: EditRoundViewModel,
     navigateUp: () -> Unit,
-    id: String? = null,
+    roundId: String? = null,
     date: LocalDate? = null,
 ) {
-    val viewModel: EditRoundViewModel = viewModel()
-
-    /* TODO Find different callback that will work with navigating up.
-     * This needs to be improved. There should be no need for additional state for dismissal.
-     */
     val roundDeleted = viewModel.roundDeleted.observeAsState(false)
-    val dismissed = remember { mutableStateOf(false) }
-    when {
-        roundDeleted.value && !dismissed.value -> {
-            SideEffect { navigateUp() }
-            dismissed.value = true
-            return
-        }
-        dismissed.value -> return
+    if (roundDeleted.value) {
+        SideEffect { navigateUp() }
+        return
     }
 
-    id?.let(viewModel::loadRound)
-    date?.let(viewModel::createNewRound)
+    OnceEffect(roundId, date) {
+        date?.let(viewModel::createNewRound)
+        roundId?.let(viewModel::loadRound)
+    }
 
     EditRoundScreen(
         navigateUp = navigateUp,
