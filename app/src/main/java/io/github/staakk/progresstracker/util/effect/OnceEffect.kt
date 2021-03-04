@@ -9,7 +9,7 @@ import androidx.compose.runtime.remember
  */
 @Composable
 fun OnceEffect(vararg keys: Any?, effect: @DisallowComposableCalls () -> Unit) {
-    remember(keys) {
+    remember(*keys) {
         effect()
         0
     }
