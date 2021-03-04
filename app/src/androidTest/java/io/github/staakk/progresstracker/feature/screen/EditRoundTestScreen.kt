@@ -19,8 +19,8 @@ class EditRoundTestScreen(
             .performClick()
         rule.onNode(hasTestTag(EditRoundTags.EXERCISE_DROP_DOWN_ITEM.name) and hasText(name))
             .performClick()
-        rule.onNodeWithTag(EditRoundTags.EXERCISE_DROP_DOWN.name)
-            .assert(hasText(name))
+        rule.waitForIdle()
+        assertExerciseSelected(name)
     }
 
     fun deleteRound(): JournalTestScreen {

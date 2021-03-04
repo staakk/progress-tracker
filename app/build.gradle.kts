@@ -39,7 +39,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.0.0-alpha12"
+        kotlinCompilerExtensionVersion = "1.0.0-beta01"
     }
 
     packagingOptions {
@@ -76,7 +76,7 @@ dependencies {
     testImplementation("androidx.room:room-testing:$roomVersion")
 
     // Android Compose
-    val composeVersion = "1.0.0-alpha12"
+    val composeVersion = "1.0.0-beta01"
 
     implementation("androidx.compose.animation:animation:$composeVersion")
     implementation("androidx.compose.foundation:foundation:$composeVersion")
@@ -89,14 +89,14 @@ dependencies {
     implementation("androidx.compose.ui:ui-util:$composeVersion")
     implementation("androidx.compose.runtime:runtime-livedata:$composeVersion")
 
-    implementation("androidx.activity:activity-compose:1.3.0-alpha02")
+    implementation("androidx.activity:activity-compose:1.3.0-alpha03")
 
-    implementation("androidx.navigation:navigation-compose:1.0.0-alpha07")
+    implementation("androidx.navigation:navigation-compose:1.0.0-alpha08")
     implementation("androidx.hilt:hilt-navigation:1.0.0-alpha03")
     implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha01")
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha02")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha02")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha03")
 
     androidTestImplementation("androidx.compose.ui:ui-test:$composeVersion")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeVersion")

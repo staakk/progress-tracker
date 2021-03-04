@@ -120,11 +120,11 @@ private fun Day(
     } else {
         Modifier
     }
-    Providers(LocalContentAlpha provides alpha) {
+    CompositionLocalProvider(LocalContentAlpha provides alpha) {
         Box(
             modifier = Modifier
                 .clickable(onClick = { onClick(day) })
-                .preferredSize(48.dp)
+                .requiredSize(48.dp)
                 .padding(4.dp)
                 .then(background),
             contentAlignment = Alignment.Center,

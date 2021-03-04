@@ -1,6 +1,5 @@
-import Destinations.EXERCISE_ID_KEY
-import Destinations.ROUND_CREATE_DATE_KEY
-import Destinations.ROUND_ID_KEY
+package io.github.staakk.progresstracker.ui.navigation
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
@@ -18,6 +17,9 @@ import io.github.staakk.progresstracker.ui.journal.Journal
 import io.github.staakk.progresstracker.ui.journal.JournalViewModel
 import io.github.staakk.progresstracker.ui.journal.round.EditRound
 import io.github.staakk.progresstracker.ui.journal.round.EditRoundViewModel
+import io.github.staakk.progresstracker.ui.navigation.Destinations.EXERCISE_ID_KEY
+import io.github.staakk.progresstracker.ui.navigation.Destinations.ROUND_CREATE_DATE_KEY
+import io.github.staakk.progresstracker.ui.navigation.Destinations.ROUND_ID_KEY
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 
@@ -36,8 +38,8 @@ object Destinations {
 
 @Composable
 fun NavGraph(startDestination: String = Destinations.HOME_ROUTE) {
-    val navController = rememberNavController()
-    val actions = remember(navController) { Actions(navController) }
+    val navController: NavHostController = rememberNavController()
+    val actions: Actions = remember(navController) { Actions(navController) }
 
     NavHost(navController = navController, startDestination = startDestination) {
         composable(Destinations.HOME_ROUTE) {

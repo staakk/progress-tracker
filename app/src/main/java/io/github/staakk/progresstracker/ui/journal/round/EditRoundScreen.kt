@@ -98,15 +98,6 @@ fun EditRoundScreen(
         Surface(Modifier.fillMaxSize()) {
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
-                bodyContent = {
-                    BodyContent(
-                        round = round,
-                        exercises = exercises,
-                        onExerciseSelected = onExerciseSelected,
-                        onSetUpdated = onSetUpdated,
-                        deleteSet = deleteSet,
-                    )
-                },
                 isFloatingActionButtonDocked = true,
                 floatingActionButtonPosition = FabPosition.Center,
                 floatingActionButton = {
@@ -153,7 +144,15 @@ fun EditRoundScreen(
                         }
                     }
                 }
-            )
+            ) {
+                BodyContent(
+                    round = round,
+                    exercises = exercises,
+                    onExerciseSelected = onExerciseSelected,
+                    onSetUpdated = onSetUpdated,
+                    deleteSet = deleteSet,
+                )
+            }
         }
     }
 }

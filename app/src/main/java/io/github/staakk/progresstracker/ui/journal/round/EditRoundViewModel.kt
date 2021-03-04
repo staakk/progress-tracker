@@ -97,8 +97,7 @@ class EditRoundViewModel @Inject constructor(
                         roundSet,
                         reps = roundSet.reps,
                         weight = roundSet.weight)
-                }
-                    .fold({ Timber.e(it.toString()) }, { _round.value = it.round })
+                }.fold({ Timber.e(it.toString()) }, { _round.value = it.round })
             }
         }
     }

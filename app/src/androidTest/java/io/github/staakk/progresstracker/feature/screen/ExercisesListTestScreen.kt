@@ -15,7 +15,7 @@ class ExercisesListTestScreen(
             rule.onNodeWithText(it).assertIsDisplayed()
         }
         rule.onAllNodesWithTag(ExercisesListTestTags.LIST_ITEM.name)
-            .fetchSemanticsNodes("Cannot fetch list items.")
+            .fetchSemanticsNodes(errorMessageOnFail = "Cannot fetch list items.")
             .size
             .let { assertEquals(names.size, it) }
     }

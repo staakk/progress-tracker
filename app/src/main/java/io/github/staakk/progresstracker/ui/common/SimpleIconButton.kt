@@ -1,6 +1,6 @@
 package io.github.staakk.progresstracker.ui.common
 
-import androidx.compose.foundation.InteractionState
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -13,7 +13,7 @@ fun SimpleIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    interactionState: InteractionState = remember { InteractionState() },
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     imageVector: ImageVector,
     contentDescription: String,
     tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current),
@@ -22,7 +22,7 @@ fun SimpleIconButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
-        interactionState = interactionState,
+        interactionSource = interactionSource,
     ) {
         Icon(imageVector = imageVector, tint = tint, contentDescription = contentDescription)
     }

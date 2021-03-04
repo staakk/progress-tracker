@@ -1,7 +1,7 @@
 package io.github.staakk.progresstracker.util.datetime
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Providers
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
@@ -21,7 +21,7 @@ class DateTimeProviderImpl : DateTimeProvider {
 
 @Composable
 fun ProvideDateTimeProvider(dateTimeProvider: DateTimeProvider, content: @Composable () -> Unit) {
-    Providers(LocalDateTimeProvider provides dateTimeProvider, content = content)
+    CompositionLocalProvider(LocalDateTimeProvider provides dateTimeProvider, content = content)
 }
 
 internal val LocalDateTimeProvider = staticCompositionLocalOf<DateTimeProvider> {

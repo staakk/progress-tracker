@@ -88,16 +88,6 @@ fun JournalScreen(
     ProgressTrackerTheme {
         Surface(Modifier.fillMaxSize()) {
             Scaffold(
-                bodyContent = {
-                    BodyContent(
-                        date = date,
-                        rounds = rounds,
-                        daysWithRound = daysWithRound,
-                        editSet = editSet,
-                        onDateChanged = onDateChanged,
-                        onMonthChanged = onMonthChanged,
-                    )
-                },
                 isFloatingActionButtonDocked = true,
                 floatingActionButtonPosition = FabPosition.Center,
                 bottomBar = {
@@ -145,7 +135,16 @@ fun JournalScreen(
                         },
                     )
                 }
-            )
+            ) {
+                BodyContent(
+                    date = date,
+                    rounds = rounds,
+                    daysWithRound = daysWithRound,
+                    editSet = editSet,
+                    onDateChanged = onDateChanged,
+                    onMonthChanged = onMonthChanged,
+                )
+            }
         }
     }
 }
