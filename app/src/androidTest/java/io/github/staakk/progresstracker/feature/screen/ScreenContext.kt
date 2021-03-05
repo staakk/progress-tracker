@@ -7,7 +7,8 @@ import io.github.staakk.progresstracker.ui.MainActivity
 
 class ScreenContext(
     val rule: AndroidComposeTestRule<ActivityScenarioRule<MainActivity>, MainActivity>,
-    val activity: MainActivity = rule.activity
 ) {
+    private val activity: MainActivity = rule.activity
+
     fun getString(@StringRes id: Int) = activity.getString(id)
 }

@@ -12,17 +12,16 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.staakk.progresstracker.R
 import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.ui.theme.ProgressTrackerTheme
+import io.github.staakk.progresstracker.util.testTag
 
 enum class ExercisesListTestTags {
     SEARCH,
@@ -73,7 +72,7 @@ private fun ExerciseListScreen(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(16.dp)
-                            .testTag(ExercisesListTestTags.FAB.name),
+                            .testTag(ExercisesListTestTags.FAB),
                         backgroundColor = MaterialTheme.colors.primary
                     ) {
                         Icon(
@@ -113,7 +112,7 @@ private fun ExerciseItem(
         Modifier
             .fillMaxWidth()
             .clickable(onClick = { onItemClick(exercise.id) })
-            .testTag(ExercisesListTestTags.LIST_ITEM.name)
+            .testTag(ExercisesListTestTags.LIST_ITEM)
     ) {
         Text(
             text = exercise.name,
@@ -128,7 +127,7 @@ private fun SearchView(initialSearchValue: String, onValueChanged: (String) -> U
     var text by remember { mutableStateOf(TextFieldValue(initialSearchValue)) }
     TextField(
         modifier = Modifier.fillMaxWidth()
-            .testTag(ExercisesListTestTags.SEARCH.name),
+            .testTag(ExercisesListTestTags.SEARCH),
         value = text,
         leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
         onValueChange = {

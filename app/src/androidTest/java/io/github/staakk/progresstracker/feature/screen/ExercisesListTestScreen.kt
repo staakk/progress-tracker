@@ -2,7 +2,9 @@ package io.github.staakk.progresstracker.feature.screen
 
 import androidx.compose.ui.test.*
 import io.github.staakk.progresstracker.ui.exercise.ExercisesListTestTags
-import junit.framework.Assert.assertEquals
+import io.github.staakk.progresstracker.util.onAllNodesWithTag
+import io.github.staakk.progresstracker.util.onNodeWithTag
+import org.junit.Assert.assertEquals
 
 class ExercisesListTestScreen(
     private val context: ScreenContext,
@@ -14,14 +16,14 @@ class ExercisesListTestScreen(
         names.forEach {
             rule.onNodeWithText(it).assertIsDisplayed()
         }
-        rule.onAllNodesWithTag(ExercisesListTestTags.LIST_ITEM.name)
+        rule.onAllNodesWithTag(ExercisesListTestTags.LIST_ITEM)
             .fetchSemanticsNodes(errorMessageOnFail = "Cannot fetch list items.")
             .size
             .let { assertEquals(names.size, it) }
     }
 
     fun createNewExercise(): EditExerciseTestScreen {
-        rule.onNodeWithTag(ExercisesListTestTags.FAB.name).performClick()
+        rule.onNodeWithTag(ExercisesListTestTags.FAB).performClick()
         return EditExerciseTestScreen(context)
     }
 
@@ -31,12 +33,12 @@ class ExercisesListTestScreen(
     }
 
     fun search(value: String) = apply {
-        rule.onNodeWithTag(ExercisesListTestTags.SEARCH.name)
+        rule.onNodeWithTag(ExercisesListTestTags.SEARCH)
             .performTextInput(value)
     }
 
     fun clearSearch() = apply {
-        rule.onNodeWithTag(ExercisesListTestTags.SEARCH.name)
+        rule.onNodeWithTag(ExercisesListTestTags.SEARCH)
             .performTextClearance()
     }
 }

@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -40,8 +39,8 @@ import io.github.staakk.progresstracker.ui.common.SuffixTransformation
 import io.github.staakk.progresstracker.ui.theme.Dimensions
 import io.github.staakk.progresstracker.ui.theme.ProgressTrackerTheme
 import io.github.staakk.progresstracker.util.effect.OnceEffect
+import io.github.staakk.progresstracker.util.testTag
 import org.threeten.bp.LocalDate
-import timber.log.Timber
 
 enum class EditRoundTags {
     EDIT_REPS,
@@ -104,7 +103,7 @@ fun EditRoundScreen(
                 floatingActionButtonPosition = FabPosition.Center,
                 floatingActionButton = {
                     FloatingActionButton(
-                        modifier = Modifier.testTag(EditRoundTags.ADD_SET.name),
+                        modifier = Modifier.testTag(EditRoundTags.ADD_SET),
                         onClick = createSet,
                     ) {
                         Icon(
@@ -127,7 +126,7 @@ fun EditRoundScreen(
                             val (deleteRef, navigateUpRef) = createRefs()
                             SimpleIconButton(
                                 modifier = Modifier
-                                    .testTag(EditRoundTags.BACK.name)
+                                    .testTag(EditRoundTags.BACK)
                                     .constrainAs(navigateUpRef) { start.linkTo(parent.start) },
                                 onClick = navigateUp,
                                 imageVector = Icons.Filled.ArrowBack,
@@ -136,7 +135,7 @@ fun EditRoundScreen(
                             )
                             SimpleIconButton(
                                 modifier = Modifier
-                                    .testTag(EditRoundTags.DELETE_ROUND.name)
+                                    .testTag(EditRoundTags.DELETE_ROUND)
                                     .constrainAs(deleteRef) { end.linkTo(parent.end) },
                                 onClick = deleteRound,
                                 imageVector = Icons.Filled.DeleteForever,
@@ -207,7 +206,7 @@ private fun BodyContent(
                 items(sets) { set ->
                     Row(
                         modifier = Modifier
-                            .testTag(EditRoundTags.SET.name)
+                            .testTag(EditRoundTags.SET)
                             .fillMaxWidth()
                             .padding(bottom = Dimensions.padding),
                         horizontalArrangement = Arrangement.spacedBy(Dimensions.padding),
@@ -219,7 +218,7 @@ private fun BodyContent(
                             },
                             modifier = Modifier
                                 .weight(1f)
-                                .testTag(EditRoundTags.EDIT_REPS.name),
+                                .testTag(EditRoundTags.EDIT_REPS),
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Number
@@ -236,14 +235,14 @@ private fun BodyContent(
                             },
                             modifier = Modifier
                                 .weight(1f)
-                                .testTag(EditRoundTags.EDIT_WEIGHT.name),
+                                .testTag(EditRoundTags.EDIT_WEIGHT),
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Number
                             )
                         )
                         SimpleIconButton(
-                            modifier = Modifier.testTag(EditRoundTags.DELETE_SET.name),
+                            modifier = Modifier.testTag(EditRoundTags.DELETE_SET),
                             onClick = { deleteSet(set) },
                             imageVector = Icons.Filled.RemoveCircleOutline,
                             tint = MaterialTheme.colors.primary,
@@ -275,7 +274,7 @@ fun ExerciseSelector(
     Box {
         OutlinedTextField(
             modifier = Modifier
-                .testTag(EditRoundTags.EXERCISE_DROP_DOWN.name)
+                .testTag(EditRoundTags.EXERCISE_DROP_DOWN)
                 .clickable { expanded.value = !expanded.value }
                 .focusable(false)
                 .onFocusChanged {
@@ -308,7 +307,7 @@ fun ExerciseSelector(
         ) {
             items.forEach { exercise ->
                 DropdownMenuItem(
-                    modifier = Modifier.testTag(EditRoundTags.EXERCISE_DROP_DOWN_ITEM.name),
+                    modifier = Modifier.testTag(EditRoundTags.EXERCISE_DROP_DOWN_ITEM),
                     onClick = {
                         expanded.value = false
                         focusManager.clearFocus()

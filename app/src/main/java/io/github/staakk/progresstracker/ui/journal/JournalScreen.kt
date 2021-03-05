@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -38,6 +37,7 @@ import io.github.staakk.progresstracker.ui.common.SimpleIconButton
 import io.github.staakk.progresstracker.ui.theme.Dimensions
 import io.github.staakk.progresstracker.ui.theme.ProgressTrackerTheme
 import io.github.staakk.progresstracker.util.datetime.LocalDateTimeProvider
+import io.github.staakk.progresstracker.util.testTag
 import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
 import timber.log.Timber
@@ -179,7 +179,7 @@ private fun BodyContent(
 
         if (!calendarCollapsed.value) {
             Calendar(
-                modifier = Modifier.testTag(JournalTestTags.CALENDAR.name),
+                modifier = Modifier.testTag(JournalTestTags.CALENDAR),
                 currentMonth = calendarYearMonth,
                 onDaySelected = onDateChanged,
                 selectedItems = selectedItems,
@@ -232,7 +232,7 @@ private fun Header(
         )
         IconButton(
             modifier = Modifier
-                .testTag(JournalTestTags.PREV_DAY.name)
+                .testTag(JournalTestTags.PREV_DAY)
                 .constrainAs(prevDayRef) { end.linkTo(toggleCalendarRef.start) },
             onClick = previousDay,
         ) {
@@ -245,7 +245,7 @@ private fun Header(
         }
         SimpleIconButton(
             modifier = Modifier
-                .testTag(JournalTestTags.CALENDAR_TOGGLE_BUTTON.name)
+                .testTag(JournalTestTags.CALENDAR_TOGGLE_BUTTON)
                 .constrainAs(toggleCalendarRef) { end.linkTo(nextDayRef.start) },
             onClick = toggleCalendar,
             imageVector = Icons.Filled.CalendarToday,
@@ -254,7 +254,7 @@ private fun Header(
         )
         SimpleIconButton(
             modifier = Modifier
-                .testTag(JournalTestTags.NEXT_DAY.name)
+                .testTag(JournalTestTags.NEXT_DAY)
                 .constrainAs(nextDayRef) { end.linkTo(parent.end) },
             onClick = nextDay,
             imageVector = Icons.Filled.ArrowRightAlt,

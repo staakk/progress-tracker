@@ -4,6 +4,7 @@ import androidx.compose.ui.test.*
 import io.github.staakk.progresstracker.R
 import io.github.staakk.progresstracker.ui.common.Formatters
 import io.github.staakk.progresstracker.ui.journal.JournalTestTags
+import io.github.staakk.progresstracker.util.onNodeWithTag
 import org.threeten.bp.LocalDate
 
 class JournalTestScreen(
@@ -33,30 +34,30 @@ class JournalTestScreen(
     }
 
     fun goToNextDay() = apply {
-        rule.onNodeWithTag(JournalTestTags.NEXT_DAY.name)
+        rule.onNodeWithTag(JournalTestTags.NEXT_DAY)
             .performClick()
     }
 
     fun goToPrevDay() = apply {
-        rule.onNodeWithTag(JournalTestTags.PREV_DAY.name)
+        rule.onNodeWithTag(JournalTestTags.PREV_DAY)
             .performClick()
     }
 
     fun openCalendar() = apply {
-        rule.onNodeWithTag(JournalTestTags.CALENDAR.name).assertDoesNotExist()
-        rule.onNodeWithTag(JournalTestTags.CALENDAR_TOGGLE_BUTTON.name)
+        rule.onNodeWithTag(JournalTestTags.CALENDAR).assertDoesNotExist()
+        rule.onNodeWithTag(JournalTestTags.CALENDAR_TOGGLE_BUTTON)
             .performClick()
     }
 
     fun closeCalendar() = apply {
-        rule.onNodeWithTag(JournalTestTags.CALENDAR.name).assertIsDisplayed()
-        rule.onNodeWithTag(JournalTestTags.CALENDAR_TOGGLE_BUTTON.name)
+        rule.onNodeWithTag(JournalTestTags.CALENDAR).assertIsDisplayed()
+        rule.onNodeWithTag(JournalTestTags.CALENDAR_TOGGLE_BUTTON)
             .performClick()
     }
 
     fun selectDate(date: LocalDate) = apply {
-        rule.onNodeWithTag(JournalTestTags.CALENDAR.name).assertIsDisplayed()
-        rule.onNodeWithTag(JournalTestTags.CALENDAR.name)
+        rule.onNodeWithTag(JournalTestTags.CALENDAR).assertIsDisplayed()
+        rule.onNodeWithTag(JournalTestTags.CALENDAR)
             .onChildren()
             .filter(hasText(date.dayOfMonth.toString()))
             .let { if (date.dayOfMonth < 15) it.onFirst() else it.onLast() }
