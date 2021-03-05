@@ -19,7 +19,6 @@ class EditRoundTestScreen(
             .performClick()
         rule.onNode(hasTestTag(EditRoundTags.EXERCISE_DROP_DOWN_ITEM.name) and hasText(name))
             .performClick()
-        rule.waitForIdle()
         assertExerciseSelected(name)
     }
 

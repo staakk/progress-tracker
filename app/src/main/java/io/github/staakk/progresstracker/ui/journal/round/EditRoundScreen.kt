@@ -1,6 +1,8 @@
 package io.github.staakk.progresstracker.ui.journal.round
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -271,9 +273,11 @@ fun ExerciseSelector(
     val expanded = remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     Box {
-        TextField(
+        OutlinedTextField(
             modifier = Modifier
                 .testTag(EditRoundTags.EXERCISE_DROP_DOWN.name)
+                .clickable { expanded.value = !expanded.value }
+                .focusable(false)
                 .onFocusChanged {
                     expanded.value = when (it) {
                         FocusState.Captured,
@@ -291,7 +295,7 @@ fun ExerciseSelector(
                 Icon(Icons.Filled.ArrowDropDown,
                     stringResource(id = R.string.edit_round_content_desc_expand_exercises_drop_down))
             },
-            onValueChange = { Timber.v("") },
+            onValueChange = {},
             readOnly = true,
             label = { Text(stringResource(R.string.edit_set_exercise_label)) },
         )
@@ -327,7 +331,7 @@ fun PreviewEditSetScreen() {
         MutableLiveData(
             listOf(
                 Exercise(name = "Dead lift"),
-                Exercise(name = "Dumbell row"),
+                Exercise(name = "Dumbbell row"),
                 Exercise(name = "Barbell row"),
                 Exercise(name = "Overhead press"),
                 Exercise(name = "Bench press"),
