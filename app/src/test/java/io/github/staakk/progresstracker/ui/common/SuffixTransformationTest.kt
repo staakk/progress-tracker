@@ -16,7 +16,7 @@ class SuffixTransformationTest {
     fun `should return text with suffix`() {
         val result = tested.filter(AnnotatedString(text))
 
-        assertEquals(text + suffix, result.transformedText.text)
+        assertEquals(text + suffix, result.text.toString())
     }
 
     @Test
