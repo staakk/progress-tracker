@@ -136,7 +136,6 @@ class JournalTest: ScreenTestCase() {
      * THE I should see updated round on Journal screen
      */
     @Test
-    @Ignore("Clicking on the drop down menu item doesn't result in item registering onClick callback")
     fun shouldUpdateRound() {
         HomeTestScreen(ScreenContext(composeTestRule))
             .openJournal()
