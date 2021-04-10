@@ -6,6 +6,8 @@ import io.github.staakk.progresstracker.data.exercise.ExerciseDataSource.Error.E
 import io.github.staakk.progresstracker.data.exercise.ExerciseDataSource.Error.IdAlreadyExists
 import io.github.staakk.progresstracker.util.functional.Left
 import io.github.staakk.progresstracker.util.functional.Right
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.util.*
@@ -24,18 +26,18 @@ class LocalExerciseDataSourceTest : DatabaseTestCase() {
     override fun setUp() {
         super.setUp()
         exercises.forEach { exerciseDao.create(it) }
-        tested = LocalExerciseDataSource(exerciseDao)
+        tested = LocalExerciseDataSource(exerciseDao, Dispatchers.IO)
     }
 
     @Test
-    fun shouldCreateExercise() {
+    fun shouldCreateExercise() = runBlocking {
         val newExercise = Exercise(name = "new exercise")
         tested.create(newExercise)
         assertEquals(newExercise, exerciseDao.getById(newExercise.id))
     }
 
     @Test
-    fun shouldReturnErrorWhenExerciseWithExistingIdIsCreated() {
+    fun shouldReturnErrorWhenExerciseWithExistingIdIsCreated() = runBlocking {
         val exercise = exercises[0]
         val result = tested.create(exercise)
         assert(result is Left)
@@ -43,7 +45,7 @@ class LocalExerciseDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldUpdateExercise() {
+    fun shouldUpdateExercise() = runBlocking {
         val exercise = exercises[0]
         val updatedExercise = exercise.copy(name = "changed")
         tested.update(updatedExercise)
@@ -53,7 +55,7 @@ class LocalExerciseDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldReturnErrorWhenNotExistingExerciseUpdated() {
+    fun shouldReturnErrorWhenNotExistingExerciseUpdated() = runBlocking {
         val newExercise = Exercise(name = "new exercise")
         val result = tested.update(newExercise)
 
@@ -65,14 +67,14 @@ class LocalExerciseDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldDeleteExercise() {
+    fun shouldDeleteExercise() = runBlocking {
         val exercise = exercises[0]
         val result = tested.delete(exercise)
         assert(result is Right)
     }
 
     @Test
-    fun shouldReturnErrorWhenNotExistingExerciseDeleted() {
+    fun shouldReturnErrorWhenNotExistingExerciseDeleted() = runBlocking {
         val newExercise = Exercise(name = "new exercise")
         val result = tested.delete(newExercise)
 
@@ -84,7 +86,7 @@ class LocalExerciseDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldGetExerciseById() {
+    fun shouldGetExerciseById() = runBlocking {
         val exercise = exercises[0]
         val result = tested.getById(exercise.id)
 
@@ -93,7 +95,7 @@ class LocalExerciseDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldReturnErrorWhenExerciseDoesNotExist() {
+    fun shouldReturnErrorWhenExerciseDoesNotExist() = runBlocking {
         val newId = UUID.randomUUID().toString()
         val result = tested.getById(newId)
 
@@ -102,7 +104,7 @@ class LocalExerciseDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldFindExerciseByNameSubstring() {
+    fun shouldFindExerciseByNameSubstring() = runBlocking {
         val exercise = exercises[0]
         val result = tested.findByName("est 1")
 
@@ -111,7 +113,7 @@ class LocalExerciseDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldFindMultipleExercisesMatching() {
+    fun shouldFindMultipleExercisesMatching() = runBlocking {
         val result = tested.findByName("est")
 
         assert(result.size == exercises.size)
@@ -119,7 +121,7 @@ class LocalExerciseDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldFetchAllExercises() {
+    fun shouldFetchAllExercises() = runBlocking {
         val result = tested.getAll()
 
         assert(result.size == exercises.size)

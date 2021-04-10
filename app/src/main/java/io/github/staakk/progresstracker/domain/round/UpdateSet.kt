@@ -12,7 +12,7 @@ class UpdateSet @Inject constructor(
     private val roundDataSource: RoundDataSource,
 ) {
 
-    operator fun invoke(
+    suspend operator fun invoke(
         round: Round,
         roundSet: RoundSet,
         position: Int? = null,

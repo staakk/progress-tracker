@@ -8,6 +8,8 @@ import io.github.staakk.progresstracker.data.round.RoundDataSource.Error.*
 import io.github.staakk.progresstracker.data.round.RoundSet
 import io.github.staakk.progresstracker.util.functional.Left
 import io.github.staakk.progresstracker.util.functional.Right
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -51,11 +53,11 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
         super.setUp()
         exercises.forEach { exerciseDao.create(it) }
         rounds.forEach { roundDao.create(it.toRoomRound()) }
-        tested = LocalRoundDataSource(roundDao, setDao)
+        tested = LocalRoundDataSource(roundDao, setDao, Dispatchers.IO)
     }
 
     @Test
-    fun shouldCreateRound() {
+    fun shouldCreateRound() = runBlocking {
         val newRound = Round(exercise = exercises[0], createdAt = LocalDateTime.now().withNano(0))
         val result = tested.create(newRound)
 
@@ -64,7 +66,7 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldReturnErrorWhenRoundAlreadyExists() {
+    fun shouldReturnErrorWhenRoundAlreadyExists() = runBlocking {
         val round = rounds.first()
         val result = tested.create(round)
 
@@ -73,7 +75,7 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldUpdateRound() {
+    fun shouldUpdateRound() = runBlocking {
         val newExercise = Exercise(name = "new exercise")
         exerciseDao.create(newExercise)
         val round = rounds.first()
@@ -84,7 +86,7 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldReturnErrorWhenUpdateNotPossible() {
+    fun shouldReturnErrorWhenUpdateNotPossible() = runBlocking {
         val newRound = Round(exercise = exercises[0], createdAt = LocalDateTime.now())
         val result = tested.update(newRound)
 
@@ -93,7 +95,7 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldDeleteRound() {
+    fun shouldDeleteRound() = runBlocking {
         val round = rounds.first()
         val result = tested.delete(round)
 
@@ -102,7 +104,7 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldReturnErrorWhenRoundDoesNotExist() {
+    fun shouldReturnErrorWhenRoundDoesNotExist() = runBlocking {
         val newRound = Round(exercise = exercises[0], createdAt = LocalDateTime.now())
         val result = tested.delete(newRound)
 
@@ -111,7 +113,7 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldGetRoundById() {
+    fun shouldGetRoundById() = runBlocking {
         val result = tested.getById(rounds.first().id)
 
         assert(result is Right)
@@ -119,7 +121,7 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldReturnErrorWhenNotExistingRoundFetched() {
+    fun shouldReturnErrorWhenNotExistingRoundFetched() = runBlocking {
         val newRound = Round(exercise = exercises[0], createdAt = LocalDateTime.now())
         val result = tested.delete(newRound)
 
@@ -128,7 +130,7 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldFetchRoundsInPeriod() {
+    fun shouldFetchRoundsInPeriod() = runBlocking {
         val result = tested.getByDate(rounds[1].createdAt, rounds[3].createdAt)
 
         assertEquals(3, result.size)
@@ -137,7 +139,7 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldReturnEmptyListForEmptyPeriod() {
+    fun shouldReturnEmptyListForEmptyPeriod() = runBlocking {
         val lastRoundTime = rounds.last().createdAt
         val result = tested.getByDate(lastRoundTime.plusHours(1), lastRoundTime.plusHours(2))
 
@@ -145,7 +147,7 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldReturnDaysContainingAtLeastOneRound() {
+    fun shouldReturnDaysContainingAtLeastOneRound() = runBlocking {
         val expected = rounds.map { LocalDate.from(it.createdAt) }
         val result = tested.getDaysWithRound(rounds.first().createdAt, rounds.last().createdAt)
 
@@ -153,7 +155,7 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldCreateSet() {
+    fun shouldCreateSet() = runBlocking {
         val set = RoundSet(position = 1, reps = 2, weight = 3)
         val round = rounds.first()
 
@@ -170,7 +172,7 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldReturnErrorWhenSetIsCreatedForNotExistingRound() {
+    fun shouldReturnErrorWhenSetIsCreatedForNotExistingRound() = runBlocking {
         val set = RoundSet(position = 1, reps = 2, weight = 3)
         val newRound = Round(exercise = exercises.first(), createdAt = LocalDateTime.now())
 
@@ -180,7 +182,7 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldReturnErrorWhenSetIsCreatedSecondTime() {
+    fun shouldReturnErrorWhenSetIsCreatedSecondTime() = runBlocking {
         val set = RoundSet(position = 1, reps = 2, weight = 3)
         val round = rounds.first()
         tested.createSet(set, round.id)
@@ -191,7 +193,7 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldUpdateSet() {
+    fun shouldUpdateSet() = runBlocking {
         val set = RoundSet(position = 1, reps = 2, weight = 3)
         val round = rounds.first()
         tested.createSet(set, round.id)
@@ -203,7 +205,7 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldReturnErrorWhenSetIsUpdatedWithWrongRoundId() {
+    fun shouldReturnErrorWhenSetIsUpdatedWithWrongRoundId() = runBlocking {
         val set = RoundSet(position = 1, reps = 2, weight = 3)
         val round = rounds.first()
         tested.createSet(set, round.id)
@@ -215,7 +217,7 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldReturnErrorWhenNotExistingSetIsUpdated() {
+    fun shouldReturnErrorWhenNotExistingSetIsUpdated() = runBlocking {
         val set = RoundSet(position = 1, reps = 2, weight = 3)
         val round = rounds.first()
         val result = tested.updateSet(set, round.id)
@@ -225,7 +227,7 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldDeleteSet() {
+    fun shouldDeleteSet() = runBlocking {
         val set = RoundSet(position = 1, reps = 2, weight = 3)
         val round = rounds.first()
         tested.createSet(set, round.id)
@@ -236,7 +238,7 @@ class LocalRoundDataSourceTest : DatabaseTestCase() {
     }
 
     @Test
-    fun shouldReturnErrorWhenNotExistingSetDeleted() {
+    fun shouldReturnErrorWhenNotExistingSetDeleted() = runBlocking {
         val set = RoundSet(position = 1, reps = 2, weight = 3)
 
         val result = tested.deleteSet(set)

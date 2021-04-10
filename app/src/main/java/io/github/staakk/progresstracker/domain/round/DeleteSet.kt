@@ -9,7 +9,7 @@ class DeleteSet @Inject constructor(
     private val roundDataSource: RoundDataSource,
 ) {
 
-    operator fun invoke(round: Round, roundSet: RoundSet): Either<Error, Round> {
+    suspend operator fun invoke(round: Round, roundSet: RoundSet): Either<Error, Round> {
         return roundDataSource.deleteSet(roundSet)
             .mapLeft {
                 when (it) {

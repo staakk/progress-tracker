@@ -10,7 +10,12 @@ class CreateSet @Inject constructor(
     private val roundDataSource: RoundDataSource,
 ) {
 
-    operator fun invoke(round: Round, position: Int, reps: Int, weight: Int): Either<Error, Round> {
+    suspend operator fun invoke(
+        round: Round,
+        position: Int,
+        reps: Int,
+        weight: Int,
+    ): Either<Error, Round> {
         return roundDataSource.createSet(
             RoundSet(position = position, reps = reps, weight = weight),
             round.id,

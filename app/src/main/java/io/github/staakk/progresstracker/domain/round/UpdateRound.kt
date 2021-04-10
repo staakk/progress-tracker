@@ -10,7 +10,7 @@ class UpdateRound @Inject constructor(
     private val roundDataSource: RoundDataSource,
 ) {
 
-    operator fun invoke(
+    suspend operator fun invoke(
         round: Round,
         exercise: Exercise? = null,
         createdAt: LocalDateTime? = null,
@@ -24,6 +24,6 @@ class UpdateRound @Inject constructor(
     }
 
     sealed class Error {
-        object RoundNotFound: Error()
+        object RoundNotFound : Error()
     }
 }

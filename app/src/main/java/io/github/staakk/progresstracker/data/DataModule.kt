@@ -3,10 +3,8 @@ package io.github.staakk.progresstracker.data
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
 import dagger.Module
 import dagger.Provides
-import dagger.hilt.DefineComponent
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
@@ -18,9 +16,8 @@ import io.github.staakk.progresstracker.data.local.round.LocalRoundDataSource
 import io.github.staakk.progresstracker.data.local.round.RoundDao
 import io.github.staakk.progresstracker.data.local.round.SetDao
 import io.github.staakk.progresstracker.data.round.RoundDataSource
-import io.github.staakk.progresstracker.ui.App
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import io.github.staakk.progresstracker.di.IoDispatcher
+import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -31,11 +28,10 @@ class DataModule {
     @Singleton
     fun provideAppDatabase(
         @ApplicationContext appContext: Context,
-        @PopulateDatabaseQualifier populateDatabaseCallback: RoomDatabase.Callback
-    ) =
-        Room.databaseBuilder(appContext, AppDatabase::class.java, AppDatabase.DB_NAME)
-            .addCallback(populateDatabaseCallback)
-            .build()
+        @PopulateDatabaseQualifier populateDatabaseCallback: RoomDatabase.Callback,
+    ) = Room.databaseBuilder(appContext, AppDatabase::class.java, AppDatabase.DB_NAME)
+        .addCallback(populateDatabaseCallback)
+        .build()
 
     @Provides
     fun provideExerciseDao(appDatabase: AppDatabase) = appDatabase.exerciseDao()
@@ -47,11 +43,16 @@ class DataModule {
     fun provideSetDao(appDatabase: AppDatabase) = appDatabase.setDao()
 
     @Provides
-    fun provideExerciseDataSource(dao: ExerciseDao): ExerciseDataSource =
-        LocalExerciseDataSource(dao)
+    fun provideExerciseDataSource(
+        dao: ExerciseDao,
+        @IoDispatcher dispatcher: CoroutineDispatcher,
+    ): ExerciseDataSource = LocalExerciseDataSource(dao, dispatcher)
 
     @Provides
-    fun provideRoundDataSource(roundDao: RoundDao, setDao: SetDao): RoundDataSource =
-        LocalRoundDataSource(roundDao, setDao)
+    fun provideRoundDataSource(
+        roundDao: RoundDao,
+        setDao: SetDao,
+        @IoDispatcher dispatcher: CoroutineDispatcher,
+    ): RoundDataSource = LocalRoundDataSource(roundDao, setDao, dispatcher)
 
 }

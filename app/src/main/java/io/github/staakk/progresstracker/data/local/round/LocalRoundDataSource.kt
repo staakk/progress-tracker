@@ -10,62 +10,72 @@ import io.github.staakk.progresstracker.data.round.RoundSet
 import io.github.staakk.progresstracker.util.functional.Either
 import io.github.staakk.progresstracker.util.functional.left
 import io.github.staakk.progresstracker.util.functional.right
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZoneOffset
 import timber.log.Timber
-import javax.inject.Inject
 
-class LocalRoundDataSource @Inject constructor(
+class LocalRoundDataSource(
     private val roundDao: RoundDao,
     private val setDao: SetDao,
+    private val dispatcher: CoroutineDispatcher,
 ) : RoundDataSource {
 
-    override fun create(round: Round): Either<RoundAlreadyExists, Round> {
-        return try {
-            roundDao.create(round.toRoomRound())
-            round.right()
-        } catch (e: SQLiteConstraintException) {
-            Timber.e(e, "Cannot create exercise. Id ${round.id} already exists")
-            RoundAlreadyExists.left()
+    override suspend fun create(round: Round): Either<RoundAlreadyExists, Round> =
+        withContext(dispatcher) {
+            try {
+                roundDao.create(round.toRoomRound())
+                round.right()
+            } catch (e: SQLiteConstraintException) {
+                Timber.e(e, "Cannot create exercise. Id ${round.id} already exists")
+                RoundAlreadyExists.left()
+            }
         }
-    }
 
-    override fun update(round: Round): Either<RoundNotFound, Round> {
-        return if (roundDao.update(round.toRoomRound()) == 1) {
-            round.right()
-        } else {
-            Timber.e("Cannot update round ${round.id}")
-            RoundNotFound.left()
+    override suspend fun update(round: Round): Either<RoundNotFound, Round> =
+        withContext(dispatcher) {
+            if (roundDao.update(round.toRoomRound()) == 1) {
+                round.right()
+            } else {
+                Timber.e("Cannot update round ${round.id}")
+                RoundNotFound.left()
+            }
         }
-    }
 
-    override fun delete(round: Round): Either<RoundNotFound, Round> {
-        return if (roundDao.delete(round.toRoomRound()) == 1) {
-            round.right()
-        } else {
-            Timber.e("Cannot delete round ${round.id}")
-            RoundNotFound.left()
+    override suspend fun delete(round: Round): Either<RoundNotFound, Round> =
+        withContext(dispatcher) {
+            if (roundDao.delete(round.toRoomRound()) == 1) {
+                round.right()
+            } else {
+                Timber.e("Cannot delete round ${round.id}")
+                RoundNotFound.left()
+            }
         }
-    }
 
-    override fun getById(id: String): Either<RoundNotFound, Round> {
-        return roundDao.getById(id)
-            ?.toRound()
-            ?.right()
-            ?: RoundNotFound.left()
-    }
+    override suspend fun getById(id: String): Either<RoundNotFound, Round> =
+        withContext(dispatcher) {
+            roundDao.getById(id)
+                ?.toRound()
+                ?.right()
+                ?: RoundNotFound.left()
+        }
 
-    override fun getByDate(start: LocalDateTime, end: LocalDateTime): List<Round> {
-        return roundDao.getByDate(
-            start.toEpochSecond(ZoneOffset.UTC),
-            end.toEpochSecond(ZoneOffset.UTC)
-        ).map { it.toRound() }
-    }
+    override suspend fun getByDate(start: LocalDateTime, end: LocalDateTime): List<Round> =
+        withContext(dispatcher) {
+            roundDao.getByDate(
+                start.toEpochSecond(ZoneOffset.UTC),
+                end.toEpochSecond(ZoneOffset.UTC)
+            ).map { it.toRound() }
+        }
 
-    override fun getDaysWithRound(start: LocalDateTime, end: LocalDateTime): List<LocalDate> {
-        return roundDao.getDaysWithRound(
+    override suspend fun getDaysWithRound(
+        start: LocalDateTime,
+        end: LocalDateTime,
+    ): List<LocalDate> = withContext(dispatcher) {
+        roundDao.getDaysWithRound(
             start.toEpochSecond(ZoneOffset.UTC),
             end.toEpochSecond(ZoneOffset.UTC)
         ).map {
@@ -75,8 +85,11 @@ class LocalRoundDataSource @Inject constructor(
         }
     }
 
-    override fun createSet(roundSet: RoundSet, roundId: String): Either<CreateSetError, RoundSet> {
-        return try {
+    override suspend fun createSet(
+        roundSet: RoundSet,
+        roundId: String,
+    ): Either<CreateSetError, RoundSet> = withContext(dispatcher) {
+        try {
             setDao.create(roundSet.toRoomSet(roundId))
             roundSet.right()
         } catch (e: SQLiteConstraintException) {
@@ -88,8 +101,11 @@ class LocalRoundDataSource @Inject constructor(
         }
     }
 
-    override fun updateSet(roundSet: RoundSet, roundId: String): Either<UpdateSetError, RoundSet> {
-        return try {
+    override suspend fun updateSet(
+        roundSet: RoundSet,
+        roundId: String,
+    ): Either<UpdateSetError, RoundSet> = withContext(dispatcher) {
+        try {
             if (setDao.update(roundSet.toRoomSet(roundId)) == 1) {
                 roundSet.right()
             } else {
@@ -100,11 +116,12 @@ class LocalRoundDataSource @Inject constructor(
         }
     }
 
-    override fun deleteSet(roundSet: RoundSet): Either<DeleteSetError, RoundSet> {
-        return if (setDao.delete(roundSet.toRoomSet("not required")) == 1) {
-            roundSet.right()
-        } else {
-            DeleteSetError.SetNotFound.left()
+    override suspend fun deleteSet(roundSet: RoundSet): Either<DeleteSetError, RoundSet> =
+        withContext(dispatcher) {
+            if (setDao.delete(roundSet.toRoomSet("not required")) == 1) {
+                roundSet.right()
+            } else {
+                DeleteSetError.SetNotFound.left()
+            }
         }
-    }
 }

@@ -6,23 +6,23 @@ import org.threeten.bp.LocalDateTime
 
 interface RoundDataSource {
 
-    fun create(round: Round): Either<Error.RoundAlreadyExists, Round>
+    suspend fun create(round: Round): Either<Error.RoundAlreadyExists, Round>
 
-    fun update(round: Round): Either<Error.RoundNotFound, Round>
+    suspend fun update(round: Round): Either<Error.RoundNotFound, Round>
 
-    fun delete(round: Round): Either<Error.RoundNotFound, Round>
+    suspend fun delete(round: Round): Either<Error.RoundNotFound, Round>
 
-    fun getById(id: String): Either<Error.RoundNotFound, Round>
+    suspend fun getById(id: String): Either<Error.RoundNotFound, Round>
 
-    fun getByDate(start: LocalDateTime, end: LocalDateTime): List<Round>
+    suspend fun getByDate(start: LocalDateTime, end: LocalDateTime): List<Round>
 
-    fun getDaysWithRound(start: LocalDateTime, end: LocalDateTime): List<LocalDate>
+    suspend fun getDaysWithRound(start: LocalDateTime, end: LocalDateTime): List<LocalDate>
 
-    fun createSet(roundSet: RoundSet, roundId: String): Either<Error.CreateSetError, RoundSet>
+    suspend fun createSet(roundSet: RoundSet, roundId: String): Either<Error.CreateSetError, RoundSet>
 
-    fun updateSet(roundSet: RoundSet, roundId: String): Either<Error.UpdateSetError, RoundSet>
+    suspend fun updateSet(roundSet: RoundSet, roundId: String): Either<Error.UpdateSetError, RoundSet>
 
-    fun deleteSet(roundSet: RoundSet): Either<Error.DeleteSetError, RoundSet>
+    suspend fun deleteSet(roundSet: RoundSet): Either<Error.DeleteSetError, RoundSet>
 
     interface Error {
         object RoundAlreadyExists : Error

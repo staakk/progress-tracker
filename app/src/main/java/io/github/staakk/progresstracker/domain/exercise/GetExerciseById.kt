@@ -8,7 +8,7 @@ import javax.inject.Inject
 class GetExerciseById @Inject constructor(
     private val exerciseDataSource: ExerciseDataSource,
 ) {
-    operator fun invoke(id: String): Either<Error, Exercise> {
+    suspend operator fun invoke(id: String): Either<Error, Exercise> {
         return exerciseDataSource.getById(id)
             .mapLeft { Error.ExerciseNotFound }
     }

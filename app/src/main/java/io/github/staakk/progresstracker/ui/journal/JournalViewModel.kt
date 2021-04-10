@@ -6,9 +6,7 @@ import io.github.staakk.progresstracker.data.round.Round
 import io.github.staakk.progresstracker.domain.round.GetDaysWithRoundNearMonth
 import io.github.staakk.progresstracker.domain.round.GetRoundsByDateTime
 import io.github.staakk.progresstracker.util.wrapIdlingResource
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
 import javax.inject.Inject
@@ -37,11 +35,7 @@ class JournalViewModel @Inject constructor(
         _date.value = date
         viewModelScope.launch {
             wrapIdlingResource {
-                val result = withContext(Dispatchers.IO) {
-                    getRoundsByDateTime(date)
-                        .sortedBy { it.createdAt }
-                }
-                _rounds.value = result
+                _rounds.value = getRoundsByDateTime(date).sortedBy { it.createdAt }
             }
         }
     }
@@ -50,10 +44,7 @@ class JournalViewModel @Inject constructor(
         _yearMonth.value = yearMonth
         viewModelScope.launch {
             wrapIdlingResource {
-                val result = withContext(Dispatchers.IO) {
-                    getDaysWithRoundNearMonth(yearMonth)
-                }
-                _daysWithRound.value = result
+                _daysWithRound.value = getDaysWithRoundNearMonth(yearMonth)
             }
         }
     }

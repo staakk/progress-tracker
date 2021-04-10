@@ -5,15 +5,15 @@ import io.github.staakk.progresstracker.util.functional.Either
 import javax.inject.Inject
 
 class DeleteRound @Inject constructor(
-    private val roundDataSource: RoundDataSource
+    private val roundDataSource: RoundDataSource,
 ) {
 
-    operator fun invoke(round: Round): Either<Error, Round> {
+    suspend operator fun invoke(round: Round): Either<Error, Round> {
         return roundDataSource.delete(round)
             .mapLeft { Error.RoundNotFound }
     }
 
     sealed class Error {
-        object RoundNotFound: Error()
+        object RoundNotFound : Error()
     }
 }

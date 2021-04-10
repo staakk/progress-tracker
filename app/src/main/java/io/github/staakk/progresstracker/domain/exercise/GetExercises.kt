@@ -8,8 +8,5 @@ class GetExercises @Inject constructor(
     private val exerciseDataSource: ExerciseDataSource
 ) {
 
-    operator fun invoke(): List<Exercise> {
-        return exerciseDataSource.getAll()
-    }
-
+    suspend operator fun invoke(): List<Exercise> = exerciseDataSource.getAll()
 }

@@ -11,7 +11,10 @@ class CreateRound @Inject constructor(
     private val roundDataSource: RoundDataSource,
 ) {
 
-    operator fun invoke(createdAt: LocalDateTime, exercise: Exercise): Either<Error, Round> {
+    suspend operator fun invoke(
+        createdAt: LocalDateTime,
+        exercise: Exercise,
+    ): Either<Error, Round> {
         return roundDataSource.create(Round(exercise = exercise,
             createdAt = createdAt))
             .mapLeft { Error.RoundAlreadyExists }

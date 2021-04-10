@@ -6,11 +6,8 @@ import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.domain.exercise.CreateExercise
 import io.github.staakk.progresstracker.domain.exercise.GetExerciseById
 import io.github.staakk.progresstracker.domain.exercise.UpdateExercise
-import io.github.staakk.progresstracker.util.EspressoIdlingResource
 import io.github.staakk.progresstracker.util.wrapIdlingResource
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,14 +35,13 @@ class EditExerciseViewModel @Inject constructor(
         if (id == null) return
         viewModelScope.launch {
             wrapIdlingResource {
-                withContext(Dispatchers.IO) { getExerciseById(id) }
-                    .fold(
-                        { _screenState.value = ScreenState.Error(ErrorType.UnknownExerciseId) },
-                        {
-                            exercise.value = it
-                            _exerciseName.value = it.name
-                        }
-                    )
+                getExerciseById(id).fold(
+                    { _screenState.value = ScreenState.Error(ErrorType.UnknownExerciseId) },
+                    {
+                        exercise.value = it
+                        _exerciseName.value = it.name
+                    }
+                )
             }
         }
     }
@@ -61,18 +57,16 @@ class EditExerciseViewModel @Inject constructor(
                 val name = _exerciseName.value!!
                 exercise.value
                     ?.let {
-                        _screenState.value =
-                            withContext(Dispatchers.IO) { updateExercise(it, name) }
-                                .fold(
-                                    { ScreenState.Error(ErrorType.NameAlreadyExists) },
-                                    { ScreenState.Saved })
+                        _screenState.value = updateExercise(it, name).fold(
+                            { ScreenState.Error(ErrorType.NameAlreadyExists) },
+                            { ScreenState.Saved }
+                        )
                     }
                     ?: run {
-                        _screenState.value =
-                            withContext(Dispatchers.IO) { createExercise(name) }
-                                .fold(
-                                    { ScreenState.Error(ErrorType.NameAlreadyExists) },
-                                    { ScreenState.Saved })
+                        _screenState.value = createExercise(name).fold(
+                            { ScreenState.Error(ErrorType.NameAlreadyExists) },
+                            { ScreenState.Saved }
+                        )
                     }
             }
         }

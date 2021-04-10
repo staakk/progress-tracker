@@ -11,7 +11,7 @@ class UpdateExercise @Inject constructor(
     private val exerciseDataSource: ExerciseDataSource
 ) {
 
-    operator fun invoke(exercise: Exercise, name: String): Either<Error, Exercise> {
+    suspend operator fun invoke(exercise: Exercise, name: String): Either<Error, Exercise> {
         val resultFound = exerciseDataSource.findByName(name)
             .isNotEmpty()
 

@@ -8,10 +8,10 @@ import io.github.staakk.progresstracker.util.functional.right
 import javax.inject.Inject
 
 class GetRoundById @Inject constructor(
-    private val roundDataSource: RoundDataSource
+    private val roundDataSource: RoundDataSource,
 ) {
 
-    operator fun invoke(id: String): Either<Error, Round> {
+    suspend operator fun invoke(id: String): Either<Error, Round> {
         return roundDataSource.getById(id)
             .fold(
                 { Error.RoundNotFound.left() },
@@ -20,6 +20,6 @@ class GetRoundById @Inject constructor(
     }
 
     sealed class Error {
-        object RoundNotFound: Error()
+        object RoundNotFound : Error()
     }
 }

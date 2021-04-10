@@ -12,7 +12,7 @@ class GetRoundsByDateTime @Inject constructor(
     private val roundDataSource: RoundDataSource,
 ) {
 
-    operator fun invoke(from: LocalDateTime, to: LocalDateTime): List<Round> {
+    suspend operator fun invoke(from: LocalDateTime, to: LocalDateTime): List<Round> {
         if (to.isBefore(from)) {
             Timber.w("`to` date (${to.format()} before `from` date (${from.format()}")
             return emptyList()
@@ -21,6 +21,6 @@ class GetRoundsByDateTime @Inject constructor(
             .map { it.withPositionSortedSets() }
     }
 
-    operator fun invoke(day: LocalDate) =
+    suspend operator fun invoke(day: LocalDate) =
         invoke(day.atStartOfDay(), day.atStartOfDay().plusHours(24))
 }
