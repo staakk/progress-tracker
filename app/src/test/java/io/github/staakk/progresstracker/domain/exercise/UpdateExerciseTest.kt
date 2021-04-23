@@ -6,9 +6,9 @@ import io.github.staakk.progresstracker.util.functional.Left
 import io.github.staakk.progresstracker.util.functional.Right
 import io.github.staakk.progresstracker.util.functional.left
 import io.github.staakk.progresstracker.util.functional.right
-import io.mockk.every
-import io.mockk.mockk
+import io.mockk.*
 import io.mockk.verify
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -22,37 +22,43 @@ class UpdateExerciseTest {
     fun `should update exercise`() {
         val exercise = Exercise(name = "test")
         val updatedExercise = exercise.copy(name = "changed")
-        every { mockExerciseDataSource.findByName(any()) } returns emptyList()
-        every { mockExerciseDataSource.update(eq(updatedExercise)) } returns updatedExercise.right()
+        coEvery { mockExerciseDataSource.findByName(any()) } returns emptyList()
+        coEvery { mockExerciseDataSource.update(eq(updatedExercise)) } returns updatedExercise.right()
 
-        val result = tested(exercise, updatedExercise.name)
+        runBlocking {
+            val result = tested(exercise, updatedExercise.name)
 
-        assert(result is Right)
-        assertEquals(updatedExercise, (result as Right).value)
+            assert(result is Right)
+            assertEquals(updatedExercise, (result as Right).value)
+        }
     }
 
     @Test
     fun `should return error when exercise name already exist`() {
         val exercise = Exercise(name = "test")
-        every { mockExerciseDataSource.findByName(any()) } returns listOf(exercise)
+        coEvery { mockExerciseDataSource.findByName(any()) } returns listOf(exercise)
 
-        val result = tested(exercise, "changed")
+        runBlocking {
+            val result = tested(exercise, "changed")
 
-        verify(exactly = 0) { mockExerciseDataSource.update(any()) }
-        assert(result is Left)
-        assertEquals(UpdateExercise.Error.NameAlreadyExists, (result as Left).value)
+            coVerify(exactly = 0) { mockExerciseDataSource.update(any()) }
+            assert(result is Left)
+            assertEquals(UpdateExercise.Error.NameAlreadyExists, (result as Left).value)
+        }
     }
 
     @Test
     fun `should return error when exercise not found`() {
         val exercise = Exercise(name = "test")
         val updatedExercise = exercise.copy(name = "changed")
-        every { mockExerciseDataSource.findByName(any()) } returns emptyList()
-        every { mockExerciseDataSource.update(eq(updatedExercise)) } returns ExerciseDataSource.Error.ExerciseNotFound.left()
+        coEvery { mockExerciseDataSource.findByName(any()) } returns emptyList()
+        coEvery { mockExerciseDataSource.update(eq(updatedExercise)) } returns ExerciseDataSource.Error.ExerciseNotFound.left()
 
-        val result = tested(exercise, updatedExercise.name)
+        runBlocking {
+            val result = tested(exercise, updatedExercise.name)
 
-        assert(result is Left)
-        assertEquals(UpdateExercise.Error.ExerciseNotFound, (result as Left).value)
+            assert(result is Left)
+            assertEquals(UpdateExercise.Error.ExerciseNotFound, (result as Left).value)
+        }
     }
 }

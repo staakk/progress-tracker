@@ -5,8 +5,10 @@ import io.github.staakk.progresstracker.data.round.Round
 import io.github.staakk.progresstracker.data.round.RoundDataSource
 import io.github.staakk.progresstracker.util.functional.left
 import io.github.staakk.progresstracker.util.functional.right
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test
 import org.threeten.bp.LocalDateTime
@@ -24,19 +26,23 @@ class DeleteRoundTest {
 
     @Test
     fun `should delete round`() {
-        every { mockRoundDataSource.delete(eq(round)) } returns round.right()
+        coEvery { mockRoundDataSource.delete(eq(round)) } returns round.right()
 
-        val result = tested(round)
+        runBlocking {
+            val result = tested(round)
 
-        assertEquals(round, result.right)
+            assertEquals(round, result.right)
+        }
     }
 
     @Test
     fun `should return error when round does not exist`() {
-        every { mockRoundDataSource.delete(eq(round)) } returns RoundDataSource.Error.RoundNotFound.left()
+        coEvery { mockRoundDataSource.delete(eq(round)) } returns RoundDataSource.Error.RoundNotFound.left()
 
-        val result = tested(round)
+        runBlocking {
+            val result = tested(round)
 
-        assertEquals(DeleteRound.Error.RoundNotFound, result.left)
+            assertEquals(DeleteRound.Error.RoundNotFound, result.left)
+        }
     }
 }

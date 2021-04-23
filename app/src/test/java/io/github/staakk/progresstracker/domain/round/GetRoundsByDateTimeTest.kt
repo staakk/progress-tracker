@@ -4,9 +4,8 @@ import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.data.round.Round
 import io.github.staakk.progresstracker.data.round.RoundDataSource
 import io.github.staakk.progresstracker.data.round.RoundSet
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.threeten.bp.LocalDate
@@ -20,11 +19,13 @@ class GetRoundsByDateTimeTest {
 
     @Test
     fun `should return rounds in time span`() {
-        every { mockRoundDataSource.getByDate(any(), any()) } returns emptyList()
+        coEvery { mockRoundDataSource.getByDate(any(), any()) } returns emptyList()
 
-        val result = tested(LocalDateTime.now(), LocalDateTime.now().plusHours(1))
+        runBlocking {
+            val result = tested(LocalDateTime.now(), LocalDateTime.now().plusHours(1))
 
-        assertEquals(emptyList<Round>(), result)
+            assertEquals(emptyList<Round>(), result)
+        }
     }
 
     @Test
@@ -39,35 +40,41 @@ class GetRoundsByDateTimeTest {
                 )
             )
         )
-        every { mockRoundDataSource.getByDate(any(), any()) } returns rounds
+        coEvery { mockRoundDataSource.getByDate(any(), any()) } returns rounds
 
-        val result = tested(LocalDateTime.now(), LocalDateTime.now().plusHours(1))
+        runBlocking {
+            val result = tested(LocalDateTime.now(), LocalDateTime.now().plusHours(1))
 
-        assertEquals(
-            rounds.first().roundSets.sortedBy { it.position },
-            result.first().roundSets
-        )
+            assertEquals(
+                rounds.first().roundSets.sortedBy { it.position },
+                result.first().roundSets
+            )
+        }
     }
 
     @Test
     fun `should return empty list when from date after to date`() {
-        val result = tested(LocalDateTime.now().plusDays(1), LocalDateTime.now())
+        runBlocking {
+            val result = tested(LocalDateTime.now().plusDays(1), LocalDateTime.now())
 
-        assertEquals(emptyList<Round>(), result)
-        verify(exactly = 0) { mockRoundDataSource.getByDate(any(), any()) }
+            assertEquals(emptyList<Round>(), result)
+            coVerify(exactly = 0) { mockRoundDataSource.getByDate(any(), any()) }
+        }
     }
 
     @Test
     fun `should get round for given day`() {
-        every { mockRoundDataSource.getByDate(any(), any()) } returns emptyList()
+        coEvery { mockRoundDataSource.getByDate(any(), any()) } returns emptyList()
 
-        val result = tested(LocalDate.now())
+        runBlocking {
+            val result = tested(LocalDate.now())
 
-        assertEquals(emptyList<Round>(), result)
-        verify {
-            mockRoundDataSource.getByDate(
-                LocalDate.now().atStartOfDay(),
-                LocalDate.now().atStartOfDay().plusHours(24))
+            assertEquals(emptyList<Round>(), result)
+            coVerify {
+                mockRoundDataSource.getByDate(
+                    LocalDate.now().atStartOfDay(),
+                    LocalDate.now().atStartOfDay().plusHours(24))
+            }
         }
     }
 

@@ -5,8 +5,10 @@ import io.github.staakk.progresstracker.data.round.Round
 import io.github.staakk.progresstracker.data.round.RoundDataSource
 import io.github.staakk.progresstracker.util.functional.left
 import io.github.staakk.progresstracker.util.functional.right
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test
 import org.threeten.bp.LocalDateTime
@@ -35,19 +37,23 @@ class UpdateRoundTest {
 
     @Test
     fun `should update round`() {
-        every { mockRoundDataSource.update(eq(updatedRound)) } returns updatedRound.right()
+        coEvery { mockRoundDataSource.update(eq(updatedRound)) } returns updatedRound.right()
 
-        val result = tested(round, exercise2, updatedTime)
+        runBlocking {
+            val result = tested(round, exercise2, updatedTime)
 
-        assertEquals(updatedRound, result.right)
+            assertEquals(updatedRound, result.right)
+        }
     }
 
     @Test
     fun `should return error when round does not exist`() {
-        every { mockRoundDataSource.update(eq(updatedRound)) } returns RoundDataSource.Error.RoundNotFound.left()
+        coEvery { mockRoundDataSource.update(eq(updatedRound)) } returns RoundDataSource.Error.RoundNotFound.left()
 
-        val result = tested(round, exercise2, updatedTime)
+        runBlocking {
+            val result = tested(round, exercise2, updatedTime)
 
-        assertEquals(UpdateRound.Error.RoundNotFound, result.left)
+            assertEquals(UpdateRound.Error.RoundNotFound, result.left)
+        }
     }
 }

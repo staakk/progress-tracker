@@ -6,8 +6,10 @@ import io.github.staakk.progresstracker.data.round.RoundDataSource
 import io.github.staakk.progresstracker.data.round.RoundSet
 import io.github.staakk.progresstracker.util.functional.left
 import io.github.staakk.progresstracker.util.functional.right
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test
 import org.threeten.bp.LocalDateTime
@@ -32,30 +34,42 @@ class UpdateSetTest {
 
     @Test
     fun `should update set`() {
-        every { mockRoundDataSource.updateSet(updatedSet, round.id) } returns updatedSet.right()
+        coEvery { mockRoundDataSource.updateSet(updatedSet, round.id) } returns updatedSet.right()
 
-        val result = tested(round, set, updatedSet.position, updatedSet.reps, updatedSet.weight)
-        val (resultRound, resultSet) = result.right
-        assertEquals(updatedRound, resultRound)
-        assertEquals(updatedSet, resultSet)
+        runBlocking {
+            val result = tested(round, set, updatedSet.position, updatedSet.reps, updatedSet.weight)
+            val (resultRound, resultSet) = result.right
+            assertEquals(updatedRound, resultRound)
+            assertEquals(updatedSet, resultSet)
+        }
     }
 
     @Test
     fun `should return error when round not found`() {
-        every { mockRoundDataSource.updateSet(updatedSet, round.id) } returns RoundDataSource.Error.UpdateSetError.RoundNotFound.left()
+        coEvery {
+            mockRoundDataSource.updateSet(updatedSet,
+                round.id)
+        } returns RoundDataSource.Error.UpdateSetError.RoundNotFound.left()
 
-        val result = tested(round, set, updatedSet.position, updatedSet.reps, updatedSet.weight)
+        runBlocking {
+            val result = tested(round, set, updatedSet.position, updatedSet.reps, updatedSet.weight)
 
-        assertEquals(UpdateSet.Error.RoundNotFound, result.left)
+            assertEquals(UpdateSet.Error.RoundNotFound, result.left)
+        }
     }
 
     @Test
     fun `should return error when set not found`() {
-        every { mockRoundDataSource.updateSet(updatedSet, round.id) } returns RoundDataSource.Error.UpdateSetError.SetNotFound.left()
+        coEvery {
+            mockRoundDataSource.updateSet(updatedSet,
+                round.id)
+        } returns RoundDataSource.Error.UpdateSetError.SetNotFound.left()
 
-        val result = tested(round, set, updatedSet.position, updatedSet.reps, updatedSet.weight)
+        runBlocking {
+            val result = tested(round, set, updatedSet.position, updatedSet.reps, updatedSet.weight)
 
-        assertEquals(UpdateSet.Error.SetNotFound, result.left)
+            assertEquals(UpdateSet.Error.SetNotFound, result.left)
+        }
     }
 
 }

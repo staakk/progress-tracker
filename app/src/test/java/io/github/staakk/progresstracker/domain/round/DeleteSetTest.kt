@@ -6,8 +6,10 @@ import io.github.staakk.progresstracker.data.round.RoundSet
 import io.github.staakk.progresstracker.data.round.RoundDataSource
 import io.github.staakk.progresstracker.util.functional.left
 import io.github.staakk.progresstracker.util.functional.right
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test
 import org.threeten.bp.LocalDateTime
@@ -29,20 +31,24 @@ class DeleteSetTest {
 
     @Test
     fun `should delete set`() {
-        every { mockRoundDataSource.deleteSet(set) } returns set.right()
+        coEvery { mockRoundDataSource.deleteSet(set) } returns set.right()
 
-        val result = tested(round, set)
+        runBlocking {
+            val result = tested(round, set)
 
-        assertEquals(round.copy(roundSets = emptyList()), result.right)
+            assertEquals(round.copy(roundSets = emptyList()), result.right)
+        }
     }
 
     @Test
     fun `should return error when set cannot be found`() {
-        every { mockRoundDataSource.deleteSet(set) } returns RoundDataSource.Error.DeleteSetError.SetNotFound.left()
+        coEvery { mockRoundDataSource.deleteSet(set) } returns RoundDataSource.Error.DeleteSetError.SetNotFound.left()
 
-        val result = tested(round, set)
+        runBlocking {
+            val result = tested(round, set)
 
-        assertEquals(DeleteSet.Error.SetNotFound, result.left)
+            assertEquals(DeleteSet.Error.SetNotFound, result.left)
+        }
     }
 
 }

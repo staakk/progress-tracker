@@ -6,8 +6,10 @@ import io.github.staakk.progresstracker.data.round.RoundDataSource
 import io.github.staakk.progresstracker.data.round.RoundSet
 import io.github.staakk.progresstracker.util.functional.left
 import io.github.staakk.progresstracker.util.functional.right
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test
 import org.threeten.bp.LocalDateTime
@@ -33,36 +35,42 @@ class CreateSetTest {
 
     @Test
     fun `should create set`() {
-        every {
+        coEvery {
             mockRoundDataSource.createSet(match(setMatcher), eq(round.id))
         } returns set.right()
 
-        val result = tested(round, position = 0, reps = 1, weight = 2)
+        runBlocking {
+            val result = tested(round, position = 0, reps = 1, weight = 2)
 
-        assertEquals(round.copy(roundSets = listOf(set)), result.right)
+            assertEquals(round.copy(roundSets = listOf(set)), result.right)
+        }
     }
 
     @Test
     fun `should return error when round does not exist`() {
-        every {
+        coEvery {
             mockRoundDataSource.createSet(match(setMatcher),
                 eq(round.id))
         } returns RoundDataSource.Error.CreateSetError.RoundNotFound.left()
 
-        val result = tested(round, position = 0, reps = 1, weight = 2)
+        runBlocking {
+            val result = tested(round, position = 0, reps = 1, weight = 2)
 
-        assertEquals(CreateSet.Error.RoundNotFound, result.left)
+            assertEquals(CreateSet.Error.RoundNotFound, result.left)
+        }
     }
 
     @Test
     fun `should return error when set already exist`() {
-        every {
+        coEvery {
             mockRoundDataSource.createSet(match(setMatcher),
                 eq(round.id))
         } returns RoundDataSource.Error.CreateSetError.SetAlreadyExist.left()
 
-        val result = tested(round, position = 0, reps = 1, weight = 2)
+        runBlocking {
+            val result = tested(round, position = 0, reps = 1, weight = 2)
 
-        assertEquals(CreateSet.Error.SetAlreadyExists, result.left)
+            assertEquals(CreateSet.Error.SetAlreadyExists, result.left)
+        }
     }
 }

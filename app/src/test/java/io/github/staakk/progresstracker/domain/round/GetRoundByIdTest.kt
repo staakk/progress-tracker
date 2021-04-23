@@ -6,8 +6,10 @@ import io.github.staakk.progresstracker.data.round.RoundDataSource
 import io.github.staakk.progresstracker.data.round.RoundSet
 import io.github.staakk.progresstracker.util.functional.left
 import io.github.staakk.progresstracker.util.functional.right
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test
 import org.threeten.bp.LocalDateTime
@@ -25,20 +27,24 @@ class GetRoundByIdTest {
 
     @Test
     fun `should get round by id`() {
-        every { mockRoundDataSource.getById(eq(round.id)) } returns round.right()
+        coEvery { mockRoundDataSource.getById(eq(round.id)) } returns round.right()
 
-        val result = tested(round.id)
+        runBlocking {
+            val result = tested(round.id)
 
-        assertEquals(round, result.right)
+            assertEquals(round, result.right)
+        }
     }
 
     @Test
     fun `should return error when round not found`() {
-        every { mockRoundDataSource.getById(eq(round.id)) } returns RoundDataSource.Error.RoundNotFound.left()
+        coEvery { mockRoundDataSource.getById(eq(round.id)) } returns RoundDataSource.Error.RoundNotFound.left()
 
-        val result = tested(round.id)
+        runBlocking {
+            val result = tested(round.id)
 
-        assertEquals(GetRoundById.Error.RoundNotFound, result.left)
+            assertEquals(GetRoundById.Error.RoundNotFound, result.left)
+        }
     }
 
     @Test
@@ -50,11 +56,13 @@ class GetRoundByIdTest {
                 RoundSet(position = 5, reps = 1, weight = 2),
             )
         )
-        every { mockRoundDataSource.getById(eq(round.id)) } returns round.right()
+        coEvery { mockRoundDataSource.getById(eq(round.id)) } returns round.right()
 
-        val result = tested(round.id)
+        runBlocking {
+            val result = tested(round.id)
 
-        assertEquals(round.roundSets.sortedBy { it.position }, result.right.roundSets)
+            assertEquals(round.roundSets.sortedBy { it.position }, result.right.roundSets)
+        }
     }
 
 }

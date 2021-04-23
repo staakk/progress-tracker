@@ -8,8 +8,10 @@ import io.github.staakk.progresstracker.util.functional.Left
 import io.github.staakk.progresstracker.util.functional.Right
 import io.github.staakk.progresstracker.util.functional.left
 import io.github.staakk.progresstracker.util.functional.right
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test
 import org.threeten.bp.LocalDateTime
@@ -32,22 +34,26 @@ class CreateRoundTest {
 
     @Test
     fun `should create round`() {
-        every { mockRoundDataSource.create(match(roundMatcher)) } returns round.right()
+        coEvery { mockRoundDataSource.create(match(roundMatcher)) } returns round.right()
 
-        val result = tested(createdAt, exercise)
+        runBlocking {
+            val result = tested(createdAt, exercise)
 
-        assert(result is Right)
-        assertEquals(round, (result as Right).value)
+            assert(result is Right)
+            assertEquals(round, (result as Right).value)
+        }
     }
 
     @Test
     fun `should return error when round already exists`() {
-        every { mockRoundDataSource.create(match(roundMatcher)) } returns RoundAlreadyExists.left()
+        coEvery { mockRoundDataSource.create(match(roundMatcher)) } returns RoundAlreadyExists.left()
 
-        val result = tested(createdAt, exercise)
+        runBlocking {
+            val result = tested(createdAt, exercise)
 
-        assert(result is Left)
-        assertEquals(CreateRound.Error.RoundAlreadyExists, (result as Left).value)
+            assert(result is Left)
+            assertEquals(CreateRound.Error.RoundAlreadyExists, (result as Left).value)
+        }
     }
 
 }

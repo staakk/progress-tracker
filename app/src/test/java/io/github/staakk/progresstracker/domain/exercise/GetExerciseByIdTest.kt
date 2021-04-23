@@ -6,9 +6,11 @@ import io.github.staakk.progresstracker.util.functional.Left
 import io.github.staakk.progresstracker.util.functional.Right
 import io.github.staakk.progresstracker.util.functional.left
 import io.github.staakk.progresstracker.util.functional.right
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -21,21 +23,25 @@ class GetExerciseByIdTest {
     @Test
     fun `should find exercise`() {
         val exercise = Exercise(name = "test")
-        every { mockExerciseDataSource.getById(eq(exercise.id)) } returns exercise.right()
+        coEvery { mockExerciseDataSource.getById(eq(exercise.id)) } returns exercise.right()
 
-        val result = tested(exercise.id)
-        assert(result is Right)
-        assertEquals(exercise, (result as Right).value)
+        runBlocking {
+            val result = tested(exercise.id)
+            assert(result is Right)
+            assertEquals(exercise, (result as Right).value)
+        }
     }
 
     @Test
     fun `should return error when exercise not found`() {
         val id = "missing id"
-        every { mockExerciseDataSource.getById(eq(id)) } returns ExerciseDataSource.Error.ExerciseNotFound.left()
+        coEvery { mockExerciseDataSource.getById(eq(id)) } returns ExerciseDataSource.Error.ExerciseNotFound.left()
 
-        val result = tested(id)
+        runBlocking {
+            val result = tested(id)
 
-        assert(result is Left)
-        assertEquals(GetExerciseById.Error.ExerciseNotFound, (result as Left).value)
+            assert(result is Left)
+            assertEquals(GetExerciseById.Error.ExerciseNotFound, (result as Left).value)
+        }
     }
 }
