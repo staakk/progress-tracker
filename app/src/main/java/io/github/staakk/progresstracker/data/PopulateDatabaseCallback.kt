@@ -7,8 +7,8 @@ import io.github.staakk.progresstracker.data.round.RoomRound
 import io.github.staakk.progresstracker.data.round.RoomSet
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.threeten.bp.LocalDateTime
-import org.threeten.bp.ZoneOffset
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.*
 
 class PopulateDatabaseCallback : RoomDatabase.Callback() {

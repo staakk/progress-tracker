@@ -1,8 +1,8 @@
 package io.github.staakk.progresstracker.util.log
 
-import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalDateTime
-import org.threeten.bp.format.DateTimeFormatter
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 fun LocalDateTime.format() {
     format(DateTimeFormatter.ISO_DATE_TIME)

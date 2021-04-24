@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import io.github.staakk.progresstracker.data.exercise.Exercise
-import org.threeten.bp.ZoneOffset
+import java.time.ZoneOffset
 import java.util.*
 
 @Entity(

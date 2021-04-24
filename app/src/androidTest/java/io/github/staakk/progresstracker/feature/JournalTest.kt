@@ -11,7 +11,7 @@ import io.github.staakk.progresstracker.initDatabase
 import io.github.staakk.progresstracker.testcase.ScreenTestCase
 import org.junit.Ignore
 import org.junit.Test
-import org.threeten.bp.ZoneOffset
+import java.time.ZoneOffset
 
 private val EXERCISES = listOf(
     Exercise(name = "Dead lift"),

@@ -20,8 +20,8 @@ import io.github.staakk.progresstracker.ui.journal.round.EditRoundViewModel
 import io.github.staakk.progresstracker.ui.navigation.Destinations.EXERCISE_ID_KEY
 import io.github.staakk.progresstracker.ui.navigation.Destinations.ROUND_CREATE_DATE_KEY
 import io.github.staakk.progresstracker.ui.navigation.Destinations.ROUND_ID_KEY
-import org.threeten.bp.LocalDate
-import org.threeten.bp.format.DateTimeFormatter
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 object Destinations {
     const val EXERCISES_ROUTE = "exercises"

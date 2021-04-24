@@ -12,7 +12,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test
-import org.threeten.bp.LocalDateTime
+import java.time.LocalDateTime
 
 class GetRoundByIdTest {
 

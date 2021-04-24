@@ -7,8 +7,8 @@ import io.github.staakk.progresstracker.domain.round.GetDaysWithRoundNearMonth
 import io.github.staakk.progresstracker.domain.round.GetRoundsByDateTime
 import io.github.staakk.progresstracker.util.wrapIdlingResource
 import kotlinx.coroutines.launch
-import org.threeten.bp.LocalDate
-import org.threeten.bp.YearMonth
+import java.time.LocalDate
+import java.time.YearMonth
 import javax.inject.Inject
 
 @HiltViewModel

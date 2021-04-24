@@ -7,9 +7,9 @@ import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import io.github.staakk.progresstracker.util.datetime.DateTimeProvider
 import io.github.staakk.progresstracker.util.datetime.DateTimeProviderModule
-import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalDateTime
-import org.threeten.bp.YearMonth
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.YearMonth
 import javax.inject.Singleton
 
 @TestInstallIn(

@@ -3,7 +3,7 @@ package io.github.staakk.progresstracker.domain.round
 import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.data.round.*
 import io.github.staakk.progresstracker.util.functional.Either
-import org.threeten.bp.LocalDateTime
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 class UpdateRound @Inject constructor(

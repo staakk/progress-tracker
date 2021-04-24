@@ -47,6 +47,7 @@ android {
     }
 
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
@@ -54,7 +55,7 @@ android {
 
 
 dependencies {
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
     implementation("androidx.core:core-ktx:1.3.2")
@@ -116,7 +117,6 @@ dependencies {
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.6")
 
     testImplementation("io.mockk:mockk:1.11.0")
-    testImplementation("org.threeten:threetenbp:1.5.0")
 
     implementation("androidx.test.espresso:espresso-idling-resource:3.3.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")

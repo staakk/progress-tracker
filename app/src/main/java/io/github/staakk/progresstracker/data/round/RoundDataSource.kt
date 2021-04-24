@@ -1,8 +1,8 @@
 package io.github.staakk.progresstracker.data.round
 
 import io.github.staakk.progresstracker.util.functional.Either
-import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalDateTime
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 interface RoundDataSource {
 

@@ -3,9 +3,9 @@ package io.github.staakk.progresstracker.util.datetime
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
-import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalDateTime
-import org.threeten.bp.YearMonth
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.YearMonth
 
 interface DateTimeProvider {
     fun currentDateTime(): LocalDateTime

@@ -12,9 +12,9 @@ import io.github.staakk.progresstracker.domain.exercise.GetExercises
 import io.github.staakk.progresstracker.domain.round.*
 import io.github.staakk.progresstracker.util.wrapIdlingResource
 import kotlinx.coroutines.launch
-import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalTime
-import org.threeten.bp.format.DateTimeFormatter
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import timber.log.Timber
 import javax.inject.Inject
 

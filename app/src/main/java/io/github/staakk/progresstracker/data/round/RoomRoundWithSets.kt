@@ -3,9 +3,9 @@ package io.github.staakk.progresstracker.data.round
 import androidx.room.Embedded
 import androidx.room.Relation
 import io.github.staakk.progresstracker.data.exercise.Exercise
-import org.threeten.bp.LocalDateTime
-import org.threeten.bp.ZoneId
-import org.threeten.bp.ZoneOffset
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZoneOffset
 
 data class RoomRoundWithSets(
     @Embedded val round: RoomRound,

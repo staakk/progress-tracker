@@ -25,10 +25,10 @@ import androidx.compose.ui.unit.dp
 import com.jakewharton.threetenabp.AndroidThreeTen
 import io.github.staakk.progresstracker.R
 import io.github.staakk.progresstracker.ui.theme.ProgressTrackerTheme
-import org.threeten.bp.DayOfWeek
-import org.threeten.bp.LocalDate
-import org.threeten.bp.YearMonth
-import org.threeten.bp.format.TextStyle
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.YearMonth
+import java.time.format.TextStyle
 import java.text.DateFormatSymbols
 import java.util.*
 

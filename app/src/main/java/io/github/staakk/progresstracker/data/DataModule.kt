@@ -43,12 +43,14 @@ class DataModule {
     fun provideSetDao(appDatabase: AppDatabase) = appDatabase.setDao()
 
     @Provides
+    @Singleton
     fun provideExerciseDataSource(
         dao: ExerciseDao,
         @IoDispatcher dispatcher: CoroutineDispatcher,
     ): ExerciseDataSource = LocalExerciseDataSource(dao, dispatcher)
 
     @Provides
+    @Singleton
     fun provideRoundDataSource(
         roundDao: RoundDao,
         setDao: SetDao,

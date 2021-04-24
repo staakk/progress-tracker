@@ -3,8 +3,8 @@ package io.github.staakk.progresstracker.domain.round
 import io.github.staakk.progresstracker.data.round.Round
 import io.github.staakk.progresstracker.data.round.RoundDataSource
 import io.github.staakk.progresstracker.util.log.format
-import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalDateTime
+import java.time.LocalDate
+import java.time.LocalDateTime
 import timber.log.Timber
 import javax.inject.Inject
 

@@ -1,9 +1,9 @@
 package io.github.staakk.progresstracker.feature
 
 import io.github.staakk.progresstracker.util.datetime.DateTimeProvider
-import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalDateTime
-import org.threeten.bp.YearMonth
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.YearMonth
 
 object TestDateTimeProvider : DateTimeProvider {
     override fun currentDateTime(): LocalDateTime =

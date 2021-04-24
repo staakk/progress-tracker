@@ -40,7 +40,7 @@ import io.github.staakk.progresstracker.ui.theme.Dimensions
 import io.github.staakk.progresstracker.ui.theme.ProgressTrackerTheme
 import io.github.staakk.progresstracker.util.effect.OnceEffect
 import io.github.staakk.progresstracker.util.testTag
-import org.threeten.bp.LocalDate
+import java.time.LocalDate
 
 enum class EditRoundTags {
     EDIT_REPS,

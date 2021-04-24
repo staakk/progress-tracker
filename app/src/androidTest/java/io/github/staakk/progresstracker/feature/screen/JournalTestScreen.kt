@@ -5,7 +5,7 @@ import io.github.staakk.progresstracker.R
 import io.github.staakk.progresstracker.ui.common.Formatters
 import io.github.staakk.progresstracker.ui.journal.JournalTestTags
 import io.github.staakk.progresstracker.util.onNodeWithTag
-import org.threeten.bp.LocalDate
+import java.time.LocalDate
 
 class JournalTestScreen(
     private val screenContext: ScreenContext,

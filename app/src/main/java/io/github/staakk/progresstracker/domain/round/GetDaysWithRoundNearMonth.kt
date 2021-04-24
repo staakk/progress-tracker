@@ -1,8 +1,8 @@
 package io.github.staakk.progresstracker.domain.round
 
 import io.github.staakk.progresstracker.data.round.RoundDataSource
-import org.threeten.bp.LocalDate
-import org.threeten.bp.YearMonth
+import java.time.LocalDate
+import java.time.YearMonth
 import javax.inject.Inject
 
 class GetDaysWithRoundNearMonth @Inject constructor(

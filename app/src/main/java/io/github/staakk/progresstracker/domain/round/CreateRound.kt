@@ -4,7 +4,7 @@ import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.data.round.Round
 import io.github.staakk.progresstracker.data.round.RoundDataSource
 import io.github.staakk.progresstracker.util.functional.Either
-import org.threeten.bp.LocalDateTime
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 class CreateRound @Inject constructor(

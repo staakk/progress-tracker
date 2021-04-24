@@ -38,8 +38,8 @@ import io.github.staakk.progresstracker.ui.theme.Dimensions
 import io.github.staakk.progresstracker.ui.theme.ProgressTrackerTheme
 import io.github.staakk.progresstracker.util.datetime.LocalDateTimeProvider
 import io.github.staakk.progresstracker.util.testTag
-import org.threeten.bp.LocalDate
-import org.threeten.bp.YearMonth
+import java.time.LocalDate
+import java.time.YearMonth
 import timber.log.Timber
 
 enum class JournalTestTags {
