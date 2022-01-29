@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.jakewharton.threetenabp.AndroidThreeTen
@@ -51,13 +52,12 @@ enum class JournalTestTags {
 
 @Composable
 fun Journal(
-    viewModel: JournalViewModel,
     editSet: (String) -> Unit,
     newSet: (LocalDate) -> Unit,
     navigateUp: () -> Unit,
 ) {
     val dateTimeProvider = LocalDateTimeProvider.current
-
+    val viewModel: JournalViewModel = hiltViewModel()
     viewModel.loadRounds(viewModel.date.value ?: dateTimeProvider.currentDate())
     viewModel.loadMonth(viewModel.date.value?.let(YearMonth::from)
         ?: dateTimeProvider.currentYearMonth())

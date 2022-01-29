@@ -26,6 +26,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.github.staakk.progresstracker.R
@@ -56,11 +57,11 @@ enum class EditRoundTags {
 
 @Composable
 fun EditRound(
-    viewModel: EditRoundViewModel,
     navigateUp: () -> Unit,
     roundId: String? = null,
     date: LocalDate? = null,
 ) {
+    val viewModel: EditRoundViewModel = hiltViewModel()
     val roundDeleted = viewModel.roundDeleted.observeAsState(false)
     if (roundDeleted.value) {
         SideEffect { navigateUp() }

@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.github.staakk.progresstracker.R
@@ -31,10 +32,10 @@ enum class ExercisesListTestTags {
 
 @Composable
 fun ExercisesList(
-    viewModel: ExercisesListViewModel,
     editExerciseAction: (String) -> Unit,
     newExerciseAction: () -> Unit,
 ) {
+    val viewModel: ExercisesListViewModel = hiltViewModel()
     viewModel.setSearchValue(viewModel.getSearchValue())
     ExerciseListScreen(
         exercises = viewModel.exercises,
@@ -126,7 +127,8 @@ private fun ExerciseItem(
 private fun SearchView(initialSearchValue: String, onValueChanged: (String) -> Unit) {
     var text by remember { mutableStateOf(TextFieldValue(initialSearchValue)) }
     TextField(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .testTag(ExercisesListTestTags.SEARCH),
         value = text,
         leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },

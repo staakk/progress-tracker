@@ -51,20 +51,14 @@ fun NavGraph(startDestination: String = Destinations.HOME_ROUTE) {
         }
 
         composable(Destinations.EXERCISES_ROUTE) {
-            val viewModel: ExercisesListViewModel =
-                viewModel(factory = HiltViewModelFactory(LocalContext.current, it))
             ExercisesList(
-                viewModel = viewModel,
                 editExerciseAction = actions.editExercise,
                 newExerciseAction = actions.newExercise
             )
         }
 
         composable(Destinations.JOURNAL_ROUTE) {
-            val viewModel: JournalViewModel =
-                viewModel(factory = HiltViewModelFactory(LocalContext.current, it))
             Journal(
-                viewModel = viewModel,
                 editSet = actions.editSet,
                 newSet = actions.newSet,
                 navigateUp = actions.upPress
@@ -93,8 +87,7 @@ fun NavGraph(startDestination: String = Destinations.HOME_ROUTE) {
             val args = requireNotNull(it.arguments)
             val date =
                 LocalDate.from(DateTimeFormatter.ISO_DATE.parse(args.getString(ROUND_CREATE_DATE_KEY)))
-            val viewModel: EditRoundViewModel = viewModel(factory = HiltViewModelFactory(LocalContext.current, it))
-            EditRound(viewModel = viewModel, navigateUp = actions.upPress, date = date)
+            EditRound(navigateUp = actions.upPress, date = date)
         }
 
         composable(
@@ -103,9 +96,7 @@ fun NavGraph(startDestination: String = Destinations.HOME_ROUTE) {
         ) {
             val args = requireNotNull(it.arguments)
             val roundId = args.getString(ROUND_ID_KEY)
-            val viewModel: EditRoundViewModel = viewModel(factory = HiltViewModelFactory(LocalContext.current, it))
             EditRound(
-                viewModel = viewModel,
                 navigateUp = actions.upPress,
                 roundId = roundId
             )
