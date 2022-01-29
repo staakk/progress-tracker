@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.github.staakk.progresstracker.ui.theme.ProgressTrackerTheme
@@ -23,12 +24,11 @@ enum class EditExerciseScreenTags {
 
 @Composable
 fun EditExercise(
-    viewModel: EditExerciseViewModel,
     exerciseId: String? = null,
     navigateUp: () -> Unit
 ) {
+    val viewModel: EditExerciseViewModel = hiltViewModel()
     viewModel.loadExercise(exerciseId)
-
     EditExerciseScreen(
         exerciseId == null,
         viewModel.screenState,

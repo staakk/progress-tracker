@@ -278,15 +278,7 @@ fun ExerciseSelector(
                 .clickable { expanded.value = !expanded.value }
                 .focusable(false)
                 .onFocusChanged {
-                    expanded.value = when (it) {
-                        FocusState.Captured,
-                        FocusState.Active,
-                        FocusState.ActiveParent,
-                        -> true
-                        FocusState.Disabled,
-                        FocusState.Inactive,
-                        -> false
-                    }
+                    expanded.value = it.isFocused
                 }
                 .fillMaxWidth(),
             value = if (items.isEmpty()) "" else items[selectedIndex.value].name,

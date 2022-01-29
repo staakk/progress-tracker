@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
+import androidx.navigation.navArgument
 import io.github.staakk.progresstracker.ui.exercise.ExercisesList
 import io.github.staakk.progresstracker.ui.exercise.ExercisesListViewModel
 import io.github.staakk.progresstracker.ui.exercise.editexercise.EditExercise
@@ -48,6 +49,7 @@ fun NavGraph(startDestination: String = Destinations.HOME_ROUTE) {
                 openJournal = actions.openJournal
             )
         }
+
         composable(Destinations.EXERCISES_ROUTE) {
             val viewModel: ExercisesListViewModel =
                 viewModel(factory = HiltViewModelFactory(LocalContext.current, it))
@@ -57,6 +59,7 @@ fun NavGraph(startDestination: String = Destinations.HOME_ROUTE) {
                 newExerciseAction = actions.newExercise
             )
         }
+
         composable(Destinations.JOURNAL_ROUTE) {
             val viewModel: JournalViewModel =
                 viewModel(factory = HiltViewModelFactory(LocalContext.current, it))
@@ -67,22 +70,22 @@ fun NavGraph(startDestination: String = Destinations.HOME_ROUTE) {
                 navigateUp = actions.upPress
             )
         }
+
         composable(
             "${Destinations.EXERCISE_ROUTE}/{$EXERCISE_ID_KEY}",
             arguments = listOf(navArgument(EXERCISE_ID_KEY) { type = NavType.StringType })
         ) {
             val args = requireNotNull(it.arguments)
-            val viewModel: EditExerciseViewModel = viewModel(factory = HiltViewModelFactory(LocalContext.current, it))
             EditExercise(
-                viewModel = viewModel,
                 exerciseId = args.getString(EXERCISE_ID_KEY),
                 navigateUp = actions.upPress
             )
         }
+
         composable(Destinations.NEW_EXERCISE_ROUTE) {
-            val viewModel: EditExerciseViewModel = viewModel(factory = HiltViewModelFactory(LocalContext.current, it))
-            EditExercise(viewModel = viewModel, navigateUp = actions.upPress)
+            EditExercise(navigateUp = actions.upPress)
         }
+
         composable(
             "${Destinations.NEW_ROUND_ROUTE}/{$ROUND_CREATE_DATE_KEY}",
             arguments = listOf(navArgument(ROUND_CREATE_DATE_KEY) { type = NavType.StringType })
@@ -93,6 +96,7 @@ fun NavGraph(startDestination: String = Destinations.HOME_ROUTE) {
             val viewModel: EditRoundViewModel = viewModel(factory = HiltViewModelFactory(LocalContext.current, it))
             EditRound(viewModel = viewModel, navigateUp = actions.upPress, date = date)
         }
+
         composable(
             "${Destinations.ROUND_ROUTE}/{$ROUND_ID_KEY}",
             arguments = listOf(navArgument(ROUND_ID_KEY) { type = NavType.StringType })

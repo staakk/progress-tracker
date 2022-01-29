@@ -7,12 +7,12 @@ plugins {
 }
 
 android {
-    compileSdkVersion(30)
+    compileSdk = 31
 
     defaultConfig {
         applicationId = "io.github.staakk.progresstracker"
-        minSdkVersion(21)
-        targetSdkVersion(30)
+        minSdk = 21
+        targetSdk = 31
         versionCode = 1
         versionName = "1.0"
 
@@ -35,11 +35,10 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
-        useIR = true
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.0.0-beta04"
+        kotlinCompilerExtensionVersion = "1.1.0-rc03"
     }
 
     packagingOptions {
@@ -58,15 +57,15 @@ dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
-    implementation("androidx.core:core-ktx:1.3.2")
-    implementation("androidx.appcompat:appcompat:1.2.0")
+    implementation("androidx.core:core-ktx:1.7.0")
+    implementation("androidx.appcompat:appcompat:1.4.1")
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.2")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
+    androidTestImplementation("androidx.test.ext:junit:1.1.3")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
 
     // Lifecycle
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.3.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.4.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
 
     // Room
     val roomVersion = "2.2.6"
@@ -77,7 +76,7 @@ dependencies {
     testImplementation("androidx.room:room-testing:$roomVersion")
 
     // Android Compose
-    val composeVersion = "1.0.0-beta06"
+    val composeVersion = "1.1.0-rc03"
 
     implementation("androidx.compose.animation:animation:$composeVersion")
     implementation("androidx.compose.foundation:foundation:$composeVersion")
@@ -90,20 +89,21 @@ dependencies {
     implementation("androidx.compose.ui:ui-util:$composeVersion")
     implementation("androidx.compose.runtime:runtime-livedata:$composeVersion")
 
-    implementation("androidx.activity:activity-compose:1.3.0-alpha07")
+    implementation("androidx.activity:activity-compose:1.4.0")
 
-    implementation("androidx.navigation:navigation-compose:1.0.0-alpha10")
+    implementation("androidx.navigation:navigation-compose:2.4.0")
     implementation("androidx.hilt:hilt-navigation:1.0.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha04")
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha06")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0")
 
     androidTestImplementation("androidx.compose.ui:ui-test:$composeVersion")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeVersion")
 
     // Hilt
-    val hiltVersion = "2.35"
+    val hiltVersion = "2.38.1"
 
     implementation("com.google.dagger:hilt-android:$hiltVersion")
     kapt("com.google.dagger:hilt-android-compiler:$hiltVersion")
@@ -114,12 +114,12 @@ dependencies {
     // Other
     implementation("com.jakewharton.timber:timber:4.7.1")
     implementation("com.jakewharton.threetenabp:threetenabp:1.3.0")
-    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.6")
+    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.8.1")
 
-    testImplementation("io.mockk:mockk:1.11.0")
+    testImplementation("io.mockk:mockk:1.12.0")
 
-    implementation("androidx.test.espresso:espresso-idling-resource:3.3.0")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
+    implementation("androidx.test.espresso:espresso-idling-resource:3.4.0")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
 }
 
 kapt {
