@@ -1,6 +1,6 @@
 package io.github.staakk.progresstracker.feature
 
-import io.github.staakk.progresstracker.util.datetime.DateTimeProvider
+import io.github.staakk.common.ui.compose.datetime.DateTimeProvider
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth

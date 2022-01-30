@@ -2,14 +2,10 @@ package io.github.staakk.progresstracker.feature
 
 import dagger.Module
 import dagger.Provides
-import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
-import io.github.staakk.progresstracker.util.datetime.DateTimeProvider
-import io.github.staakk.progresstracker.util.datetime.DateTimeProviderModule
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.YearMonth
+import io.github.staakk.common.ui.compose.datetime.DateTimeProvider
+import io.github.staakk.common.ui.compose.datetime.DateTimeProviderModule
 import javax.inject.Singleton
 
 @TestInstallIn(

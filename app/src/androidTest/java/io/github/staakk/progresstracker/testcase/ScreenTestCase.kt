@@ -3,9 +3,9 @@ package io.github.staakk.progresstracker.testcase
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import dagger.hilt.android.testing.HiltAndroidRule
 import io.github.staakk.progresstracker.ComposeIdlingResource
+import io.github.staakk.progresstracker.common.android.EspressoIdlingResource
 import io.github.staakk.progresstracker.data.local.AppDatabase
 import io.github.staakk.progresstracker.ui.MainActivity
-import io.github.staakk.progresstracker.util.EspressoIdlingResource
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule

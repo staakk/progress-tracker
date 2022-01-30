@@ -6,9 +6,9 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:7.0.4")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10")
-        classpath("com.google.dagger:hilt-android-gradle-plugin:2.38.1")
+        classpath(libs.android.pluginGradle)
+        classpath(libs.kotlin.pluginGradle)
+        classpath(libs.hilt.pluginGradle)
     }
 }
 
@@ -28,3 +28,9 @@ allprojects {
 tasks.register("clean").configure {
     delete("build")
 }
+
+extra["sdkVersion"] = 31
+extra["minSdkVersion"] = 21
+
+extra["appVersionCode"] = 1
+extra["appVersionName"] = "1.0"

@@ -1,8 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="11">
+    <bytecodeTargetLevel target="1.8">
       <module name="core" target="1.7" />
+      <module name="ProgressTracker.app" target="11" />
+      <module name="ProgressTracker.buildSrc" target="11" />
+      <module name="ProgressTracker.common-android" target="11" />
+      <module name="ProgressTracker.common-ui-compose" target="11" />
+      <module name="ProgressTracker.common-ui-resources" target="11" />
+      <module name="ProgressTracker.data" target="11" />
+      <module name="ProgressTracker.domain" target="11" />
+      <module name="ProgressTracker.ui-exercise" target="11" />
+      <module name="ProgressTracker.ui-exercisesearch" target="11" />
+      <module name="ProgressTracker.ui-home" target="11" />
+      <module name="ProgressTracker.ui-journal" target="11" />
+      <module name="ProgressTracker.ui-round" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>
