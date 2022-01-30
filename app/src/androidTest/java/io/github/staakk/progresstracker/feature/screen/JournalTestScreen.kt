@@ -1,8 +1,8 @@
 package io.github.staakk.progresstracker.feature.screen
 
 import androidx.compose.ui.test.*
+import io.github.staakk.common.ui.compose.Formatters
 import io.github.staakk.progresstracker.R
-import io.github.staakk.progresstracker.ui.common.Formatters
 import io.github.staakk.progresstracker.ui.journal.JournalTestTags
 import io.github.staakk.progresstracker.util.onNodeWithTag
 import java.time.LocalDate

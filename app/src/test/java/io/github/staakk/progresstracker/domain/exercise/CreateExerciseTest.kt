@@ -4,8 +4,8 @@ import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.data.exercise.ExerciseDataSource
 import io.github.staakk.progresstracker.domain.exercise.CreateExercise.Error.ExerciseWithIdAlreadyExists
 import io.github.staakk.progresstracker.domain.exercise.CreateExercise.Error.ExerciseWithNameAlreadyExists
-import io.github.staakk.progresstracker.util.functional.left
-import io.github.staakk.progresstracker.util.functional.right
+import io.github.staakk.progresstracker.common.functional.left
+import io.github.staakk.progresstracker.common.functional.right
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
@@ -15,7 +15,8 @@ class CreateExerciseTest {
 
     private val mockExerciseDataSource = mockk<ExerciseDataSource>()
 
-    private val tested = CreateExercise(mockExerciseDataSource)
+    private val tested =
+        CreateExercise(mockExerciseDataSource)
 
     private val exercise = Exercise(name = "test")
 

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ProgressTracker</string>
+
+    <string name="done">Done</string>
+    <string name="cancel">Cancel</string>
+    <string name="go_back">Go back</string>
+
+    <string name="exercises_list_search_label">Search exercises</string>
+
+    <string name="edit_exercise_header_edit">Edit exercise</string>
+    <string name="edit_exercise_header_create">Create new exercise</string>
+    <string name="edit_exercise_label_name">Name</string>
+    <string name="edit_exercise_error">Something went wrong :(</string>
+    <string name="edit_exercise_saving">Saving</string>
+    <string name="edit_exercise_saved">Saved</string>
+    <string name="edit_exercise_error_name_already_exists">Exercise with that name already exists</string>
+    <string name="edit_exercise_error_unknown_exercise">Exercise doesn\'t exist!</string>
+
+    <string name="edit_set_exercise_label">Exercise</string>
+    <string name="edit_set_reps_label">Repetitions</string>
+    <string name="edit_set_weight_label">Weight</string>
+
+    <string name="journal_add_round">Add round</string>
+    <string name="journal_exercise_label">Exercise</string>
+    <string name="journal_sets_label">Sets</string>
+    <string name="journal_max_weight_label">Max weight</string>
+    <string name="journal_no_round">No rounds yet for this day.</string>
+    <string name="calendar_next_month">Show next month</string>
+    <string name="calendar_previous_month">Show previous month</string>
+    <string name="journal_content_desc_go_back">Go back to home screen</string>
+    <string name="journal_content_desc_prev_day">Show previous day</string>
+    <string name="journal_content_desc_next_day">Show next day</string>
+    <string name="journal_content_desc_toggle_callendar">Toggle calendar</string>
+    <string name="exercises_list_content_desc_add_new_exercise">Add new exercise</string>
+    <string name="edit_round_content_desc_fab_add_set">Create new set</string>
+    <string name="edit_round_content_desc_go_back">Go back to journal screen</string>
+    <string name="edit_round_content_desc_delete_round">Delete round</string>
+    <string name="edit_round_content_desc_delete_set">Delete set</string>
+    <string name="edit_round_content_desc_expand_exercises_drop_down">Show available exercises</string>
+    <string name="home_browse_exercises">Browse exercises</string>
+    <string name="home_view_exercises_journal">View exercises journal</string>
+</resources>

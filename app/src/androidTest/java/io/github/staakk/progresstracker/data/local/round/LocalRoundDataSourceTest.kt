@@ -6,8 +6,8 @@ import io.github.staakk.progresstracker.data.round.RoomRound.Companion.toRoomRou
 import io.github.staakk.progresstracker.data.round.Round
 import io.github.staakk.progresstracker.data.round.RoundDataSource.Error.*
 import io.github.staakk.progresstracker.data.round.RoundSet
-import io.github.staakk.progresstracker.util.functional.Left
-import io.github.staakk.progresstracker.util.functional.Right
+import io.github.staakk.progresstracker.common.functional.Left
+import io.github.staakk.progresstracker.common.functional.Right
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*

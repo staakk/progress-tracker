@@ -3,9 +3,9 @@ package io.github.staakk.progresstracker.ui.exercise
 import androidx.lifecycle.*
 import androidx.lifecycle.Transformations.switchMap
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.staakk.progresstracker.common.android.wrapIdlingResource
 import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.domain.exercise.GetExercises
-import io.github.staakk.progresstracker.util.wrapIdlingResource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber

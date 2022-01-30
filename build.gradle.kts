@@ -1,6 +1,12 @@
 import org.jetbrains.kotlin.gradle.tasks.*
 
 buildscript {
+    with (project) {
+        extra["minSdk"] = 21
+        extra["compileSdk"] = 31
+        extra["targetSdk"] = 31
+    }
+
     repositories {
         google()
         mavenCentral()
@@ -28,3 +34,9 @@ allprojects {
 tasks.register("clean").configure {
     delete("build")
 }
+
+extra["sdkVersion"] = 31
+extra["minSdkVersion"] = 21
+
+extra["appVersionCode"] = 1
+extra["appVersionName"] = "1.0"

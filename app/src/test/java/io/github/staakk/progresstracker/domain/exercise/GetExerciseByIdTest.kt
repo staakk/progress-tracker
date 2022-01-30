@@ -2,14 +2,12 @@ package io.github.staakk.progresstracker.domain.exercise
 
 import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.data.exercise.ExerciseDataSource
-import io.github.staakk.progresstracker.util.functional.Left
-import io.github.staakk.progresstracker.util.functional.Right
-import io.github.staakk.progresstracker.util.functional.left
-import io.github.staakk.progresstracker.util.functional.right
+import io.github.staakk.progresstracker.common.functional.Left
+import io.github.staakk.progresstracker.common.functional.Right
+import io.github.staakk.progresstracker.common.functional.left
+import io.github.staakk.progresstracker.common.functional.right
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test
@@ -18,7 +16,8 @@ class GetExerciseByIdTest {
 
     private val mockExerciseDataSource = mockk<ExerciseDataSource>()
 
-    private val tested = GetExerciseById(mockExerciseDataSource)
+    private val tested =
+        GetExerciseById(mockExerciseDataSource)
 
     @Test
     fun `should find exercise`() {

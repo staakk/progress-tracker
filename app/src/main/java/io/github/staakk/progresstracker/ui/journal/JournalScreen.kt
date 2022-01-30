@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -28,17 +27,12 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.jakewharton.threetenabp.AndroidThreeTen
+import io.github.staakk.common.ui.compose.*
+import io.github.staakk.common.ui.compose.theme.Dimensions
+import io.github.staakk.common.ui.compose.theme.ProgressTrackerTheme
 import io.github.staakk.progresstracker.R
 import io.github.staakk.progresstracker.data.round.Round
-import io.github.staakk.progresstracker.ui.common.Calendar
-import io.github.staakk.progresstracker.ui.common.Formatters
-import io.github.staakk.progresstracker.ui.common.Selection
-import io.github.staakk.progresstracker.ui.common.SimpleIconButton
-import io.github.staakk.progresstracker.ui.theme.Dimensions
-import io.github.staakk.progresstracker.ui.theme.ProgressTrackerTheme
 import io.github.staakk.progresstracker.util.datetime.LocalDateTimeProvider
-import io.github.staakk.progresstracker.util.testTag
 import java.time.LocalDate
 import java.time.YearMonth
 import timber.log.Timber
@@ -329,7 +323,6 @@ fun RoundsList(
 @Preview
 @Composable
 fun PreviewJournalScreen() {
-    AndroidThreeTen.init(LocalContext.current.applicationContext)
     JournalScreen(
         navigateUp = {},
         date = MutableLiveData(),

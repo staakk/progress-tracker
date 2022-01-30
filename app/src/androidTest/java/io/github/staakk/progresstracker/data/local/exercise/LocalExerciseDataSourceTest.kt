@@ -4,8 +4,8 @@ import io.github.staakk.progresstracker.testcase.DatabaseTestCase
 import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.data.exercise.ExerciseDataSource.Error.ExerciseNotFound
 import io.github.staakk.progresstracker.data.exercise.ExerciseDataSource.Error.IdAlreadyExists
-import io.github.staakk.progresstracker.util.functional.Left
-import io.github.staakk.progresstracker.util.functional.Right
+import io.github.staakk.progresstracker.common.functional.Left
+import io.github.staakk.progresstracker.common.functional.Right
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals

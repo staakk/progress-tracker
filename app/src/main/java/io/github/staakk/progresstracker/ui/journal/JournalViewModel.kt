@@ -2,10 +2,10 @@ package io.github.staakk.progresstracker.ui.journal
 
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.staakk.progresstracker.common.android.wrapIdlingResource
 import io.github.staakk.progresstracker.data.round.Round
 import io.github.staakk.progresstracker.domain.round.GetDaysWithRoundNearMonth
 import io.github.staakk.progresstracker.domain.round.GetRoundsByDateTime
-import io.github.staakk.progresstracker.util.wrapIdlingResource
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.YearMonth

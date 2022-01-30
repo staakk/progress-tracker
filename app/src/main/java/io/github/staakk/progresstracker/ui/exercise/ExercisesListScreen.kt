@@ -19,10 +19,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.github.staakk.common.ui.compose.testTag
+import io.github.staakk.common.ui.compose.theme.ProgressTrackerTheme
 import io.github.staakk.progresstracker.R
 import io.github.staakk.progresstracker.data.exercise.Exercise
-import io.github.staakk.progresstracker.ui.theme.ProgressTrackerTheme
-import io.github.staakk.progresstracker.util.testTag
 
 enum class ExercisesListTestTags {
     SEARCH,

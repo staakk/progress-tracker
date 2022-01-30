@@ -2,22 +2,17 @@ package io.github.staakk.progresstracker.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.HiltViewModelFactory
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import io.github.staakk.progresstracker.ui.exercise.EditExercise
 import io.github.staakk.progresstracker.ui.exercise.ExercisesList
-import io.github.staakk.progresstracker.ui.exercise.ExercisesListViewModel
-import io.github.staakk.progresstracker.ui.exercise.editexercise.EditExercise
-import io.github.staakk.progresstracker.ui.exercise.editexercise.EditExerciseViewModel
 import io.github.staakk.progresstracker.ui.home.Home
 import io.github.staakk.progresstracker.ui.journal.Journal
-import io.github.staakk.progresstracker.ui.journal.JournalViewModel
 import io.github.staakk.progresstracker.ui.journal.round.EditRound
-import io.github.staakk.progresstracker.ui.journal.round.EditRoundViewModel
 import io.github.staakk.progresstracker.ui.navigation.Destinations.EXERCISE_ID_KEY
 import io.github.staakk.progresstracker.ui.navigation.Destinations.ROUND_CREATE_DATE_KEY
 import io.github.staakk.progresstracker.ui.navigation.Destinations.ROUND_ID_KEY
