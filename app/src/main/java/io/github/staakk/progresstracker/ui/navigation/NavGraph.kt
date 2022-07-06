@@ -9,12 +9,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import io.github.staakk.progresstracker.ui.exercise.EditExercise
-import io.github.staakk.progresstracker.ui.home.Home
 import io.github.staakk.progresstracker.journal.Journal
 import io.github.staakk.progresstracker.ui.navigation.Destinations.EXERCISE_ID_KEY
 import io.github.staakk.progresstracker.ui.navigation.Destinations.ROUND_CREATE_DATE_KEY
 import io.github.staakk.progresstracker.ui.navigation.Destinations.ROUND_ID_KEY
 import io.github.staakk.progresstracker.ui.exercise.search.ExercisesSearch
+import io.github.staakk.progresstracker.ui.home.Home
 import io.github.staakk.progresstracker.ui.round.EditRound
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -39,7 +39,7 @@ fun NavGraph(startDestination: String = Destinations.HOME_ROUTE) {
 
     NavHost(navController = navController, startDestination = startDestination) {
         composable(Destinations.HOME_ROUTE) {
-            io.github.staakk.progresstracker.ui.home.Home(
+            Home(
                 openExercisesList = actions.openExercisesList,
                 openJournal = actions.openJournal
             )

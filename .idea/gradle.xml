@@ -15,6 +15,7 @@
             <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/common" />
             <option value="$PROJECT_DIR$/common-android" />
+            <option value="$PROJECT_DIR$/common-test" />
             <option value="$PROJECT_DIR$/common-ui-compose" />
             <option value="$PROJECT_DIR$/common-ui-resources" />
             <option value="$PROJECT_DIR$/data" />
@@ -26,7 +27,6 @@
             <option value="$PROJECT_DIR$/ui-round" />
           </set>
         </option>
-        <option name="resolveModulePerSourceSet" value="false" />
       </GradleProjectSettings>
     </option>
   </component>

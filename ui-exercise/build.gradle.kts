@@ -47,6 +47,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            isReturnDefaultValues = true
+        }
+    }
 }
 
 dependencies {
@@ -60,6 +67,7 @@ dependencies {
     implementation(libs.navigation.compose)
     implementation(libs.activity.compose)
     implementation(libs.constraintlayout.compose)
+    testImplementation(libs.bundles.compose.unitTest)
     androidTestImplementation(libs.bundles.compose.androidTest)
 
     implementation(libs.bundles.hilt.libs)
@@ -74,10 +82,14 @@ dependencies {
     implementation(libs.espresso.idlingResources)
     androidTestImplementation(libs.espresso.core)
 
+    testImplementation(libs.robolectric)
+    testImplementation(libs.kotlin.coroutinesTest)
+
     implementation(project(":common"))
     implementation(project(":data"))
     implementation(project(":domain"))
     implementation(project(":common-android"))
     implementation(project(":common-ui-compose"))
     implementation(project(":common-ui-resources"))
+    testImplementation(project(":common-test"))
 }

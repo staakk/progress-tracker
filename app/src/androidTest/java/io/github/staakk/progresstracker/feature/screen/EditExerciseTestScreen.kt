@@ -1,12 +1,8 @@
 package io.github.staakk.progresstracker.feature.screen
 
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTextClearance
-import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.*
 import io.github.staakk.progresstracker.R
 import io.github.staakk.progresstracker.ui.exercise.EditExerciseScreenTags
-import io.github.staakk.progresstracker.util.onNodeWithTag
 
 class EditExerciseTestScreen(
     private val context: ScreenContext,
@@ -14,7 +10,7 @@ class EditExerciseTestScreen(
     private val rule = context.rule
 
     fun setExerciseName(name: String) = apply {
-        rule.onNodeWithTag(EditExerciseScreenTags.NAME).apply {
+        rule.onNodeWithTag(EditExerciseScreenTags.NameField).apply {
             performTextClearance()
             performTextInput(name)
         }

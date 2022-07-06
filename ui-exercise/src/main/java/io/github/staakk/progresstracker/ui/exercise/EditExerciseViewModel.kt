@@ -1,86 +1,67 @@
 package io.github.staakk.progresstracker.ui.exercise
 
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.staakk.progresstracker.common.android.wrapIdlingResource
 import io.github.staakk.progresstracker.data.exercise.Exercise
-import io.github.staakk.progresstracker.domain.exercise.CreateExercise
 import io.github.staakk.progresstracker.domain.exercise.GetExerciseById
-import io.github.staakk.progresstracker.domain.exercise.UpdateExercise
+import io.github.staakk.progresstracker.domain.exercise.SaveExercise
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class EditExerciseViewModel @Inject constructor(
+internal class EditExerciseViewModel @Inject constructor(
     private val getExerciseById: GetExerciseById,
-    private val createExercise: CreateExercise,
-    private val updateExercise: UpdateExercise,
+    private val saveExercise: SaveExercise,
 ) : ViewModel() {
 
-    private val exercise = MutableLiveData<Exercise?>()
+    private val _state = MutableStateFlow<EditExerciseState>(EditExerciseState.Loading)
 
-    private val _exerciseName = MutableLiveData<String>()
+    val state: StateFlow<EditExerciseState> = _state
 
-    val exerciseName: LiveData<String> = _exerciseName
+    fun dispatch(event: EditExerciseEvent) {
+        when (event) {
+            is EditExerciseEvent.ScreenOpened -> onScreenOpened(event.exerciseId)
+            is EditExerciseEvent.ExerciseNameChanged -> onExerciseNameChanged(event.name)
+            EditExerciseEvent.SaveExerciseClicked -> onSaveExercise()
+        }
+    }
 
-    private val _screenState = MutableLiveData<ScreenState>(ScreenState.Editing)
-
-    val screenState: LiveData<ScreenState> = _screenState
-
-    fun loadExercise(id: String?) {
-        _screenState.value = ScreenState.Editing
-        _exerciseName.value = ""
-        exercise.value = null
-
-        if (id == null) return
+    private fun onScreenOpened(exerciseId: String?) {
+        _state.value = EditExerciseState.Loading
         viewModelScope.launch {
-            wrapIdlingResource {
-                getExerciseById(id).fold(
-                    { _screenState.value = ScreenState.Error(ErrorType.UnknownExerciseId) },
-                    {
-                        exercise.value = it
-                        _exerciseName.value = it.name
-                    }
-                )
+            _state.value =
+                if (exerciseId == null) EditExerciseState.Editing(true, Exercise(name = ""))
+                else wrapIdlingResource {
+                    getExerciseById(exerciseId).fold(
+                        { EditExerciseState.Error },
+                        { EditExerciseState.Editing(false, it) }
+                    )
+                }
+        }
+    }
+
+    private fun onExerciseNameChanged(name: String) {
+        _state.value.let {
+            if (it is EditExerciseState.Editing && it.exercise.name != name) {
+                _state.value = it.copy(exercise = it.exercise.copy(name = name))
             }
         }
     }
 
-    fun setExerciseName(name: String) {
-        _exerciseName.value = name
-    }
-
-    fun saveExercise() {
-        _screenState.value = ScreenState.Saving
-        viewModelScope.launch {
-            wrapIdlingResource {
-                val name = _exerciseName.value!!
-                exercise.value
-                    ?.let {
-                        _screenState.value = updateExercise(it, name).fold(
-                            { ScreenState.Error(ErrorType.NameAlreadyExists) },
-                            { ScreenState.Saved }
-                        )
-                    }
-                    ?: run {
-                        _screenState.value = createExercise(name).fold(
-                            { ScreenState.Error(ErrorType.NameAlreadyExists) },
-                            { ScreenState.Saved }
-                        )
-                    }
+    private fun onSaveExercise() {
+        _state.value.let {
+            if (it !is EditExerciseState.Editing) return
+            _state.value = EditExerciseState.Saving
+            viewModelScope.launch {
+                _state.value = wrapIdlingResource {
+                    saveExercise(it.exercise)
+                        .fold({ EditExerciseState.Error }, { EditExerciseState.Saved })
+                }
             }
         }
-    }
-
-    sealed class ScreenState(val isInteractive: Boolean) {
-        object Editing : ScreenState(true)
-        object Saving : ScreenState(false)
-        data class Error(val type: ErrorType) : ScreenState(true)
-        object Saved : ScreenState(false)
-    }
-
-    sealed class ErrorType {
-        object NameAlreadyExists : ErrorType()
-        object UnknownExerciseId : ErrorType()
     }
 }

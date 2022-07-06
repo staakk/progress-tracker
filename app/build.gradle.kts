@@ -101,6 +101,7 @@ dependencies {
     implementation(project(":ui-exercisesearch"))
     implementation(project(":ui-journal"))
     implementation(project(":ui-round"))
+    implementation(project(":ui-home"))
 }
 
 kapt {

@@ -3,137 +3,115 @@ package io.github.staakk.progresstracker.ui.exercise
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import io.github.staakk.common.ui.compose.Header
-import io.github.staakk.common.ui.compose.LoadingIndicator
-import io.github.staakk.common.ui.compose.theme.ProgressTrackerTheme
-import io.github.staakk.progresstracker.ui.exercise.EditExerciseViewModel.ErrorType
-import io.github.staakk.progresstracker.ui.exercise.EditExerciseViewModel.ScreenState
 import io.github.staakk.common.ui.compose.testTag
+import io.github.staakk.progresstracker.data.exercise.Exercise
+import io.github.staakk.progresstracker.ui.exercise.EditExerciseEvent.*
+import io.github.staakk.progresstracker.ui.exercise.EditExerciseScreenTags.NameField
+import io.github.staakk.progresstracker.ui.exercise.EditExerciseScreenTags.ProgressIndicator
 
-enum class EditExerciseScreenTags {
-    NAME
+object EditExerciseScreenTags {
+    const val ProgressIndicator = "ProgressIndicator"
+    const val NameField = "NameField"
 }
 
 @Composable
 fun EditExercise(
     exerciseId: String? = null,
-    navigateUp: () -> Unit
+    navigateUp: () -> Unit,
 ) {
     val viewModel: EditExerciseViewModel = hiltViewModel()
-    viewModel.loadExercise(exerciseId)
+    LaunchedEffect(viewModel) {
+        viewModel.dispatch(ScreenOpened(exerciseId))
+    }
+    val state by viewModel.state.collectAsState()
     EditExerciseScreen(
-        exerciseId == null,
-        viewModel.screenState,
-        viewModel.exerciseName,
-        viewModel::setExerciseName,
-        viewModel::saveExercise,
+        state,
+        viewModel::dispatch,
         navigateUp
     )
 }
 
 @Composable
-fun EditExerciseScreen(
-    isNewExercise: Boolean,
-    screenState: LiveData<ScreenState>,
-    exerciseName: LiveData<String>,
-    onNameChanged: (String) -> Unit,
-    saveExercise: () -> Unit,
-    navigateUp: () -> Unit
+internal fun EditExerciseScreen(
+    state: EditExerciseState,
+    dispatch: (EditExerciseEvent) -> Unit,
+    navigateUp: () -> Unit,
 ) {
-    ProgressTrackerTheme {
-        Surface(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            val state = screenState.observeAsState(ScreenState.Editing).value
-            if (state == ScreenState.Saved) {
-                SideEffect { navigateUp() }
-                return@Surface
-            }
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxSize()
-            ) {
+    when (state) {
+        is EditExerciseState.Saved,
+        is EditExerciseState.Error,
+        -> SideEffect { navigateUp() }
+        is EditExerciseState.Editing -> Editing(
+            state,
+            dispatch,
+            navigateUp,
+        )
+        EditExerciseState.Loading,
+        is EditExerciseState.Saving,
+        -> CircularProgressIndicator(
+            modifier = Modifier.testTag(ProgressIndicator)
+        )
+    }
+}
 
-                Header(text = stringResource(getHeaderText(isNewExercise)))
+@Composable
+private fun Editing(
+    state: EditExerciseState.Editing,
+    dispatch: (EditExerciseEvent) -> Unit,
+    navigateUp: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxSize()
+    ) {
+        Header(text = stringResource(state.headerText()))
 
-                val name = exerciseName.observeAsState(initial = "")
-                TextField(
-                    modifier = Modifier.fillMaxWidth()
-                        .testTag(EditExerciseScreenTags.NAME),
-                    value = name.value,
-                    onValueChange = { onNameChanged(it) },
-                    label = { Text(stringResource(R.string.edit_exercise_label_name)) },
-                    enabled = state.isInteractive
-                )
+        val name = state.exercise.name
+        TextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag(NameField),
+            value = name,
+            onValueChange = { dispatch(ExerciseNameChanged(it)) },
+            label = { Text(stringResource(R.string.edit_exercise_label_name)) },
+            enabled = true
+        )
 
-                if (state is ScreenState.Error) {
-                    Text(
-                        text = stringResource(getErrorText(state.type)),
-                        modifier = Modifier.padding(top = 16.dp),
-                        color = MaterialTheme.colors.error,
-                    )
-                }
+        Spacer(Modifier.weight(2f))
 
-                Spacer(modifier = Modifier.weight(2f))
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            OutlinedButton(
+                onClick = navigateUp,
+                modifier = Modifier.weight(1f)
+            ) { Text(stringResource(id = R.string.cancel)) }
 
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-
-                    OutlinedButton(
-                        onClick = navigateUp,
-                        modifier = Modifier.weight(1f),
-                        enabled = state.isInteractive
-                    ) { Text(stringResource(id = R.string.cancel)) }
-
-                    Button(
-                        onClick = { saveExercise() },
-                        modifier = Modifier.weight(1f),
-                        enabled = state.isInteractive
-                    ) {
-                        if (state.isInteractive) {
-                            Text(
-                                text = stringResource(id = R.string.done),
-                                style = MaterialTheme.typography.button
-                            )
-                        } else {
-                            LoadingIndicator()
-                        }
-                    }
-                }
-            }
+            Button(
+                onClick = { dispatch(SaveExerciseClicked) },
+                modifier = Modifier.weight(1f)
+            ) { Text(stringResource(id = R.string.done)) }
         }
     }
 }
 
 @Preview("Editing")
 @Composable
-fun PreviewEditExerciseScreen() {
+private fun PreviewEditExerciseScreen() {
     EditExerciseScreen(
-        false,
-        MutableLiveData(ScreenState.Editing),
-        MutableLiveData("DeadLift"),
-        {},
-        {},
-        {},
+        state = EditExerciseState.Editing(false, Exercise(name = "Dead lift")),
+        dispatch = {},
+        navigateUp = {}
     )
 }
 
-private fun getHeaderText(isNewExercise: Boolean) = if (isNewExercise) {
-    R.string.edit_exercise_header_create
-} else {
-    R.string.edit_exercise_header_edit
-}
-
-private fun getErrorText(type: ErrorType) = when (type) {
-    ErrorType.NameAlreadyExists -> R.string.edit_exercise_error_name_already_exists
-    ErrorType.UnknownExerciseId -> R.string.edit_exercise_error_unknown_exercise
-}
+private fun EditExerciseState.Editing.headerText() =
+    if (isNewExercise) R.string.edit_exercise_header_create
+    else R.string.edit_exercise_header_edit
 
