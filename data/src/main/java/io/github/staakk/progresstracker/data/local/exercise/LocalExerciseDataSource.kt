@@ -9,6 +9,9 @@ import io.github.staakk.progresstracker.common.functional.Either
 import io.github.staakk.progresstracker.common.functional.left
 import io.github.staakk.progresstracker.common.functional.right
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
@@ -51,9 +54,17 @@ class LocalExerciseDataSource(
             exerciseDao.getById(id)?.right() ?: ExerciseNotFound.left()
         }
 
-    override suspend fun findByName(name: String): List<Exercise> = withContext(dispatcher) {
-        exerciseDao.findByName("%$name%")
-    }
+    override suspend fun findByNameContains(name: String): Flow<List<Exercise>> =
+        exerciseDao
+            .findByName("%$name%")
+            .flowOn(dispatcher)
+
+    override suspend fun findByName(name: String): List<Exercise> =
+        withContext(dispatcher) {
+            exerciseDao
+                .findByName(name)
+                .first()
+        }
 
     override suspend fun getAll(): List<Exercise> = withContext(dispatcher) {
         exerciseDao.getAll()

@@ -22,7 +22,7 @@ import java.time.format.DateTimeFormatter
 object Destinations {
     const val EXERCISES_ROUTE = "exercises"
     const val EXERCISE_ROUTE = "exercise"
-    const val EXERCISE_ID_KEY = "exerciseId"
+    const val EXERCISE_ID_KEY = "exercise_id"
     const val NEW_EXERCISE_ROUTE = "new_exercise"
     const val JOURNAL_ROUTE = "journal"
     const val ROUND_ROUTE = "round"

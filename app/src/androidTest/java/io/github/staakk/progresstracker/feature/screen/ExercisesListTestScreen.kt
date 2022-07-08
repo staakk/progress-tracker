@@ -16,14 +16,14 @@ class ExercisesListTestScreen(
         names.forEach {
             rule.onNodeWithText(it).assertIsDisplayed()
         }
-        rule.onAllNodesWithTag(ExercisesSearchTestTags.LIST_ITEM)
+        rule.onAllNodesWithTag(ExercisesSearchTestTags.ListItem)
             .fetchSemanticsNodes(errorMessageOnFail = "Cannot fetch list items.")
             .size
             .let { assertEquals(names.size, it) }
     }
 
     fun createNewExercise(): EditExerciseTestScreen {
-        rule.onNodeWithTag(ExercisesSearchTestTags.FAB).performClick()
+        rule.onNodeWithTag(ExercisesSearchTestTags.Fab).performClick()
         return EditExerciseTestScreen(context)
     }
 
@@ -33,12 +33,12 @@ class ExercisesListTestScreen(
     }
 
     fun search(value: String) = apply {
-        rule.onNodeWithTag(ExercisesSearchTestTags.SEARCH)
+        rule.onNodeWithTag(ExercisesSearchTestTags.Search)
             .performTextInput(value)
     }
 
     fun clearSearch() = apply {
-        rule.onNodeWithTag(ExercisesSearchTestTags.SEARCH)
+        rule.onNodeWithTag(ExercisesSearchTestTags.Search)
             .performTextClearance()
     }
 }

@@ -2,6 +2,7 @@ package io.github.staakk.progresstracker.data.local.exercise
 
 import androidx.room.*
 import io.github.staakk.progresstracker.data.exercise.Exercise
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ExerciseDao {
@@ -22,5 +23,5 @@ interface ExerciseDao {
     fun getById(id: String): Exercise?
 
     @Query("SELECT * FROM exercise WHERE name LIKE :name")
-    fun findByName(name: String): List<Exercise>
+    fun findByName(name: String): Flow<List<Exercise>>
 }

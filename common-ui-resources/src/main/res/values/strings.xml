@@ -6,7 +6,7 @@
     <string name="cancel">Cancel</string>
     <string name="go_back">Go back</string>
 
-    <string name="exercises_list_search_label">Search exercises</string>
+    <string name="exercises_list_search_label">Exercises</string>
 
     <string name="edit_exercise_header_edit">Edit exercise</string>
     <string name="edit_exercise_header_create">Create new exercise</string>
@@ -31,7 +31,7 @@
     <string name="journal_content_desc_go_back">Go back to home screen</string>
     <string name="journal_content_desc_prev_day">Show previous day</string>
     <string name="journal_content_desc_next_day">Show next day</string>
-    <string name="journal_content_desc_toggle_callendar">Toggle calendar</string>
+    <string name="journal_content_desc_toggle_calendar">Toggle calendar</string>
     <string name="exercises_list_content_desc_add_new_exercise">Add new exercise</string>
     <string name="edit_round_content_desc_fab_add_set">Create new set</string>
     <string name="edit_round_content_desc_go_back">Go back to journal screen</string>

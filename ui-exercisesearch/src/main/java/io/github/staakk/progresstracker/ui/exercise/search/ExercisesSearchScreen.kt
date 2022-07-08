@@ -4,29 +4,37 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.github.staakk.common.ui.compose.SearchField
 import io.github.staakk.common.ui.compose.testTag
 import io.github.staakk.common.ui.compose.theme.ProgressTrackerTheme
 import io.github.staakk.progresstracker.data.exercise.Exercise
 
 enum class ExercisesSearchTestTags {
-    SEARCH,
-    LIST_ITEM,
-    FAB
+    Search,
+    ListItem,
+    Fab
 }
 
 @Composable
@@ -35,9 +43,9 @@ fun ExercisesSearch(
     newExerciseAction: () -> Unit,
 ) {
     val viewModel: ExercisesSearchViewModel = hiltViewModel()
-    viewModel.setSearchValue(viewModel.getSearchValue())
+    val exercises: List<Exercise> by viewModel.exercises.collectAsState()
     ExerciseSearchScreen(
-        exercises = viewModel.exercises,
+        exercises = exercises,
         onExerciseClick = editExerciseAction,
         onNewExerciseClick = newExerciseAction,
         onSearchValueChanged = viewModel::setSearchValue,
@@ -47,60 +55,43 @@ fun ExercisesSearch(
 
 @Composable
 private fun ExerciseSearchScreen(
-    exercises: LiveData<List<Exercise>>,
+    exercises: List<Exercise>,
     onExerciseClick: (String) -> Unit,
     onNewExerciseClick: () -> Unit,
     onSearchValueChanged: (String) -> Unit,
     initialSearchValue: String,
 ) {
-    ProgressTrackerTheme {
-        Surface(Modifier.fillMaxSize()) {
-            Column {
-                SearchView(initialSearchValue, onSearchValueChanged)
-                Box(modifier = Modifier.fillMaxSize()) {
-                    val items = exercises.observeAsState(listOf())
-                    LazyColumn {
-                        items(items = items.value, itemContent = {
-                            ExerciseItem(
-                                onItemClick = onExerciseClick,
-                                exercise = it
-                            )
-                        })
-                    }
-                    FloatingActionButton(
-                        onClick = onNewExerciseClick,
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(16.dp)
-                            .testTag(ExercisesSearchTestTags.FAB),
-                        backgroundColor = MaterialTheme.colors.primary
-                    ) {
-                        Icon(
-                            Icons.Filled.Add,
-                            tint = MaterialTheme.colors.onPrimary,
-                            contentDescription = stringResource(id = R.string.exercises_list_content_desc_add_new_exercise),
-                        )
-                    }
-                }
+    Column {
+        SearchField(
+            modifier = Modifier.testTag(ExercisesSearchTestTags.Search),
+            initialValue = initialSearchValue,
+            onValueChanged = onSearchValueChanged
+        )
+        Box(modifier = Modifier.fillMaxSize()) {
+            LazyColumn {
+                items(items = exercises, itemContent = {
+                    ExerciseItem(
+                        onItemClick = onExerciseClick,
+                        exercise = it
+                    )
+                })
+            }
+            FloatingActionButton(
+                onClick = onNewExerciseClick,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)
+                    .testTag(ExercisesSearchTestTags.Fab),
+                backgroundColor = MaterialTheme.colors.primary
+            ) {
+                Icon(
+                    Icons.Filled.Add,
+                    tint = MaterialTheme.colors.onPrimary,
+                    contentDescription = stringResource(id = R.string.exercises_list_content_desc_add_new_exercise),
+                )
             }
         }
     }
-}
-
-@Preview
-@Composable
-private fun PreviewExerciseListScreen() {
-    val exercises = listOf(
-        Exercise(name = "Squat"),
-        Exercise(name = "Dead Lift")
-    )
-    ExerciseSearchScreen(
-        exercises = MutableLiveData(exercises),
-        {},
-        {},
-        {},
-        "Search",
-    )
 }
 
 @Composable
@@ -112,7 +103,7 @@ private fun ExerciseItem(
         Modifier
             .fillMaxWidth()
             .clickable(onClick = { onItemClick(exercise.id) })
-            .testTag(ExercisesSearchTestTags.LIST_ITEM)
+            .testTag(ExercisesSearchTestTags.ListItem)
     ) {
         Text(
             text = exercise.name,
@@ -122,19 +113,42 @@ private fun ExerciseItem(
     }
 }
 
+@Preview
 @Composable
-private fun SearchView(initialSearchValue: String, onValueChanged: (String) -> Unit) {
-    var text by remember { mutableStateOf(TextFieldValue(initialSearchValue)) }
-    TextField(
-        modifier = Modifier
-            .fillMaxWidth()
-            .testTag(ExercisesSearchTestTags.SEARCH),
-        value = text,
-        leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
-        onValueChange = {
-            text = it
-            onValueChanged(it.text)
-        },
-        placeholder = { Text(stringResource(id = R.string.exercises_list_search_label)) }
+private fun PreviewExerciseListScreenWithInput() {
+    val exercises = listOf(
+        Exercise(name = "Squat"),
+        Exercise(name = "Dead Lift")
     )
+    ProgressTrackerTheme {
+        Surface {
+            ExerciseSearchScreen(
+                exercises = exercises,
+                {},
+                {},
+                {},
+                "Search",
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewExerciseListScreenWithoutInput() {
+    val exercises = listOf(
+        Exercise(name = "Squat"),
+        Exercise(name = "Dead Lift")
+    )
+    ProgressTrackerTheme {
+        Surface {
+            ExerciseSearchScreen(
+                exercises = exercises,
+                {},
+                {},
+                {},
+                "",
+            )
+        }
+    }
 }

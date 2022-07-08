@@ -243,7 +243,7 @@ private fun Header(
             onClick = toggleCalendar,
             imageVector = Icons.Filled.CalendarToday,
             tint = MaterialTheme.colors.primary,
-            contentDescription = stringResource(id = R.string.journal_content_desc_toggle_callendar)
+            contentDescription = stringResource(id = R.string.journal_content_desc_toggle_calendar)
         )
         SimpleIconButton(
             modifier = Modifier

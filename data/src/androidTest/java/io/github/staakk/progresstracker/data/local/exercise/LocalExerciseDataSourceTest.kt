@@ -106,7 +106,7 @@ class LocalExerciseDataSourceTest : DatabaseTestCase() {
     @Test
     fun shouldFindExerciseByNameSubstring() = runBlocking {
         val exercise = exercises[0]
-        val result = tested.findByName("est 1")
+        val result = tested.findByNameContains("est 1")
 
         assert(result.size == 1)
         assertEquals(result[0], exercise)
@@ -114,7 +114,7 @@ class LocalExerciseDataSourceTest : DatabaseTestCase() {
 
     @Test
     fun shouldFindMultipleExercisesMatching() = runBlocking {
-        val result = tested.findByName("est")
+        val result = tested.findByNameContains("est")
 
         assert(result.size == exercises.size)
         assert(result.containsAll(exercises))
