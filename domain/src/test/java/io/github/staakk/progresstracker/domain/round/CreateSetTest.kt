@@ -1,13 +1,11 @@
 package io.github.staakk.progresstracker.domain.round
 
 import io.github.staakk.progresstracker.data.exercise.Exercise
-import io.github.staakk.progresstracker.data.round.Round
-import io.github.staakk.progresstracker.data.round.RoundDataSource
-import io.github.staakk.progresstracker.data.round.RoundSet
+import io.github.staakk.progresstracker.data.training.Round
+import io.github.staakk.progresstracker.data.training.RoundSet
 import io.github.staakk.progresstracker.common.functional.left
 import io.github.staakk.progresstracker.common.functional.right
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
@@ -25,10 +23,10 @@ class CreateSetTest {
         createdAt = LocalDateTime.now(),
     )
 
-    private val set = RoundSet(position = 0, reps = 1, weight = 2)
+    private val set = RoundSet(ordinal = 0, reps = 1, weight = 2)
 
     private val setMatcher = { it: RoundSet ->
-        it.position == set.position &&
+        it.ordinal == set.ordinal &&
                 it.reps == set.reps &&
                 it.weight == set.weight
     }

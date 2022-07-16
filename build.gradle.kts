@@ -9,6 +9,7 @@ buildscript {
         classpath(libs.android.pluginGradle)
         classpath(libs.kotlin.pluginGradle)
         classpath(libs.hilt.pluginGradle)
+        classpath(libs.realm.pluginGradle)
     }
 }
 

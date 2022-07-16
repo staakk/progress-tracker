@@ -11,6 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import io.github.staakk.common.ui.compose.Header
 import io.github.staakk.common.ui.compose.testTag
+import io.github.staakk.progresstracker.data.Id
 import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.ui.exercise.EditExerciseEvent.*
 import io.github.staakk.progresstracker.ui.exercise.EditExerciseScreenTags.NameField
@@ -23,7 +24,7 @@ object EditExerciseScreenTags {
 
 @Composable
 fun EditExercise(
-    exerciseId: String? = null,
+    exerciseId: Id? = null,
     navigateUp: () -> Unit,
 ) {
     val viewModel: EditExerciseViewModel = hiltViewModel()

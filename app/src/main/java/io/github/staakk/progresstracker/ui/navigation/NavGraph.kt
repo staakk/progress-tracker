@@ -8,25 +8,27 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import io.github.staakk.progresstracker.data.Id
 import io.github.staakk.progresstracker.ui.exercise.EditExercise
-import io.github.staakk.progresstracker.journal.Journal
 import io.github.staakk.progresstracker.ui.navigation.Destinations.EXERCISE_ID_KEY
-import io.github.staakk.progresstracker.ui.navigation.Destinations.ROUND_CREATE_DATE_KEY
 import io.github.staakk.progresstracker.ui.navigation.Destinations.ROUND_ID_KEY
 import io.github.staakk.progresstracker.ui.exercise.search.ExercisesSearch
 import io.github.staakk.progresstracker.ui.home.Home
+import io.github.staakk.progresstracker.ui.navigation.Destinations.TRAINING_ID_KEY
 import io.github.staakk.progresstracker.ui.round.EditRound
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import io.github.staakk.ui.training.TrainingScreen
+import io.github.staakk.ui.trainings.Trainings
 
 object Destinations {
     const val EXERCISES_ROUTE = "exercises"
     const val EXERCISE_ROUTE = "exercise"
     const val EXERCISE_ID_KEY = "exercise_id"
     const val NEW_EXERCISE_ROUTE = "new_exercise"
-    const val JOURNAL_ROUTE = "journal"
+    const val TRAININGS_ROUTE = "trainings"
+    const val TRAINING_ROUTE = "training"
+    const val TRAINING_ID_KEY = "training_id"
     const val ROUND_ROUTE = "round"
-    const val ROUND_ID_KEY = "roundId"
+    const val ROUND_ID_KEY = "round_id"
     const val NEW_ROUND_ROUTE = "new_round"
     const val ROUND_CREATE_DATE_KEY = "date"
     const val HOME_ROUTE = "home"
@@ -41,7 +43,7 @@ fun NavGraph(startDestination: String = Destinations.HOME_ROUTE) {
         composable(Destinations.HOME_ROUTE) {
             Home(
                 openExercisesList = actions.openExercisesList,
-                openJournal = actions.openJournal
+                openTrainings = actions.openTrainings
             )
         }
 
@@ -52,11 +54,20 @@ fun NavGraph(startDestination: String = Destinations.HOME_ROUTE) {
             )
         }
 
-        composable(Destinations.JOURNAL_ROUTE) {
-            Journal(
-                editSet = actions.editSet,
-                newSet = actions.newSet,
-                navigateUp = actions.upPress
+        composable(Destinations.TRAININGS_ROUTE) {
+            Trainings(
+                actions.editTraining,
+            )
+        }
+
+        composable(
+            "${Destinations.TRAINING_ROUTE}/{$TRAINING_ID_KEY}",
+            arguments = listOf(navArgument(TRAINING_ID_KEY) { type = NavType.StringType })
+        ) {
+            val args = requireNotNull(it.arguments)
+            TrainingScreen(
+                id = Id.fromString(args.getString(TRAINING_ID_KEY))!!,
+                editRound = actions.editRound
             )
         }
 
@@ -66,7 +77,7 @@ fun NavGraph(startDestination: String = Destinations.HOME_ROUTE) {
         ) {
             val args = requireNotNull(it.arguments)
             EditExercise(
-                exerciseId = args.getString(EXERCISE_ID_KEY),
+                exerciseId = Id.fromString(args.getString(EXERCISE_ID_KEY)),
                 navigateUp = actions.upPress
             )
         }
@@ -76,27 +87,13 @@ fun NavGraph(startDestination: String = Destinations.HOME_ROUTE) {
         }
 
         composable(
-            "${Destinations.NEW_ROUND_ROUTE}/{$ROUND_CREATE_DATE_KEY}",
-            arguments = listOf(navArgument(ROUND_CREATE_DATE_KEY) { type = NavType.StringType })
-        ) {
-            val args = requireNotNull(it.arguments)
-            val date =
-                LocalDate.from(DateTimeFormatter.ISO_DATE.parse(args.getString(ROUND_CREATE_DATE_KEY)))
-            EditRound(
-                navigateUp = actions.upPress,
-                date = date
-            )
-        }
-
-        composable(
             "${Destinations.ROUND_ROUTE}/{$ROUND_ID_KEY}",
             arguments = listOf(navArgument(ROUND_ID_KEY) { type = NavType.StringType })
         ) {
             val args = requireNotNull(it.arguments)
-            val roundId = args.getString(ROUND_ID_KEY)
             EditRound(
                 navigateUp = actions.upPress,
-                roundId = roundId
+                roundId = Id.fromString(args.getString(ROUND_ID_KEY))!!
             )
         }
     }
@@ -106,20 +103,20 @@ class Actions(navController: NavHostController) {
     val openExercisesList: () -> Unit = {
         navController.navigate(Destinations.EXERCISES_ROUTE)
     }
-    val editExercise: (String) -> Unit = { exerciseId ->
+    val editExercise: (Id) -> Unit = { exerciseId ->
         navController.navigate("${Destinations.EXERCISE_ROUTE}/${exerciseId}")
     }
     val newExercise: () -> Unit = {
         navController.navigate(Destinations.NEW_EXERCISE_ROUTE)
     }
-    val openJournal: () -> Unit = {
-        navController.navigate(Destinations.JOURNAL_ROUTE)
+    val openTrainings: () -> Unit = {
+        navController.navigate(Destinations.TRAININGS_ROUTE)
     }
-    val editSet: (String) -> Unit = { setId ->
+    val editTraining: (Id) -> Unit = { trainingId ->
+        navController.navigate("${Destinations.TRAINING_ROUTE}/${trainingId}")
+    }
+    val editRound: (Id) -> Unit = { setId ->
         navController.navigate("${Destinations.ROUND_ROUTE}/${setId}")
-    }
-    val newSet: (LocalDate) -> Unit = { date ->
-        navController.navigate("${Destinations.NEW_ROUND_ROUTE}/${date.format(DateTimeFormatter.ISO_DATE)}")
     }
     val upPress: () -> Unit = {
         navController.navigateUp()

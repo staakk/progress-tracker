@@ -14,17 +14,10 @@ class SaveExercise @Inject constructor(
     override suspend operator fun invoke(exercise: Exercise): Either<Error, Exercise> {
         return when {
             exercise.nameExists() -> Error.NameAlreadyExists.left()
-            exercise.exists() -> exerciseDataSource
-                .update(exercise)
-                .mapLeft { Error.ExerciseNotFound }
             else -> exerciseDataSource
-                .create(exercise)
-                .mapLeft { Error.ExerciseAlreadyExists }
+                .save(exercise)
+                .mapLeft { Error.ExerciseNotFound }
         }
-    }
-
-    private suspend fun Exercise.exists(): Boolean {
-        return exerciseDataSource.getById(id) is Right
     }
 
     private suspend fun Exercise.nameExists(): Boolean {

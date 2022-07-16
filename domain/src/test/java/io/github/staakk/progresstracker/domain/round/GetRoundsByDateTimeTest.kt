@@ -1,9 +1,8 @@
 package io.github.staakk.progresstracker.domain.round
 
 import io.github.staakk.progresstracker.data.exercise.Exercise
-import io.github.staakk.progresstracker.data.round.Round
-import io.github.staakk.progresstracker.data.round.RoundDataSource
-import io.github.staakk.progresstracker.data.round.RoundSet
+import io.github.staakk.progresstracker.data.training.Round
+import io.github.staakk.progresstracker.data.training.RoundSet
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -35,8 +34,8 @@ class GetRoundsByDateTimeTest {
                 exercise = Exercise(name = "test"),
                 createdAt = LocalDateTime.now().plusMinutes(30),
                 roundSets = listOf(
-                    RoundSet(position = 1, reps = 1, weight = 2),
-                    RoundSet(position = 0, reps = 1, weight = 2),
+                    RoundSet(ordinal = 1, reps = 1, weight = 2),
+                    RoundSet(ordinal = 0, reps = 1, weight = 2),
                 )
             )
         )
@@ -46,7 +45,7 @@ class GetRoundsByDateTimeTest {
             val result = tested(LocalDateTime.now(), LocalDateTime.now().plusHours(1))
 
             assertEquals(
-                rounds.first().roundSets.sortedBy { it.position },
+                rounds.first().roundSets.sortedBy { it.ordinal },
                 result.first().roundSets
             )
         }

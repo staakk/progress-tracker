@@ -1,13 +1,11 @@
 package io.github.staakk.progresstracker.domain.round
 
 import io.github.staakk.progresstracker.data.exercise.Exercise
-import io.github.staakk.progresstracker.data.round.Round
-import io.github.staakk.progresstracker.data.round.RoundDataSource
-import io.github.staakk.progresstracker.data.round.RoundSet
+import io.github.staakk.progresstracker.data.training.Round
+import io.github.staakk.progresstracker.data.training.RoundSet
 import io.github.staakk.progresstracker.common.functional.left
 import io.github.staakk.progresstracker.common.functional.right
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
@@ -51,9 +49,9 @@ class GetRoundByIdTest {
     fun `should have sets sorted ascending by position`() {
         val round = round.copy(
             roundSets = listOf(
-                RoundSet(position = 3, reps = 1, weight = 2),
-                RoundSet(position = 2, reps = 1, weight = 2),
-                RoundSet(position = 5, reps = 1, weight = 2),
+                RoundSet(ordinal = 3, reps = 1, weight = 2),
+                RoundSet(ordinal = 2, reps = 1, weight = 2),
+                RoundSet(ordinal = 5, reps = 1, weight = 2),
             )
         )
         coEvery { mockRoundDataSource.getById(eq(round.id)) } returns round.right()
@@ -61,7 +59,7 @@ class GetRoundByIdTest {
         runBlocking {
             val result = tested(round.id)
 
-            assertEquals(round.roundSets.sortedBy { it.position }, result.right.roundSets)
+            assertEquals(round.roundSets.sortedBy { it.ordinal }, result.right.roundSets)
         }
     }
 

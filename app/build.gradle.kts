@@ -68,9 +68,7 @@ dependencies {
 
     implementation(libs.bundles.lifecycle.libs)
 
-    implementation(libs.bundles.room.libs)
-    kapt(libs.bundles.room.kapt)
-    testImplementation(libs.bundles.room.test)
+    implementation(libs.realm.lib)
 
     implementation(libs.bundles.compose.libs)
     implementation(libs.navigation.compose)
@@ -99,9 +97,10 @@ dependencies {
 
     implementation(project(":ui-exercise"))
     implementation(project(":ui-exercisesearch"))
-    implementation(project(":ui-journal"))
     implementation(project(":ui-round"))
     implementation(project(":ui-home"))
+    implementation(project(":ui-training"))
+    implementation(project(":ui-trainings"))
 }
 
 kapt {

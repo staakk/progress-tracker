@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.staakk.progresstracker.common.android.wrapIdlingResource
+import io.github.staakk.progresstracker.data.Id
 import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.domain.exercise.GetExerciseById
 import io.github.staakk.progresstracker.domain.exercise.SaveExercise
@@ -30,7 +31,7 @@ internal class EditExerciseViewModel @Inject constructor(
         }
     }
 
-    private fun onScreenOpened(exerciseId: String?) {
+    private fun onScreenOpened(exerciseId: Id?) {
         _state.value = EditExerciseState.Loading
         viewModelScope.launch {
             _state.value =

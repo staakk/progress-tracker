@@ -15,11 +15,11 @@ import io.github.staakk.common.ui.compose.theme.ProgressTrackerTheme
 @Composable
 fun Home(
     openExercisesList: () -> Unit,
-    openJournal: () -> Unit,
+    openTrainings: () -> Unit,
 ) {
     HomeScreen(
         openExercisesList = openExercisesList,
-        openJournal = openJournal,
+        openJournal = openTrainings,
     )
 }
 

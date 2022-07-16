@@ -29,6 +29,7 @@ import androidx.lifecycle.MutableLiveData
 import io.github.staakk.common.ui.compose.SearchField
 import io.github.staakk.common.ui.compose.testTag
 import io.github.staakk.common.ui.compose.theme.ProgressTrackerTheme
+import io.github.staakk.progresstracker.data.Id
 import io.github.staakk.progresstracker.data.exercise.Exercise
 
 enum class ExercisesSearchTestTags {
@@ -39,7 +40,7 @@ enum class ExercisesSearchTestTags {
 
 @Composable
 fun ExercisesSearch(
-    editExerciseAction: (String) -> Unit,
+    editExerciseAction: (Id) -> Unit,
     newExerciseAction: () -> Unit,
 ) {
     val viewModel: ExercisesSearchViewModel = hiltViewModel()
@@ -56,7 +57,7 @@ fun ExercisesSearch(
 @Composable
 private fun ExerciseSearchScreen(
     exercises: List<Exercise>,
-    onExerciseClick: (String) -> Unit,
+    onExerciseClick: (Id) -> Unit,
     onNewExerciseClick: () -> Unit,
     onSearchValueChanged: (String) -> Unit,
     initialSearchValue: String,
@@ -97,7 +98,7 @@ private fun ExerciseSearchScreen(
 @Composable
 private fun ExerciseItem(
     exercise: Exercise,
-    onItemClick: (String) -> Unit,
+    onItemClick: (Id) -> Unit,
 ) {
     Row(
         Modifier

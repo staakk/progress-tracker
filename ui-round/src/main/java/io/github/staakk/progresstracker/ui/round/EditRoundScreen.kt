@@ -32,9 +32,10 @@ import io.github.staakk.common.ui.compose.*
 import io.github.staakk.common.ui.compose.effect.OnceEffect
 import io.github.staakk.common.ui.compose.theme.Dimensions
 import io.github.staakk.common.ui.compose.theme.ProgressTrackerTheme
+import io.github.staakk.progresstracker.data.Id
 import io.github.staakk.progresstracker.data.exercise.Exercise
-import io.github.staakk.progresstracker.data.round.Round
-import io.github.staakk.progresstracker.data.round.RoundSet
+import io.github.staakk.progresstracker.data.training.Round
+import io.github.staakk.progresstracker.data.training.RoundSet
 import java.time.LocalDate
 
 enum class EditRoundTags {
@@ -52,19 +53,12 @@ enum class EditRoundTags {
 @Composable
 fun EditRound(
     navigateUp: () -> Unit,
-    roundId: String? = null,
-    date: LocalDate? = null,
+    roundId: Id
 ) {
     val viewModel: EditRoundViewModel = hiltViewModel()
-    val roundDeleted = viewModel.roundDeleted.observeAsState(false)
-    if (roundDeleted.value) {
-        SideEffect { navigateUp() }
-        return
-    }
 
-    OnceEffect(roundId, date) {
-        date?.let(viewModel::createNewRound)
-        roundId?.let(viewModel::loadRound)
+    LaunchedEffect(viewModel) {
+        viewModel.loadRound(roundId)
     }
 
     EditRoundScreen(
@@ -74,7 +68,6 @@ fun EditRound(
         onExerciseSelected = viewModel::updateExercise,
         onSetUpdated = viewModel::updateSet,
         createSet = viewModel::createNewSet,
-        deleteRound = viewModel::deleteCurrentRound,
         deleteSet = viewModel::deleteSet
     )
 }
@@ -87,7 +80,6 @@ fun EditRoundScreen(
     onExerciseSelected: (Exercise) -> Unit,
     onSetUpdated: (RoundSet) -> Unit,
     createSet: () -> Unit,
-    deleteRound: () -> Unit,
     deleteSet: (RoundSet) -> Unit,
 ) {
     ProgressTrackerTheme {
@@ -128,15 +120,6 @@ fun EditRoundScreen(
                                 tint = MaterialTheme.colors.onPrimary,
                                 contentDescription = stringResource(id = R.string.edit_round_content_desc_go_back)
                             )
-                            SimpleIconButton(
-                                modifier = Modifier
-                                    .testTag(EditRoundTags.DELETE_ROUND)
-                                    .constrainAs(deleteRef) { end.linkTo(parent.end) },
-                                onClick = deleteRound,
-                                imageVector = Icons.Filled.DeleteForever,
-                                tint = MaterialTheme.colors.onPrimary,
-                                contentDescription = stringResource(id = R.string.edit_round_content_desc_delete_round)
-                            )
                         }
                     }
                 }
@@ -165,11 +148,7 @@ private fun BodyContent(
     val roundState = round.observeAsState()
     val sets = roundState.value?.roundSets ?: emptyList()
     Column(modifier = Modifier.padding(16.dp)) {
-        Header(text = roundState.value
-            ?.createdAt
-            ?.format(Formatters.DAY_MONTH_SHORT_YEAR_FORMATTER)
-            ?: ""
-        )
+        Header(text = "empty header")
         ExerciseSelector(
             round = round,
             exercises = exercises,
@@ -276,7 +255,7 @@ fun ExerciseSelector(
                     expanded.value = it.isFocused
                 }
                 .fillMaxWidth(),
-            value = if (items.isEmpty()) "" else items[selectedIndex.value].name,
+            value = if (items.isEmpty() || selectedIndex.value == -1) "" else items[selectedIndex.value].name,
             trailingIcon = {
                 Icon(Icons.Filled.ArrowDropDown,
                     stringResource(id = R.string.edit_round_content_desc_expand_exercises_drop_down))
@@ -327,6 +306,5 @@ fun PreviewEditSetScreen() {
         {},
         {},
         {},
-        {}
     )
 }

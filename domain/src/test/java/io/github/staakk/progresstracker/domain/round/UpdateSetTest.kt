@@ -1,13 +1,11 @@
 package io.github.staakk.progresstracker.domain.round
 
 import io.github.staakk.progresstracker.data.exercise.Exercise
-import io.github.staakk.progresstracker.data.round.Round
-import io.github.staakk.progresstracker.data.round.RoundDataSource
-import io.github.staakk.progresstracker.data.round.RoundSet
+import io.github.staakk.progresstracker.data.training.Round
+import io.github.staakk.progresstracker.data.training.RoundSet
 import io.github.staakk.progresstracker.common.functional.left
 import io.github.staakk.progresstracker.common.functional.right
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
@@ -20,9 +18,9 @@ class UpdateSetTest {
 
     private val tested = UpdateSet(mockRoundDataSource)
 
-    private val set = RoundSet(position = 0, reps = 1, weight = 2)
+    private val set = RoundSet(ordinal = 0, reps = 1, weight = 2)
 
-    private val updatedSet = set.copy(position = 1, reps = 2, weight = 3)
+    private val updatedSet = set.copy(ordinal = 1, reps = 2, weight = 3)
 
     private val round = Round(
         exercise = Exercise(name = "test"),
@@ -37,7 +35,7 @@ class UpdateSetTest {
         coEvery { mockRoundDataSource.updateSet(updatedSet, round.id) } returns updatedSet.right()
 
         runBlocking {
-            val result = tested(round, set, updatedSet.position, updatedSet.reps, updatedSet.weight)
+            val result = tested(round, set, updatedSet.ordinal, updatedSet.reps, updatedSet.weight)
             val (resultRound, resultSet) = result.right
             assertEquals(updatedRound, resultRound)
             assertEquals(updatedSet, resultSet)
@@ -52,7 +50,7 @@ class UpdateSetTest {
         } returns RoundDataSource.Error.UpdateSetError.RoundNotFound.left()
 
         runBlocking {
-            val result = tested(round, set, updatedSet.position, updatedSet.reps, updatedSet.weight)
+            val result = tested(round, set, updatedSet.ordinal, updatedSet.reps, updatedSet.weight)
 
             assertEquals(UpdateSet.Error.RoundNotFound, result.left)
         }
@@ -66,7 +64,7 @@ class UpdateSetTest {
         } returns RoundDataSource.Error.UpdateSetError.SetNotFound.left()
 
         runBlocking {
-            val result = tested(round, set, updatedSet.position, updatedSet.reps, updatedSet.weight)
+            val result = tested(round, set, updatedSet.ordinal, updatedSet.reps, updatedSet.weight)
 
             assertEquals(UpdateSet.Error.SetNotFound, result.left)
         }

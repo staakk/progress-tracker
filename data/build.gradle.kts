@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
+    id("io.realm.kotlin")
 }
 
 android {
@@ -53,10 +54,9 @@ dependencies {
     coreLibraryDesugaring(libs.tools.desugar)
 
     implementation(libs.kotlin.stdlib)
+    implementation(libs.kotlin.coroutinesNative)
 
-    implementation(libs.bundles.room.libs)
-    kapt(libs.bundles.room.kapt)
-    testImplementation(libs.bundles.room.test)
+    implementation(libs.realm.lib)
 
     implementation(libs.bundles.hilt.libs)
     kapt(libs.bundles.hilt.kapt)
@@ -66,8 +66,11 @@ dependencies {
     implementation(libs.timber)
     implementation(project(":common"))
 
+    androidTestImplementation(libs.kotlin.coroutinesTest)
+
     androidTestImplementation(libs.androidx.testRunner)
     androidTestImplementation(libs.androidx.testRules)
     androidTestImplementation(libs.junit.androidx)
     androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(project(":common-test"))
 }

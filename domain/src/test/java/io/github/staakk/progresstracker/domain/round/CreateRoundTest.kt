@@ -1,15 +1,13 @@
 package io.github.staakk.progresstracker.domain.round
 
 import io.github.staakk.progresstracker.data.exercise.Exercise
-import io.github.staakk.progresstracker.data.round.Round
-import io.github.staakk.progresstracker.data.round.RoundDataSource
+import io.github.staakk.progresstracker.data.training.Round
 import io.github.staakk.progresstracker.data.round.RoundDataSource.Error.RoundAlreadyExists
 import io.github.staakk.progresstracker.common.functional.Left
 import io.github.staakk.progresstracker.common.functional.Right
 import io.github.staakk.progresstracker.common.functional.left
 import io.github.staakk.progresstracker.common.functional.right
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
