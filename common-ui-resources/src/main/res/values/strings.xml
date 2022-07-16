@@ -40,4 +40,11 @@
     <string name="edit_round_content_desc_expand_exercises_drop_down">Show available exercises</string>
     <string name="home_browse_exercises">Browse exercises</string>
     <string name="home_view_exercises_journal">View exercises journal</string>
+
+    <string name="trainings_title">Your trainings</string>
+
+    <plurals name="n_sets">
+        <item quantity="one">$1%d set</item>
+        <item quantity="many">$1%d sets</item>
+    </plurals>
 </resources>

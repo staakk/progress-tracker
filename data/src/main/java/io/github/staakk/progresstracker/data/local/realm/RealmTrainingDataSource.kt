@@ -66,7 +66,7 @@ class RealmTrainingDataSource(
         val startDateSeconds = startDate.toEpochSecond(ZoneOffset.UTC)
         val endDateSeconds = endDate.toEpochSecond(ZoneOffset.UTC)
         return realm.query<RealmTraining>(
-            "date >= $0 AND date <= $1",
+            "date >= $0 AND date <= $1 SORT(date DESC)",
             startDateSeconds,
             endDateSeconds
         )
