@@ -3,7 +3,9 @@ package io.github.staakk.ui.training
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -11,9 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -24,6 +28,7 @@ import io.github.staakk.progresstracker.data.training.Round
 import io.github.staakk.progresstracker.data.training.RoundSet
 import io.github.staakk.progresstracker.data.training.Training
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun TrainingScreen(
@@ -49,33 +54,47 @@ private fun Content(
     dispatch: (TrainingEvent) -> Unit,
     editRound: (Id) -> Unit,
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { dispatch(TrainingEvent.CreateRound) },
+                backgroundColor = MaterialTheme.colors.primary
+            ) {
+                Icon(
+                    Icons.Filled.Add,
+                    tint = MaterialTheme.colors.onPrimary,
+                    contentDescription = stringResource(id = R.string.exercises_list_content_desc_add_new_exercise),
+                )
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End,
+    ) {
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
-            Text(text = state.dateText())
+            Text(
+                style = MaterialTheme.typography.h5,
+                text = state.dateFirstLine(),
+            )
+            Text(
+                style = MaterialTheme.typography.subtitle1,
+                text = state.dateSecondLine(),
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             LazyColumn {
-                items(state.getRounds()) {
+                itemsIndexed(items = state.getRounds()) { index, item ->
                     RoundItem(
-                        onClick = { editRound(it.id) },
-                        round = it
+                        onClick = { editRound(item.id) },
+                        round = item
                     )
+                    if (index != state.getRounds().lastIndex)
+                        Divider()
                 }
             }
-        }
-        FloatingActionButton(
-            onClick = { dispatch(TrainingEvent.CreateRound) },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            backgroundColor = MaterialTheme.colors.primary
-        ) {
-            Icon(
-                Icons.Filled.Add,
-                tint = MaterialTheme.colors.onPrimary,
-                contentDescription = stringResource(id = R.string.exercises_list_content_desc_add_new_exercise),
-            )
         }
     }
 }
@@ -83,20 +102,54 @@ private fun Content(
 @Composable
 private fun RoundItem(onClick: () -> Unit, round: Round) {
     Column(
-        modifier = Modifier.clickable(onClick = onClick)
+        modifier = Modifier
+            .clickable(onClick = onClick)
+            .padding(top = 16.dp, bottom = 16.dp)
     ) {
-        Text(round.exercise.name + " exercise")
+        Text(
+            modifier = Modifier.padding(bottom = 8.dp),
+            style = MaterialTheme.typography.body1,
+            text = round.exercise.name
+        )
 
-        Row {
-            round.roundSets.forEach {
-                Text("${it.reps} x ${it.weight}g")
-            }
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            items(round.roundSets) { RoundSetItem(roundSet = it) }
         }
     }
 }
 
-private fun TrainingState.dateText() = when (this) {
-    is TrainingState.Loaded -> training.date.toString()
+@Composable
+private fun RoundSetItem(roundSet: RoundSet) {
+    val textColorWithAlpha = LocalTextStyle.current.color.copy(alpha = 0.4f)
+    val text = buildAnnotatedString {
+        append(roundSet.reps.toString())
+        append(' ')
+        withStyle(SpanStyle(textColorWithAlpha)) {
+            append('x')
+        }
+        append(' ')
+        append(roundSet.weight.toString())
+        withStyle(SpanStyle(textColorWithAlpha)) {
+            append("kg")
+        }
+    }
+
+    Text(
+        modifier = Modifier.padding(top = 4.dp, bottom = 4.dp),
+        style = MaterialTheme.typography.body2,
+        text = text
+    )
+}
+
+private fun TrainingState.dateFirstLine() = when (this) {
+    is TrainingState.Loaded -> training.date.format(DateTimeFormatter.ofPattern("EEEE HH:mm"))
+    else -> ""
+}
+
+private fun TrainingState.dateSecondLine() = when (this) {
+    is TrainingState.Loaded -> training.date.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
     else -> ""
 }
 
@@ -114,6 +167,22 @@ private fun PreviewTrainingScreen() {
                 Training(
                     date = LocalDateTime.now(),
                     rounds = listOf(
+                        Round(
+                            ordinal = 1,
+                            exercise = Exercise(name = "Exercise name"),
+                            roundSets = listOf(
+                                RoundSet(
+                                    ordinal = 1,
+                                    reps = 2,
+                                    weight = 50
+                                ),
+                                RoundSet(
+                                    ordinal = 1,
+                                    reps = 2,
+                                    weight = 50
+                                ),
+                            )
+                        ),
                         Round(
                             ordinal = 1,
                             exercise = Exercise(name = "Exercise name"),

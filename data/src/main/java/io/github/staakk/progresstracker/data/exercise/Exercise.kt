@@ -8,6 +8,6 @@ data class Exercise(
 ) {
 
     companion object {
-        val EmptyExercise = Exercise(name = "")
+        val EmptyExercise = Exercise(name = "Unknown exercise")
     }
 }
