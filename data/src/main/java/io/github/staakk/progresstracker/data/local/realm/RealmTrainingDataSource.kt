@@ -18,6 +18,7 @@ import io.realm.kotlin.Realm
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
 import java.time.LocalDateTime
@@ -56,7 +57,8 @@ class RealmTrainingDataSource(
     override fun observeTraining(id: Id): Flow<Training> {
         return realm.query<RealmTraining>("id = $0", id.asRealmObjectId())
             .asFlow()
-            .map { change -> change.list.map { it.toDomain() }.first() }
+            .map { change -> change.list.map { it.toDomain() }.firstOrNull() }
+            .filterNotNull()
     }
 
     override fun queryTrainingByDate(

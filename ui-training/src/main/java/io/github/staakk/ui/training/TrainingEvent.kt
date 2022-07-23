@@ -9,4 +9,12 @@ sealed class TrainingEvent {
     data class EditRound(val round: Round) : TrainingEvent()
 
     object CreateRound : TrainingEvent()
+
+    object CloseDeleteDialog : TrainingEvent()
+
+    object OpenDeleteDialog : TrainingEvent()
+
+    object DeleteTraining : TrainingEvent()
+
+    object DeleteTrainingConsumed : TrainingEvent()
 }

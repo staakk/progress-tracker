@@ -8,7 +8,7 @@ sealed class TrainingsEvent {
 
     object CreateNewTraining : TrainingsEvent()
 
-    data class EditTraining(val training: Training) : TrainingsEvent()
-
     data class DeleteTraining(val training: Training) : TrainingsEvent()
+
+    object NewTrainingIdConsumed : TrainingsEvent()
 }

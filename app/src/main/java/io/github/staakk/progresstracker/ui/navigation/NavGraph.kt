@@ -29,8 +29,6 @@ object Destinations {
     const val TRAINING_ID_KEY = "training_id"
     const val ROUND_ROUTE = "round"
     const val ROUND_ID_KEY = "round_id"
-    const val NEW_ROUND_ROUTE = "new_round"
-    const val ROUND_CREATE_DATE_KEY = "date"
     const val HOME_ROUTE = "home"
 }
 
@@ -57,6 +55,7 @@ fun NavGraph(startDestination: String = Destinations.HOME_ROUTE) {
         composable(Destinations.TRAININGS_ROUTE) {
             Trainings(
                 actions.editTraining,
+                navigateUp = actions.navigateUp
             )
         }
 
@@ -67,7 +66,8 @@ fun NavGraph(startDestination: String = Destinations.HOME_ROUTE) {
             val args = requireNotNull(it.arguments)
             TrainingScreen(
                 id = Id.fromString(args.getString(TRAINING_ID_KEY))!!,
-                editRound = actions.editRound
+                editRound = actions.editRound,
+                navigateUp = actions.navigateUp,
             )
         }
 
@@ -78,12 +78,12 @@ fun NavGraph(startDestination: String = Destinations.HOME_ROUTE) {
             val args = requireNotNull(it.arguments)
             EditExercise(
                 exerciseId = Id.fromString(args.getString(EXERCISE_ID_KEY)),
-                navigateUp = actions.upPress
+                navigateUp = actions.navigateUp
             )
         }
 
         composable(Destinations.NEW_EXERCISE_ROUTE) {
-            EditExercise(navigateUp = actions.upPress)
+            EditExercise(navigateUp = actions.navigateUp)
         }
 
         composable(
@@ -92,7 +92,7 @@ fun NavGraph(startDestination: String = Destinations.HOME_ROUTE) {
         ) {
             val args = requireNotNull(it.arguments)
             EditRound(
-                navigateUp = actions.upPress,
+                navigateUp = actions.navigateUp,
                 roundId = Id.fromString(args.getString(ROUND_ID_KEY))!!
             )
         }
@@ -118,7 +118,7 @@ class Actions(navController: NavHostController) {
     val editRound: (Id) -> Unit = { setId ->
         navController.navigate("${Destinations.ROUND_ROUTE}/${setId}")
     }
-    val upPress: () -> Unit = {
+    val navigateUp: () -> Unit = {
         navController.navigateUp()
     }
 }

@@ -5,14 +5,13 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.Card
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -21,7 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import io.github.staakk.common.ui.compose.Header
+import io.github.staakk.common.ui.compose.layout.StandardScreen
 import io.github.staakk.common.ui.compose.theme.ProgressTrackerTheme
 import io.github.staakk.progresstracker.data.Id
 import io.github.staakk.progresstracker.data.exercise.Exercise
@@ -34,16 +33,24 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun Trainings(
     editTraining: (Id) -> Unit,
+    navigateUp: () -> Unit,
 ) {
     val viewModel: TrainingsViewModel = hiltViewModel()
     LaunchedEffect(viewModel) {
         viewModel.dispatch(TrainingsEvent.ScreenOpened)
     }
-    val trainings: List<Training> by viewModel.trainings.collectAsState()
+    val state by viewModel.trainings.collectAsState()
+    state.newTrainingId?.let {
+        LaunchedEffect(state.newTrainingId) {
+            viewModel.dispatch(TrainingsEvent.NewTrainingIdConsumed)
+            editTraining(it)
+        }
+    }
     TrainingsScreen(
-        trainings,
+        state.trainings,
         viewModel::dispatch,
         editTraining,
+        navigateUp,
     )
 }
 
@@ -52,34 +59,19 @@ fun TrainingsScreen(
     trainings: List<Training>,
     dispatch: (TrainingsEvent) -> Unit,
     editTraining: (Id) -> Unit,
+    navigateUp: () -> Unit,
 ) {
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { dispatch(TrainingsEvent.CreateNewTraining) },
-                backgroundColor = MaterialTheme.colors.primary
-            ) {
-                Icon(
-                    Icons.Filled.Add,
-                    tint = MaterialTheme.colors.onPrimary,
-                    contentDescription = stringResource(id = R.string.exercises_list_content_desc_add_new_exercise),
-                )
-            }
-        },
-        floatingActionButtonPosition = FabPosition.End,
-        topBar = {
-            Header(
-                modifier = Modifier.padding(top = 16.dp, start = 16.dp, bottom = 16.dp),
-                text = stringResource(R.string.trainings_title))
-        }
+    StandardScreen(
+        navigateUp = navigateUp,
+        onFabClick = { dispatch(TrainingsEvent.CreateNewTraining) }
     ) {
         LazyColumn(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             items(items = trainings, itemContent = {
                 TrainingItem(
-                    onClick = { editTraining(it.id) },
+                    editTraining = editTraining,
                     training = it
                 )
             })
@@ -89,25 +81,26 @@ fun TrainingsScreen(
 }
 
 @Composable
-fun TrainingItem(onClick: () -> Unit, training: Training) {
-    Card(
-        modifier = Modifier.fillMaxWidth()
-    ) {
+fun TrainingItem(
+    editTraining: (Id) -> Unit,
+    training: Training,
+) {
+    Card(modifier = Modifier.fillMaxWidth()) {
         Box(
             modifier = Modifier
+                .fillMaxWidth()
                 .clickable(
-                    onClick = onClick,
+                    onClick = { editTraining(training.id) },
                     indication = rememberRipple(),
                     interactionSource = remember { MutableInteractionSource() }
                 )
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    text = training.date.formatAsCardTitle(),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
-                )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                TrainingTitle(training = training)
 
                 training.rounds.forEach {
                     Text(
@@ -118,6 +111,16 @@ fun TrainingItem(onClick: () -> Unit, training: Training) {
             }
         }
     }
+}
+
+@Composable
+private fun TrainingTitle(training: Training) {
+    Text(
+        modifier = Modifier.padding(bottom = 16.dp),
+        text = training.date.formatAsCardTitle(),
+        fontWeight = FontWeight.Bold,
+        fontSize = 18.sp
+    )
 }
 
 private fun LocalDateTime.formatAsCardTitle() = format(
@@ -164,7 +167,8 @@ private fun PreviewTraining() {
                     )
                 ),
                 dispatch = {},
-                editTraining = {}
+                editTraining = {},
+                navigateUp = {}
             )
         }
     }

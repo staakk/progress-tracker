@@ -15,7 +15,7 @@ fun SimpleIconButton(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     imageVector: ImageVector,
-    contentDescription: String,
+    contentDescription: String?,
     tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current),
 ) {
     IconButton(

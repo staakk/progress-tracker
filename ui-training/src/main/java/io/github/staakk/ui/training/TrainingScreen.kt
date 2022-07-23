@@ -8,19 +8,21 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
+import io.github.staakk.common.ui.compose.SimpleIconButton
+import io.github.staakk.common.ui.compose.layout.StandardScreen
 import io.github.staakk.common.ui.compose.theme.ProgressTrackerTheme
 import io.github.staakk.progresstracker.data.Id
 import io.github.staakk.progresstracker.data.exercise.Exercise
@@ -34,6 +36,7 @@ import java.time.format.DateTimeFormatter
 fun TrainingScreen(
     id: Id,
     editRound: (Id) -> Unit,
+    navigateUp: () -> Unit,
 ) {
     val viewModel: TrainingViewModel = hiltViewModel()
     LaunchedEffect(viewModel) {
@@ -41,10 +44,18 @@ fun TrainingScreen(
     }
 
     val state by viewModel.state.collectAsState()
+    if (state is TrainingState.TrainingDeleted) {
+        LaunchedEffect(id) {
+            viewModel.dispatch(TrainingEvent.DeleteTrainingConsumed)
+            navigateUp()
+        }
+    }
+
     Content(
         state,
         viewModel::dispatch,
         editRound,
+        navigateUp,
     )
 }
 
@@ -53,21 +64,19 @@ private fun Content(
     state: TrainingState,
     dispatch: (TrainingEvent) -> Unit,
     editRound: (Id) -> Unit,
+    navigateUp: () -> Unit,
 ) {
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { dispatch(TrainingEvent.CreateRound) },
-                backgroundColor = MaterialTheme.colors.primary
-            ) {
-                Icon(
-                    Icons.Filled.Add,
-                    tint = MaterialTheme.colors.onPrimary,
-                    contentDescription = stringResource(id = R.string.exercises_list_content_desc_add_new_exercise),
-                )
-            }
-        },
-        floatingActionButtonPosition = FabPosition.End,
+    StandardScreen(
+        navigateUp = navigateUp,
+        onFabClick = { dispatch(TrainingEvent.CreateRound) },
+        actionsEnd = {
+            SimpleIconButton(
+                onClick = { dispatch(TrainingEvent.OpenDeleteDialog) },
+                imageVector = Icons.Outlined.DeleteForever,
+                tint = MaterialTheme.colors.onPrimary,
+                contentDescription = null
+            )
+        }
     ) {
         Column(
             modifier = Modifier
@@ -91,9 +100,27 @@ private fun Content(
                         onClick = { editRound(item.id) },
                         round = item
                     )
-                    if (index != state.getRounds().lastIndex)
-                        Divider()
+                    if (index != state.getRounds().lastIndex) Divider()
                 }
+            }
+
+            if (state.isDeleteDialogOpen()) {
+                AlertDialog(
+                    onDismissRequest = { dispatch(TrainingEvent.CloseDeleteDialog) },
+                    title = { Text(text = "Delete training permanently?") },
+                    text = { Text(text = "You're about to delete this training. This operation cannot be undone.") },
+                    confirmButton = {
+                        Button(onClick = { dispatch(TrainingEvent.DeleteTraining) }) {
+                            Text("Delete")
+                        }
+                    },
+                    dismissButton = {
+                        OutlinedButton(onClick = { dispatch(TrainingEvent.CloseDeleteDialog) }) {
+                            Text("Cancel")
+                        }
+                    },
+                    properties = DialogProperties()
+                )
             }
         }
     }
@@ -158,6 +185,11 @@ private fun TrainingState.getRounds(): List<Round> = when (this) {
     else -> emptyList()
 }
 
+private fun TrainingState.isDeleteDialogOpen(): Boolean = when (this) {
+    is TrainingState.Loaded -> dialogState is DialogState.Open
+    else -> false
+}
+
 @Preview
 @Composable
 private fun PreviewTrainingScreen() {
@@ -200,9 +232,10 @@ private fun PreviewTrainingScreen() {
                             )
                         )
                     )
-                ).let { TrainingState.Loaded(it) },
+                ).let { TrainingState.Loaded(it, dialogState = DialogState.Closed) },
                 dispatch = {},
                 editRound = {},
+                navigateUp = {}
             )
         }
     }
