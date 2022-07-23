@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,6 +18,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import io.github.staakk.common.ui.compose.*
 import io.github.staakk.common.ui.compose.layout.StandardScreen
@@ -52,6 +54,13 @@ fun EditRound(
             }
     }
 
+    if (state is EditRoundState.RoundDeleted) {
+        LaunchedEffect(roundId) {
+            viewModel.dispatch(EditRoundEvent.DeleteRoundConsumed)
+            navigateUp()
+        }
+    }
+
     EditRoundScreen(
         navigateUp = navigateUp,
         state = state,
@@ -69,7 +78,15 @@ private fun EditRoundScreen(
 ) {
     StandardScreen(
         navigateUp = navigateUp,
-        onFabClick = { dispatch(EditRoundEvent.CreateSet) }
+        onFabClick = { dispatch(EditRoundEvent.CreateSet) },
+        actionsEnd = {
+            SimpleIconButton(
+                onClick = { dispatch(EditRoundEvent.OpenDeleteDialog) },
+                imageVector = Icons.Outlined.DeleteForever,
+                tint = MaterialTheme.colors.onPrimary,
+                contentDescription = null
+            )
+        }
     ) {
         Content(
             modifier = Modifier.padding(it),
@@ -105,6 +122,25 @@ private fun Content(
                     editSet = editSet,
                 )
             }
+        }
+
+        if (state.isDeleteDialogOpen()) {
+            AlertDialog(
+                onDismissRequest = { dispatch(EditRoundEvent.CloseDeleteDialog) },
+                title = { Text(text = "Delete round permanently?") },
+                text = { Text(text = "This operation cannot be undone.") },
+                confirmButton = {
+                    Button(onClick = { dispatch(EditRoundEvent.DeleteRound) }) {
+                        Text("Delete")
+                    }
+                },
+                dismissButton = {
+                    OutlinedButton(onClick = { dispatch(EditRoundEvent.CloseDeleteDialog) }) {
+                        Text("Cancel")
+                    }
+                },
+                properties = DialogProperties()
+            )
         }
     }
 }

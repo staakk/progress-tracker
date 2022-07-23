@@ -11,9 +11,11 @@ sealed class EditRoundState {
     data class Loaded(
         val round: Round,
         val exercises: List<Exercise> = emptyList(),
-        val dialogState: DialogState = DialogState.Closed,
-        val newSetId: Id? = null
+        val deleteDialogState: DialogState = DialogState.Closed,
+        val newSetId: Id? = null,
     ) : EditRoundState()
+
+    object RoundDeleted : EditRoundState()
 
     fun roundOrNull() =
         if (this is Loaded) round
@@ -22,6 +24,10 @@ sealed class EditRoundState {
     fun exercisesOrEmpty() =
         if (this is Loaded) exercises
         else emptyList()
+
+    fun isDeleteDialogOpen() =
+        if (this is Loaded) deleteDialogState == DialogState.Open
+        else false
 }
 
 enum class DialogState {

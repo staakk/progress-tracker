@@ -12,4 +12,12 @@ sealed class EditRoundEvent {
     object CreateSet : EditRoundEvent()
 
     object NewSetIdConsumed : EditRoundEvent()
+
+    object OpenDeleteDialog : EditRoundEvent()
+
+    object CloseDeleteDialog : EditRoundEvent()
+
+    object DeleteRound : EditRoundEvent()
+
+    object DeleteRoundConsumed : EditRoundEvent()
 }

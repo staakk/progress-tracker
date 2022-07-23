@@ -29,6 +29,7 @@ import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.data.training.Round
 import io.github.staakk.progresstracker.data.training.RoundSet
 import io.github.staakk.progresstracker.data.training.Training
+import io.github.staakk.progresstracker.domain.training.TrainingPreviewData
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -140,6 +141,7 @@ private fun Content(
 private fun RoundItem(onClick: () -> Unit, round: Round) {
     Column(
         modifier = Modifier
+            .fillMaxWidth()
             .clickable(onClick = onClick)
             .padding(top = 16.dp, bottom = 16.dp)
     ) {
@@ -206,43 +208,10 @@ private fun PreviewTrainingScreen() {
     ProgressTrackerTheme {
         Surface {
             Content(
-                Training(
-                    date = LocalDateTime.now(),
-                    rounds = listOf(
-                        Round(
-                            ordinal = 1,
-                            exercise = Exercise(name = "Exercise name"),
-                            roundSets = listOf(
-                                RoundSet(
-                                    ordinal = 1,
-                                    reps = 2,
-                                    weight = 50
-                                ),
-                                RoundSet(
-                                    ordinal = 1,
-                                    reps = 2,
-                                    weight = 50
-                                ),
-                            )
-                        ),
-                        Round(
-                            ordinal = 1,
-                            exercise = Exercise(name = "Exercise name"),
-                            roundSets = listOf(
-                                RoundSet(
-                                    ordinal = 1,
-                                    reps = 2,
-                                    weight = 50
-                                ),
-                                RoundSet(
-                                    ordinal = 1,
-                                    reps = 2,
-                                    weight = 50
-                                ),
-                            )
-                        )
-                    )
-                ).let { TrainingState.Loaded(it, dialogState = DialogState.Closed) },
+                TrainingState.Loaded(
+                    training = TrainingPreviewData.training,
+                    dialogState = DialogState.Closed
+                ),
                 dispatch = {},
                 editRound = {},
                 navigateUp = {}

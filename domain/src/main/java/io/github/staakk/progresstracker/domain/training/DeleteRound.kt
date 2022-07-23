@@ -8,13 +8,11 @@ import javax.inject.Inject
 
 class DeleteRound @Inject constructor(
     private val trainingDataSource: TrainingDataSource
-): suspend (Training, Round) -> Either<DeleteRound.Error, Training> {
+): suspend (Round) -> Either<DeleteRound.Error, Round> {
 
-    override suspend fun invoke(training: Training, round: Round): Either<Error, Training> {
-        val updatedTraining = training.copy(rounds = training.rounds - round)
+    override suspend fun invoke(round: Round): Either<Error, Round> {
         return trainingDataSource.deleteRound(round)
             .mapLeft { Error.DeleteRoundError }
-            .map { updatedTraining }
     }
 
     sealed class Error {

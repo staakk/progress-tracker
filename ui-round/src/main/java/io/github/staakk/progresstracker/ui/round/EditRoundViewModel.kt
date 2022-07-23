@@ -1,16 +1,11 @@
 package io.github.staakk.progresstracker.ui.round
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.staakk.progresstracker.common.android.wrapIdlingResource
 import io.github.staakk.progresstracker.common.coroutines.coLet
 import io.github.staakk.progresstracker.data.Id
 import io.github.staakk.progresstracker.data.exercise.Exercise
-import io.github.staakk.progresstracker.data.training.Round
-import io.github.staakk.progresstracker.data.training.RoundSet
 import io.github.staakk.progresstracker.domain.exercise.GetExercises
 import io.github.staakk.progresstracker.domain.training.*
 import kotlinx.coroutines.flow.*
@@ -23,9 +18,8 @@ class EditRoundViewModel @Inject constructor(
     private val getExercises: GetExercises,
     private val observeRound: ObserveRound,
     private val updateRound: UpdateRound,
+    private val deleteRound: DeleteRound,
     private val createSet: CreateSet,
-    private val updateSetUseCase: UpdateSet,
-    private val deleteSetUseCase: DeleteSet,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<EditRoundState>(EditRoundState.Loading)
@@ -37,7 +31,16 @@ class EditRoundViewModel @Inject constructor(
             is EditRoundEvent.ScreenOpened -> onScreenOpened(event.roundId)
             is EditRoundEvent.UpdateExercise -> onExerciseUpdated(event.exercise)
             is EditRoundEvent.CreateSet -> onCreateSet()
+            is EditRoundEvent.NewSetIdConsumed -> onNewSetIdConsumed()
+            is EditRoundEvent.OpenDeleteDialog -> updateDialogState(DialogState.Open)
+            is EditRoundEvent.CloseDeleteDialog -> updateDialogState(DialogState.Closed)
+            is EditRoundEvent.DeleteRound -> onDeleteRound()
+            is EditRoundEvent.DeleteRoundConsumed -> onDeleteRoundConsumed()
         }
+    }
+
+    private fun onDeleteRoundConsumed() {
+        _state.update { EditRoundState.Loading }
     }
 
     private fun onCreateSet() {
@@ -84,13 +87,29 @@ class EditRoundViewModel @Inject constructor(
         }
     }
 
-    fun deleteSet(roundSet: RoundSet) {
-        Timber.d("Delete set $roundSet")
+    private fun onDeleteRound() {
         viewModelScope.launch {
-            wrapIdlingResource {
-                deleteSetUseCase(roundSet)
-                    .fold({ Timber.e(it.toString()) }, { })
-            }
+            _state.value
+                .roundOrNull()
+                ?.coLet(deleteRound)
+                ?.fold(
+                    {},
+                    { _state.update { EditRoundState.RoundDeleted } }
+                )
+        }
+    }
+
+    private fun onNewSetIdConsumed() {
+        _state.update {
+            if (it is EditRoundState.Loaded) it.copy(newSetId = null)
+            else it
+        }
+    }
+
+    private fun updateDialogState(dialogState: DialogState) {
+        _state.update {
+            if (it is EditRoundState.Loaded) it.copy(deleteDialogState = dialogState)
+            else it
         }
     }
 }
