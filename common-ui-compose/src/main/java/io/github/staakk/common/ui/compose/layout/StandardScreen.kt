@@ -20,6 +20,7 @@ fun StandardScreen(
     navigateUp: (() -> Unit)? = null,
     onFabClick: (() -> Unit)? = null,
     actionsEnd: @Composable RowScope.() -> Unit = {},
+    actionsStart: @Composable RowScope.() -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
@@ -47,19 +48,27 @@ fun StandardScreen(
                         .fillMaxWidth()
                         .align(Alignment.CenterVertically)
                 ) {
-                    navigateUp?.let {
-                        val navigateUpRef = createRef()
-                        SimpleIconButton(
-                            modifier = Modifier
-                                .constrainAs(navigateUpRef) { start.linkTo(parent.start) },
-                            onClick = navigateUp,
-                            imageVector = Icons.Filled.ArrowBack,
-                            tint = MaterialTheme.colors.onPrimary,
-                            contentDescription = null
-                        )
-                    }
+                    val navigateUpRef = navigateUp
+                        ?.let { createRef() }
+                        ?.also {
+                            SimpleIconButton(
+                                modifier = Modifier
+                                    .constrainAs(it) { start.linkTo(parent.start) },
+                                onClick = navigateUp,
+                                imageVector = Icons.Filled.ArrowBack,
+                                tint = MaterialTheme.colors.onPrimary,
+                                contentDescription = null
+                            )
+                        }
 
-                    val actionsEndRef = createRef()
+                    val (actionsStartRef, actionsEndRef) = createRefs()
+                    Row(
+                        modifier = Modifier
+                            .constrainAs(actionsStartRef) {
+                                start.linkTo(navigateUpRef?.end ?: parent.start)
+                            },
+                        content = actionsStart
+                    )
                     Row(
                         modifier = Modifier
                             .constrainAs(actionsEndRef) { end.linkTo(parent.end) },

@@ -1,261 +1,171 @@
 package io.github.staakk.progresstracker.ui.round
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import io.github.staakk.common.ui.compose.*
-import io.github.staakk.common.ui.compose.effect.OnceEffect
+import io.github.staakk.common.ui.compose.layout.StandardScreen
 import io.github.staakk.common.ui.compose.theme.Dimensions
-import io.github.staakk.common.ui.compose.theme.ProgressTrackerTheme
 import io.github.staakk.progresstracker.data.Id
 import io.github.staakk.progresstracker.data.exercise.Exercise
-import io.github.staakk.progresstracker.data.training.Round
 import io.github.staakk.progresstracker.data.training.RoundSet
-import java.time.LocalDate
-
-enum class EditRoundTags {
-    EDIT_REPS,
-    EDIT_WEIGHT,
-    EXERCISE_DROP_DOWN,
-    EXERCISE_DROP_DOWN_ITEM,
-    BACK,
-    DELETE_ROUND,
-    DELETE_SET,
-    ADD_SET,
-    SET,
-}
+import io.github.staakk.progresstracker.domain.training.TrainingPreviewData
 
 @Composable
 fun EditRound(
+    roundId: Id,
     navigateUp: () -> Unit,
-    roundId: Id
+    editSet: (Id) -> Unit
 ) {
     val viewModel: EditRoundViewModel = hiltViewModel()
 
-    LaunchedEffect(viewModel) {
-        viewModel.loadRound(roundId)
+    LaunchedEffect(viewModel, roundId) {
+        viewModel.dispatch(EditRoundEvent.ScreenOpened(roundId))
+    }
+
+    val state by viewModel.state.collectAsState()
+
+    state.let {
+        if (it !is EditRoundState.Loaded) return@let
+
+        it.newSetId
+            ?.let { id ->
+                LaunchedEffect(id) {
+                    viewModel.dispatch(EditRoundEvent.NewSetIdConsumed)
+                    editSet(id)
+                }
+            }
     }
 
     EditRoundScreen(
         navigateUp = navigateUp,
-        round = viewModel.round,
-        exercises = viewModel.exercises,
-        onExerciseSelected = viewModel::updateExercise,
-        onSetUpdated = viewModel::updateSet,
-        createSet = viewModel::createNewSet,
-        deleteSet = viewModel::deleteSet
+        state = state,
+        dispatch = viewModel::dispatch,
+        editSet = editSet,
     )
 }
 
 @Composable
-fun EditRoundScreen(
+private fun EditRoundScreen(
     navigateUp: () -> Unit,
-    round: LiveData<Round?>,
-    exercises: LiveData<List<Exercise>>,
-    onExerciseSelected: (Exercise) -> Unit,
-    onSetUpdated: (RoundSet) -> Unit,
-    createSet: () -> Unit,
-    deleteSet: (RoundSet) -> Unit,
+    state: EditRoundState,
+    dispatch: (EditRoundEvent) -> Unit,
+    editSet: (Id) -> Unit,
 ) {
-    ProgressTrackerTheme {
-        Surface(Modifier.fillMaxSize()) {
-            Scaffold(
-                modifier = Modifier.fillMaxSize(),
-                isFloatingActionButtonDocked = true,
-                floatingActionButtonPosition = FabPosition.Center,
-                floatingActionButton = {
-                    FloatingActionButton(
-                        modifier = Modifier.testTag(EditRoundTags.ADD_SET),
-                        onClick = createSet,
-                    ) {
-                        Icon(
-                            Icons.Filled.Add,
-                            tint = MaterialTheme.colors.onSecondary,
-                            contentDescription = stringResource(id = R.string.edit_round_content_desc_fab_add_set)
-                        )
-                    }
-                },
-                bottomBar = {
-                    BottomAppBar(
-                        backgroundColor = MaterialTheme.colors.primary,
-                        cutoutShape = CircleShape,
-                    ) {
-                        ConstraintLayout(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .align(Alignment.CenterVertically)
-                        ) {
-                            val (deleteRef, navigateUpRef) = createRefs()
-                            SimpleIconButton(
-                                modifier = Modifier
-                                    .testTag(EditRoundTags.BACK)
-                                    .constrainAs(navigateUpRef) { start.linkTo(parent.start) },
-                                onClick = navigateUp,
-                                imageVector = Icons.Filled.ArrowBack,
-                                tint = MaterialTheme.colors.onPrimary,
-                                contentDescription = stringResource(id = R.string.edit_round_content_desc_go_back)
-                            )
-                        }
-                    }
-                }
-            ) {
-                BodyContent(
-                    round = round,
-                    exercises = exercises,
-                    onExerciseSelected = onExerciseSelected,
-                    onSetUpdated = onSetUpdated,
-                    deleteSet = deleteSet,
+    StandardScreen(
+        navigateUp = navigateUp,
+        onFabClick = { dispatch(EditRoundEvent.CreateSet) }
+    ) {
+        Content(
+            modifier = Modifier.padding(it),
+            state = state,
+            dispatch = dispatch,
+            editSet = editSet,
+        )
+    }
+}
+
+@Composable
+private fun Content(
+    modifier: Modifier,
+    state: EditRoundState,
+    dispatch: (EditRoundEvent) -> Unit,
+    editSet: (Id) -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .then(modifier)
+            .padding(16.dp)
+    ) {
+        ExerciseSelector(
+            state = state,
+            onExerciseSelected = { dispatch(EditRoundEvent.UpdateExercise(it)) }
+        )
+        LazyColumn(
+            modifier = Modifier.padding(top = Dimensions.padding),
+        ) {
+            items(state.roundOrNull()?.roundSets ?: emptyList()) { set ->
+                SetItem(
+                    set = set,
+                    editSet = editSet,
                 )
             }
         }
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun BodyContent(
-    round: LiveData<Round?>,
-    exercises: LiveData<List<Exercise>>,
-    onExerciseSelected: (Exercise) -> Unit,
-    onSetUpdated: (RoundSet) -> Unit,
-    deleteSet: (RoundSet) -> Unit,
+private fun SetItem(
+    set: RoundSet,
+    editSet: (Id) -> Unit,
 ) {
-    val roundState = round.observeAsState()
-    val sets = roundState.value?.roundSets ?: emptyList()
-    Column(modifier = Modifier.padding(16.dp)) {
-        Header(text = "empty header")
-        ExerciseSelector(
-            round = round,
-            exercises = exercises,
-            onExerciseSelected = onExerciseSelected
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = Dimensions.padding),
+        horizontalArrangement = Arrangement.spacedBy(Dimensions.padding),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = set.reps.toString(),
+            modifier = Modifier
+                .weight(1f),
         )
-        LazyColumn(
-            modifier = Modifier.padding(top = Dimensions.padding),
-            content = {
-                stickyHeader {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            // TODO Investigate how to get end padding - size of icon button in better way.
-                            .padding(bottom = Dimensions.padding, end = 48.dp + Dimensions.padding),
-                        horizontalArrangement = Arrangement.spacedBy(Dimensions.padding),
-                    ) {
-                        Text(
-                            modifier = Modifier.weight(1f),
-                            text = stringResource(id = R.string.edit_set_reps_label),
-                            fontWeight = FontWeight.Bold,
-                        )
-                        Text(
-                            modifier = Modifier.weight(1f),
-                            text = stringResource(id = R.string.edit_set_weight_label),
-                            fontWeight = FontWeight.Bold,
-                        )
-                    }
-                }
-                items(sets) { set ->
-                    Row(
-                        modifier = Modifier
-                            .testTag(EditRoundTags.SET)
-                            .fillMaxWidth()
-                            .padding(bottom = Dimensions.padding),
-                        horizontalArrangement = Arrangement.spacedBy(Dimensions.padding),
-                    ) {
-                        TextField(
-                            value = set.reps.toString(),
-                            onValueChange = {
-                                onSetUpdated(set.copy(reps = it.toIntOrNull() ?: 0))
-                            },
-                            modifier = Modifier
-                                .weight(1f)
-                                .testTag(EditRoundTags.EDIT_REPS),
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Number
-                            )
-                        )
-                        TextField(
-                            visualTransformation = SuffixTransformation(AnnotatedString(
-                                " kg",
-                                SpanStyle(LocalTextStyle.current.color.copy(alpha = 0.4f))
-                            )),
-                            value = set.weight.toString(),
-                            onValueChange = {
-                                onSetUpdated(set.copy(weight = it.toIntOrNull() ?: 0))
-                            },
-                            modifier = Modifier
-                                .weight(1f)
-                                .testTag(EditRoundTags.EDIT_WEIGHT),
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Number
-                            )
-                        )
-                        SimpleIconButton(
-                            modifier = Modifier.testTag(EditRoundTags.DELETE_SET),
-                            onClick = { deleteSet(set) },
-                            imageVector = Icons.Filled.RemoveCircleOutline,
-                            tint = MaterialTheme.colors.primary,
-                            contentDescription = stringResource(id = R.string.edit_round_content_desc_delete_set)
-                        )
-                    }
-                }
-            })
+        Text(
+            text = set.weight.toString() + " kg",
+            modifier = Modifier
+                .weight(1f),
+        )
+        SimpleIconButton(
+            onClick = { editSet(set.id) },
+            imageVector = Icons.Outlined.Edit,
+            contentDescription = "Edit set"
+        )
     }
 }
 
 @Composable
-fun ExerciseSelector(
-    round: LiveData<Round?>,
-    exercises: LiveData<List<Exercise>>,
+private fun ExerciseSelector(
+    state: EditRoundState,
     onExerciseSelected: (Exercise) -> Unit,
 ) {
-    val roundState = round.observeAsState()
-    val itemsState = exercises.observeAsState(listOf())
-    val items = itemsState.value
-    val selectedIndex = remember {
-        derivedStateOf {
-            val exercise = roundState.value?.exercise ?: return@derivedStateOf 0
-            return@derivedStateOf itemsState.value.indexOf(exercise)
+    val selectedIndex =
+        if (state !is EditRoundState.Loaded) -1
+        else {
+            val exercise = state.round.exercise
+            state.exercises.indexOf(exercise)
         }
-    }
+    val exercises = state.exercisesOrEmpty()
+
     val expanded = remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     Box {
         OutlinedTextField(
             modifier = Modifier
-                .testTag(EditRoundTags.EXERCISE_DROP_DOWN)
                 .clickable { expanded.value = !expanded.value }
                 .focusable(false)
                 .onFocusChanged {
                     expanded.value = it.isFocused
                 }
                 .fillMaxWidth(),
-            value = if (items.isEmpty() || selectedIndex.value == -1) "" else items[selectedIndex.value].name,
+            value =
+            if (exercises.isEmpty() || selectedIndex == -1) ""
+            else exercises[selectedIndex].name,
             trailingIcon = {
                 Icon(Icons.Filled.ArrowDropDown,
                     stringResource(id = R.string.edit_round_content_desc_expand_exercises_drop_down))
@@ -271,40 +181,32 @@ fun ExerciseSelector(
                 focusManager.clearFocus()
             },
         ) {
-            items.forEach { exercise ->
-                DropdownMenuItem(
-                    modifier = Modifier.testTag(EditRoundTags.EXERCISE_DROP_DOWN_ITEM),
-                    onClick = {
-                        expanded.value = false
-                        focusManager.clearFocus()
-                        onExerciseSelected(exercise)
+            state.exercisesOrEmpty()
+                .forEach { exercise ->
+                    DropdownMenuItem(
+                        onClick = {
+                            expanded.value = false
+                            focusManager.clearFocus()
+                            onExerciseSelected(exercise)
+                        }
+                    ) {
+                        Text(text = exercise.name)
                     }
-                ) {
-                    Text(text = exercise.name)
                 }
-            }
         }
     }
 }
 
 @Preview
 @Composable
-fun PreviewEditSetScreen() {
+private fun PreviewEditSetScreen() {
     EditRoundScreen(
-        {},
-        round = MutableLiveData(null),
-        MutableLiveData(
-            listOf(
-                Exercise(name = "Dead lift"),
-                Exercise(name = "Dumbbell row"),
-                Exercise(name = "Barbell row"),
-                Exercise(name = "Overhead press"),
-                Exercise(name = "Bench press"),
-            )
+        state = EditRoundState.Loaded(
+            round = TrainingPreviewData.round,
+            exercises = TrainingPreviewData.exercises,
         ),
-        {},
-        {},
-        {},
-        {},
+        navigateUp = {},
+        dispatch = {},
+        editSet = {},
     )
 }

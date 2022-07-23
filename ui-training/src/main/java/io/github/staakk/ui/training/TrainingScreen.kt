@@ -90,6 +90,7 @@ private fun Content(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(it)
                 .padding(16.dp)
         ) {
             Text(

@@ -24,6 +24,8 @@ interface TrainingDataSource {
 
     suspend fun deleteRound(round: Round): Either<Error.RoundNotFound, Round>
 
+    suspend fun getSetById(setId: Id): Either<Error.RoundNotFound, RoundSet>
+
     suspend fun saveSet(roundSet: RoundSet): Either<Error.CreateSetError, RoundSet>
 
     suspend fun deleteSet(roundSet: RoundSet): Either<Error.DeleteSetError, RoundSet>

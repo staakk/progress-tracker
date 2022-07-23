@@ -10,11 +10,14 @@ include(":common")
 include(":common-ui-compose")
 include(":common-ui-resources")
 include(":common-android")
+include(":common-test")
+
+include(":ui-home")
 
 include(":ui-exercise")
 include(":ui-exercisesearch")
-include(":ui-round")
-include(":ui-home")
-include(":common-test")
+
 include(":ui-trainings")
 include(":ui-training")
+include(":ui-round")
+include(":ui-set")

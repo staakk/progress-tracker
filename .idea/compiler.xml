@@ -20,6 +20,7 @@
       <module name="ProgressTracker.ui-home" target="11" />
       <module name="ProgressTracker.ui-journal" target="11" />
       <module name="ProgressTracker.ui-round" target="11" />
+      <module name="ProgressTracker.ui-set" target="11" />
       <module name="ProgressTracker.ui-training" target="11" />
       <module name="ProgressTracker.ui-trainings" target="11" />
     </bytecodeTargetLevel>

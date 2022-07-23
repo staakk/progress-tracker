@@ -1,8 +1,6 @@
 package io.github.staakk.progresstracker.data.local.realm
 
-import io.github.staakk.progresstracker.common.functional.Either
-import io.github.staakk.progresstracker.common.functional.left
-import io.github.staakk.progresstracker.common.functional.right
+import io.github.staakk.progresstracker.common.functional.*
 import io.github.staakk.progresstracker.data.Id
 import io.github.staakk.progresstracker.data.local.realm.RealmRound.Companion.toDomain
 import io.github.staakk.progresstracker.data.local.realm.RealmRound.Companion.toRealm
@@ -108,6 +106,16 @@ class RealmTrainingDataSource(
             Timber.e(e)
             TrainingDataSource.Error.RoundNotFound.left()
         }
+    }
+
+    override suspend fun getSetById(
+        setId: Id
+    ): Either<TrainingDataSource.Error.RoundNotFound, RoundSet> {
+        return Try { realm.queryById<RealmSet>(setId.asRealmObjectId()) }
+            .flatMap { it?.right() ?: TrainingDataSource.Error.RoundNotFound.left() }
+            .mapLeft { TrainingDataSource.Error.RoundNotFound }
+            .map { it.toDomain() }
+
     }
 
     override suspend fun saveSet(

@@ -14,8 +14,11 @@ import io.github.staakk.progresstracker.ui.navigation.Destinations.EXERCISE_ID_K
 import io.github.staakk.progresstracker.ui.navigation.Destinations.ROUND_ID_KEY
 import io.github.staakk.progresstracker.ui.exercise.search.ExercisesSearch
 import io.github.staakk.progresstracker.ui.home.Home
+import io.github.staakk.progresstracker.ui.navigation.Destinations.SetIdKey
+import io.github.staakk.progresstracker.ui.navigation.Destinations.SetRoute
 import io.github.staakk.progresstracker.ui.navigation.Destinations.TRAINING_ID_KEY
 import io.github.staakk.progresstracker.ui.round.EditRound
+import io.github.staakk.progresstracker.ui.set.EditSet
 import io.github.staakk.ui.training.TrainingScreen
 import io.github.staakk.ui.trainings.Trainings
 
@@ -29,6 +32,8 @@ object Destinations {
     const val TRAINING_ID_KEY = "training_id"
     const val ROUND_ROUTE = "round"
     const val ROUND_ID_KEY = "round_id"
+    const val SetRoute = "set"
+    const val SetIdKey = "set_id"
     const val HOME_ROUTE = "home"
 }
 
@@ -92,8 +97,20 @@ fun NavGraph(startDestination: String = Destinations.HOME_ROUTE) {
         ) {
             val args = requireNotNull(it.arguments)
             EditRound(
+                roundId = Id.fromString(args.getString(ROUND_ID_KEY))!!,
                 navigateUp = actions.navigateUp,
-                roundId = Id.fromString(args.getString(ROUND_ID_KEY))!!
+                editSet = actions.editSet,
+            )
+        }
+
+        composable(
+            route = "$SetRoute/{$SetIdKey}",
+            arguments = listOf(navArgument(SetIdKey) { type = NavType.StringType })
+        ) {
+            val args = requireNotNull(it.arguments)
+            EditSet(
+                setId = Id.fromString(args.getString(SetIdKey))!!,
+                navigateUp = actions.navigateUp,
             )
         }
     }
@@ -115,8 +132,11 @@ class Actions(navController: NavHostController) {
     val editTraining: (Id) -> Unit = { trainingId ->
         navController.navigate("${Destinations.TRAINING_ROUTE}/${trainingId}")
     }
-    val editRound: (Id) -> Unit = { setId ->
-        navController.navigate("${Destinations.ROUND_ROUTE}/${setId}")
+    val editRound: (Id) -> Unit = { roundId ->
+        navController.navigate("${Destinations.ROUND_ROUTE}/${roundId}")
+    }
+    val editSet: (Id) -> Unit = { setId ->
+        navController.navigate("$SetRoute/$setId")
     }
     val navigateUp: () -> Unit = {
         navController.navigateUp()

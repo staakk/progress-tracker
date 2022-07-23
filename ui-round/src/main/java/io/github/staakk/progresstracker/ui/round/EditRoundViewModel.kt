@@ -6,14 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.staakk.progresstracker.common.android.wrapIdlingResource
+import io.github.staakk.progresstracker.common.coroutines.coLet
 import io.github.staakk.progresstracker.data.Id
 import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.data.training.Round
 import io.github.staakk.progresstracker.data.training.RoundSet
 import io.github.staakk.progresstracker.domain.exercise.GetExercises
 import io.github.staakk.progresstracker.domain.training.*
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -28,53 +28,59 @@ class EditRoundViewModel @Inject constructor(
     private val deleteSetUseCase: DeleteSet,
 ) : ViewModel() {
 
-    private val _exercises = MutableLiveData(emptyList<Exercise>())
+    private val _state = MutableStateFlow<EditRoundState>(EditRoundState.Loading)
 
-    val exercises: LiveData<List<Exercise>> = _exercises
+    val state: StateFlow<EditRoundState> = _state
 
-    private val _round = MutableLiveData<Round?>(null)
+    fun dispatch(event: EditRoundEvent) {
+        when (event) {
+            is EditRoundEvent.ScreenOpened -> onScreenOpened(event.roundId)
+            is EditRoundEvent.UpdateExercise -> onExerciseUpdated(event.exercise)
+            is EditRoundEvent.CreateSet -> onCreateSet()
+        }
+    }
 
-    val round: LiveData<Round?> = _round
+    private fun onCreateSet() {
+        Timber.d("Create new set")
+        viewModelScope.launch {
+            _state.value
+                .roundOrNull()
+                ?.coLet(createSet)
+                ?.fold(
+                    { Timber.e(it.toString()) },
+                    { (_, set) ->
+                        _state.update { state ->
+                            if (state is EditRoundState.Loaded) state.copy(newSetId = set.id)
+                            else state
+                        }
+                    }
+                )
+        }
+    }
 
-    fun loadRound(roundId: Id) {
+    private fun onExerciseUpdated(exercise: Exercise) {
+        viewModelScope.launch {
+            _state.value.let { state ->
+                if (state !is EditRoundState.Loaded) return@launch
+                updateRound(state.round.copy(exercise = exercise))
+                    .fold(
+                        {},
+                        { round -> _state.update { state.copy(round = round) } }
+                    )
+            }
+        }
+    }
+
+    private fun onScreenOpened(roundId: Id) {
         Timber.d("Load round with id $roundId")
 
         viewModelScope.launch {
-            loadExercises()
+            val exercises = getExercises()
             observeRound(roundId)
-                .onEach { _round.postValue(it) }
+                .onEach { round ->
+                    _state.update { EditRoundState.Loaded(round = round, exercises = exercises) }
+                }
                 .collect()
-        }
-    }
-
-    fun updateExercise(exercise: Exercise) {
-        Timber.d("Update exercise $exercise")
-        viewModelScope.launch {
-            wrapIdlingResource {
-                updateRound(_round.value!!.copy(exercise = exercise))
-                    .fold({ Timber.e(it.toString()) }, {})
-            }
-        }
-    }
-
-    fun updateSet(roundSet: RoundSet) {
-        // TODO: throttle saving changes
-        Timber.d("Update set $roundSet")
-        viewModelScope.launch {
-            wrapIdlingResource {
-                updateSetUseCase(roundSet)
-                    .fold({ Timber.e(it.toString()) }, { })
-            }
-        }
-    }
-
-    fun createNewSet() {
-        Timber.d("Create new set")
-        viewModelScope.launch {
-            wrapIdlingResource {
-                createSet(_round.value!!)
-                    .fold({ Timber.e(it.toString()) }, { })
-            }
         }
     }
 
@@ -86,9 +92,5 @@ class EditRoundViewModel @Inject constructor(
                     .fold({ Timber.e(it.toString()) }, { })
             }
         }
-    }
-
-    private suspend fun loadExercises() {
-        _exercises.value = getExercises()
     }
 }
