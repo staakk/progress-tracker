@@ -26,10 +26,18 @@ class TrainingViewModel @Inject constructor(
         when (event) {
             is TrainingEvent.LoadTraining -> onLoadTraining(event.id)
             is TrainingEvent.CreateRound -> onCreateRound()
+            is TrainingEvent.NewRoundIdConsumed -> onNewRoundIdConsumed()
             is TrainingEvent.OpenDeleteDialog -> updateDialogState(DialogState.Open)
             is TrainingEvent.CloseDeleteDialog -> updateDialogState(DialogState.Closed)
             is TrainingEvent.DeleteTraining -> onDeleteTraining()
             is TrainingEvent.DeleteTrainingConsumed -> onDeleteTrainingConsumed()
+        }
+    }
+
+    private fun onNewRoundIdConsumed() {
+        _state.update {
+            if (it is TrainingState.Loaded) it.copy(newRoundId = null)
+            else it
         }
     }
 
@@ -71,8 +79,11 @@ class TrainingViewModel @Inject constructor(
             createRound(training)
                 .fold(
                     {},
-                    { (training, round) ->
-
+                    { (_, round) ->
+                        _state.update {
+                            if (it is TrainingState.Loaded) it.copy(newRoundId = round.id)
+                            else it
+                        }
                     }
                 )
         }

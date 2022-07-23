@@ -1,5 +1,6 @@
 package io.github.staakk.ui.training
 
+import io.github.staakk.progresstracker.data.Id
 import io.github.staakk.progresstracker.data.training.Training
 
 sealed class TrainingState {
@@ -7,7 +8,8 @@ sealed class TrainingState {
 
     data class Loaded(
         val training: Training,
-        val dialogState: DialogState,
+        val dialogState: DialogState = DialogState.Closed,
+        val newRoundId: Id? = null
     ) : TrainingState()
 
     object TrainingDeleted : TrainingState()

@@ -51,6 +51,15 @@ fun TrainingScreen(
         }
     }
 
+    state.let {
+        if (it is TrainingState.Loaded && it.newRoundId != null) {
+            LaunchedEffect(it.newRoundId) {
+                viewModel.dispatch(TrainingEvent.NewRoundIdConsumed)
+                editRound(it.newRoundId)
+            }
+        }
+    }
+
     Content(
         state,
         viewModel::dispatch,
