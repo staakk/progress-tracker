@@ -14,23 +14,22 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import io.github.staakk.common.ui.compose.SimpleIconButton
+import io.github.staakk.common.ui.compose.deletedialog.DeletePermanentlyDialog
+import io.github.staakk.common.ui.compose.deletedialog.DialogState
 import io.github.staakk.common.ui.compose.layout.StandardScreen
 import io.github.staakk.common.ui.compose.theme.ProgressTrackerTheme
 import io.github.staakk.progresstracker.data.Id
-import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.data.training.Round
 import io.github.staakk.progresstracker.data.training.RoundSet
-import io.github.staakk.progresstracker.data.training.Training
 import io.github.staakk.progresstracker.domain.training.TrainingPreviewData
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -45,7 +44,7 @@ fun TrainingScreen(
     }
 
     val state by viewModel.state.collectAsState()
-    if (state is TrainingState.TrainingDeleted) {
+    if (state.trainingDeleted) {
         LaunchedEffect(id) {
             viewModel.dispatch(TrainingEvent.DeleteTrainingConsumed)
             navigateUp()
@@ -53,7 +52,7 @@ fun TrainingScreen(
     }
 
     state.let {
-        if (it is TrainingState.Loaded && it.newRoundId != null) {
+        if (it.newRoundId != null) {
             LaunchedEffect(it.newRoundId) {
                 viewModel.dispatch(TrainingEvent.NewRoundIdConsumed)
                 editRound(it.newRoundId)
@@ -115,24 +114,12 @@ private fun Content(
                 }
             }
 
-            if (state.isDeleteDialogOpen()) {
-                AlertDialog(
-                    onDismissRequest = { dispatch(TrainingEvent.CloseDeleteDialog) },
-                    title = { Text(text = "Delete training permanently?") },
-                    text = { Text(text = "You're about to delete this training. This operation cannot be undone.") },
-                    confirmButton = {
-                        Button(onClick = { dispatch(TrainingEvent.DeleteTraining) }) {
-                            Text("Delete")
-                        }
-                    },
-                    dismissButton = {
-                        OutlinedButton(onClick = { dispatch(TrainingEvent.CloseDeleteDialog) }) {
-                            Text("Cancel")
-                        }
-                    },
-                    properties = DialogProperties()
-                )
-            }
+            DeletePermanentlyDialog(
+                dialogState = state.dialogState,
+                title = stringResource(R.string.training_delete_dialog_title),
+                onDismiss = { dispatch(TrainingEvent.CloseDeleteDialog) },
+                onConfirm = { dispatch(TrainingEvent.DeleteTraining) },
+            )
         }
     }
 }
@@ -171,7 +158,7 @@ private fun RoundSetItem(roundSet: RoundSet) {
         append(' ')
         append(roundSet.weight.toString())
         withStyle(SpanStyle(textColorWithAlpha)) {
-            append("kg")
+            append(stringResource(R.string.common_weight_kg))
         }
     }
 
@@ -182,25 +169,21 @@ private fun RoundSetItem(roundSet: RoundSet) {
     )
 }
 
-private fun TrainingState.dateFirstLine() = when (this) {
-    is TrainingState.Loaded -> training.date.format(DateTimeFormatter.ofPattern("EEEE HH:mm"))
-    else -> ""
-}
+@Composable
+private fun TrainingState.dateFirstLine() = training
+    ?.date
+    ?.format(DateTimeFormatter.ofPattern(stringResource(R.string.training_date_first_line_format)))
+    ?: ""
 
-private fun TrainingState.dateSecondLine() = when (this) {
-    is TrainingState.Loaded -> training.date.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
-    else -> ""
-}
+@Composable
+private fun TrainingState.dateSecondLine() = training
+    ?.date
+    ?.format(DateTimeFormatter.ofPattern(stringResource(R.string.training_date_second_line_format)))
+    ?: ""
 
-private fun TrainingState.getRounds(): List<Round> = when (this) {
-    is TrainingState.Loaded -> training.rounds
-    else -> emptyList()
-}
-
-private fun TrainingState.isDeleteDialogOpen(): Boolean = when (this) {
-    is TrainingState.Loaded -> dialogState is DialogState.Open
-    else -> false
-}
+private fun TrainingState.getRounds(): List<Round> = training
+    ?.rounds
+    ?: emptyList()
 
 @Preview
 @Composable
@@ -208,7 +191,7 @@ private fun PreviewTrainingScreen() {
     ProgressTrackerTheme {
         Surface {
             Content(
-                TrainingState.Loaded(
+                TrainingState(
                     training = TrainingPreviewData.training,
                     dialogState = DialogState.Closed
                 ),

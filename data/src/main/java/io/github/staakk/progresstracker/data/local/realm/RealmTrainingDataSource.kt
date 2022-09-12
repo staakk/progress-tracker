@@ -77,7 +77,8 @@ class RealmTrainingDataSource(
     override fun observeRound(id: Id): Flow<Round> {
         return realm.query<RealmRound>("id = $0", id.asRealmObjectId())
             .asFlow()
-            .map { change -> change.list.map { it.toDomain() }.first() }
+            .map { change -> change.list.map { it.toDomain() }.firstOrNull() }
+            .filterNotNull()
     }
 
     override suspend fun saveRound(round: Round): Either<TrainingDataSource.Error.RoundNotFound, Round> {

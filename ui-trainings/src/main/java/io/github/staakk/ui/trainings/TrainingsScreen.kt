@@ -12,6 +12,8 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -23,10 +25,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import io.github.staakk.common.ui.compose.layout.StandardScreen
 import io.github.staakk.common.ui.compose.theme.ProgressTrackerTheme
 import io.github.staakk.progresstracker.data.Id
-import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.data.training.Round
-import io.github.staakk.progresstracker.data.training.RoundSet
 import io.github.staakk.progresstracker.data.training.Training
+import io.github.staakk.progresstracker.domain.training.TrainingPreviewData
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -76,7 +77,6 @@ fun TrainingsScreen(
                 )
             })
         }
-
     }
 }
 
@@ -123,8 +123,9 @@ private fun TrainingTitle(training: Training) {
     )
 }
 
+@Composable
 private fun LocalDateTime.formatAsCardTitle() = format(
-    DateTimeFormatter.ofPattern("EEEE HH:mm, dd MMM yyyy")
+    DateTimeFormatter.ofPattern(stringResource(R.string.trainings_training_card_title))
 )
 
 @Composable
@@ -132,8 +133,13 @@ private fun Round.summaryText() = buildAnnotatedString {
     append(exercise.name)
     append(' ')
     withStyle(SpanStyle(Color.Gray)) {
-        append(roundSets.count().toString())
-        append(" sets")
+        append(
+            LocalContext.current.resources.getQuantityString(
+                R.plurals.trainings_n_sets,
+                roundSets.count(),
+                roundSets.count()
+            )
+        )
     }
 }
 
@@ -143,29 +149,7 @@ private fun PreviewTraining() {
     ProgressTrackerTheme {
         Surface {
             TrainingsScreen(
-                trainings = listOf(
-                    Training(
-                        date = LocalDateTime.now(),
-                        rounds = listOf(
-                            Round(
-                                ordinal = 1,
-                                exercise = Exercise(name = "Dead lift"),
-                                roundSets = listOf(
-                                    RoundSet(ordinal = 1, reps = 2, weight = 3),
-                                    RoundSet(ordinal = 1, reps = 2, weight = 3),
-                                )
-                            ),
-                            Round(
-                                ordinal = 1,
-                                exercise = Exercise(name = "Squat"),
-                                roundSets = listOf(
-                                    RoundSet(ordinal = 1, reps = 2, weight = 3),
-                                    RoundSet(ordinal = 1, reps = 2, weight = 3),
-                                )
-                            )
-                        )
-                    )
-                ),
+                trainings = listOf(TrainingPreviewData.training),
                 dispatch = {},
                 editTraining = {},
                 navigateUp = {}

@@ -3,6 +3,8 @@ package io.github.staakk.progresstracker.ui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalContext
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.staakk.common.ui.compose.datetime.DateTimeProvider
 import io.github.staakk.common.ui.compose.datetime.ProvideDateTimeProvider

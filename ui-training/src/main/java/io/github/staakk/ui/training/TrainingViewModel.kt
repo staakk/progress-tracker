@@ -3,6 +3,7 @@ package io.github.staakk.ui.training
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.staakk.common.ui.compose.deletedialog.DialogState
 import io.github.staakk.progresstracker.common.coroutines.coLet
 import io.github.staakk.progresstracker.data.Id
 import io.github.staakk.progresstracker.domain.training.CreateRound
@@ -19,7 +20,7 @@ class TrainingViewModel @Inject constructor(
     private val deleteTraining: DeleteTraining,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow<TrainingState>(TrainingState.Loading)
+    private val _state = MutableStateFlow(TrainingState())
     val state: StateFlow<TrainingState> = _state
 
     fun dispatch(event: TrainingEvent) {
@@ -35,56 +36,49 @@ class TrainingViewModel @Inject constructor(
     }
 
     private fun onNewRoundIdConsumed() {
-        _state.update {
-            if (it is TrainingState.Loaded) it.copy(newRoundId = null)
-            else it
-        }
+        _state.update { it.copy(newRoundId = null) }
     }
 
     private fun onDeleteTrainingConsumed() {
-        _state.update { TrainingState.Loading }
+        _state.update {
+            it.copy(
+                training = null,
+                trainingDeleted = false,
+                dialogState = DialogState.Closed
+            )
+        }
     }
 
     private fun onDeleteTraining() {
         viewModelScope.launch {
             _state.value
-                .getTrainingOrNull()
+                .training
                 ?.coLet(deleteTraining)
                 ?.fold(
                     {},
-                    { _state.update { TrainingState.TrainingDeleted } }
+                    { _state.update { it.copy(trainingDeleted = true) } }
                 )
         }
     }
 
     private fun updateDialogState(dialogState: DialogState) {
-        _state.update {
-            if (it is TrainingState.Loaded) it.copy(dialogState = dialogState)
-            else it
-        }
+        _state.update { it.copy(dialogState = dialogState) }
     }
 
     private fun onLoadTraining(id: Id) {
         observeTraining(id)
-            .onEach { training ->
-                _state.update { TrainingState.Loaded(training, DialogState.Closed) }
-            }
+            .onEach { training -> _state.update { it.copy(training = training) } }
             .launchIn(viewModelScope)
     }
 
     private fun onCreateRound() {
-        val training = (state.value as? TrainingState.Loaded)?.training ?: return
+        val training = state.value.training ?: return
 
         viewModelScope.launch {
             createRound(training)
                 .fold(
                     {},
-                    { (_, round) ->
-                        _state.update {
-                            if (it is TrainingState.Loaded) it.copy(newRoundId = round.id)
-                            else it
-                        }
-                    }
+                    { (_, round) -> _state.update { it.copy(newRoundId = round.id) } }
                 )
         }
     }

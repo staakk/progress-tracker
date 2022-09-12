@@ -1,35 +1,23 @@
 package io.github.staakk.progresstracker.ui.round
 
+import io.github.staakk.common.ui.compose.deletedialog.DialogState
 import io.github.staakk.progresstracker.data.Id
 import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.data.training.Round
 
-sealed class EditRoundState {
+data class EditRoundState(
+    val round: Round? = null,
+    val exercises: List<Exercise> = emptyList(),
+    val deleteDialogState: DialogState = DialogState.Closed,
+    val newSetId: Id? = null,
+    val roundDeleted: Boolean = false,
+) {
+    val roundSets get() = round?.roundSets ?: emptyList()
 
-    object Loading : EditRoundState()
-
-    data class Loaded(
-        val round: Round,
-        val exercises: List<Exercise> = emptyList(),
-        val deleteDialogState: DialogState = DialogState.Closed,
-        val newSetId: Id? = null,
-    ) : EditRoundState()
-
-    object RoundDeleted : EditRoundState()
-
-    fun roundOrNull() =
-        if (this is Loaded) round
-        else null
-
-    fun exercisesOrEmpty() =
-        if (this is Loaded) exercises
-        else emptyList()
-
-    fun isDeleteDialogOpen() =
-        if (this is Loaded) deleteDialogState == DialogState.Open
-        else false
-}
-
-enum class DialogState {
-    Open, Closed
+    val selectedExerciseIndex by lazy {
+        if (round == null) -1
+        else {
+            exercises.indexOf(round.exercise)
+        }
+    }
 }

@@ -92,6 +92,7 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":common-android"))
     implementation(project(":common-ui-compose"))
+    implementation(project(":common-ui-resources"))
     implementation(project(":domain"))
     implementation(project(":data"))
 

@@ -18,9 +18,9 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import io.github.staakk.common.ui.compose.*
+import io.github.staakk.common.ui.compose.deletedialog.DeletePermanentlyDialog
 import io.github.staakk.common.ui.compose.layout.StandardScreen
 import io.github.staakk.common.ui.compose.theme.Dimensions
 import io.github.staakk.progresstracker.data.Id
@@ -32,7 +32,7 @@ import io.github.staakk.progresstracker.domain.training.TrainingPreviewData
 fun EditRound(
     roundId: Id,
     navigateUp: () -> Unit,
-    editSet: (Id) -> Unit
+    editSet: (Id) -> Unit,
 ) {
     val viewModel: EditRoundViewModel = hiltViewModel()
 
@@ -42,19 +42,15 @@ fun EditRound(
 
     val state by viewModel.state.collectAsState()
 
-    state.let {
-        if (it !is EditRoundState.Loaded) return@let
-
-        it.newSetId
-            ?.let { id ->
-                LaunchedEffect(id) {
-                    viewModel.dispatch(EditRoundEvent.NewSetIdConsumed)
-                    editSet(id)
-                }
+    state.newSetId
+        ?.let { id ->
+            LaunchedEffect(id) {
+                viewModel.dispatch(EditRoundEvent.NewSetIdConsumed)
+                editSet(id)
             }
-    }
+        }
 
-    if (state is EditRoundState.RoundDeleted) {
+    if (state.roundDeleted) {
         LaunchedEffect(roundId) {
             viewModel.dispatch(EditRoundEvent.DeleteRoundConsumed)
             navigateUp()
@@ -116,7 +112,7 @@ private fun Content(
         LazyColumn(
             modifier = Modifier.padding(top = Dimensions.padding),
         ) {
-            items(state.roundOrNull()?.roundSets ?: emptyList()) { set ->
+            items(state.roundSets) { set ->
                 SetItem(
                     set = set,
                     editSet = editSet,
@@ -124,24 +120,12 @@ private fun Content(
             }
         }
 
-        if (state.isDeleteDialogOpen()) {
-            AlertDialog(
-                onDismissRequest = { dispatch(EditRoundEvent.CloseDeleteDialog) },
-                title = { Text(text = "Delete round permanently?") },
-                text = { Text(text = "This operation cannot be undone.") },
-                confirmButton = {
-                    Button(onClick = { dispatch(EditRoundEvent.DeleteRound) }) {
-                        Text("Delete")
-                    }
-                },
-                dismissButton = {
-                    OutlinedButton(onClick = { dispatch(EditRoundEvent.CloseDeleteDialog) }) {
-                        Text("Cancel")
-                    }
-                },
-                properties = DialogProperties()
-            )
-        }
+        DeletePermanentlyDialog(
+            dialogState = state.deleteDialogState,
+            title = stringResource(R.string.edit_round_delete_dialog_title),
+            onDismiss = { dispatch(EditRoundEvent.CloseDeleteDialog) },
+            onConfirm = { dispatch(EditRoundEvent.DeleteRound) },
+        )
     }
 }
 
@@ -180,13 +164,8 @@ private fun ExerciseSelector(
     state: EditRoundState,
     onExerciseSelected: (Exercise) -> Unit,
 ) {
-    val selectedIndex =
-        if (state !is EditRoundState.Loaded) -1
-        else {
-            val exercise = state.round.exercise
-            state.exercises.indexOf(exercise)
-        }
-    val exercises = state.exercisesOrEmpty()
+    val selectedIndex = state.selectedExerciseIndex
+    val exercises = state.exercises
 
     val expanded = remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
@@ -195,9 +174,7 @@ private fun ExerciseSelector(
             modifier = Modifier
                 .clickable { expanded.value = !expanded.value }
                 .focusable(false)
-                .onFocusChanged {
-                    expanded.value = it.isFocused
-                }
+                .onFocusChanged { expanded.value = it.isFocused }
                 .fillMaxWidth(),
             value =
             if (exercises.isEmpty() || selectedIndex == -1) ""
@@ -217,18 +194,17 @@ private fun ExerciseSelector(
                 focusManager.clearFocus()
             },
         ) {
-            state.exercisesOrEmpty()
-                .forEach { exercise ->
-                    DropdownMenuItem(
-                        onClick = {
-                            expanded.value = false
-                            focusManager.clearFocus()
-                            onExerciseSelected(exercise)
-                        }
-                    ) {
-                        Text(text = exercise.name)
+            state.exercises.forEach { exercise ->
+                DropdownMenuItem(
+                    onClick = {
+                        expanded.value = false
+                        focusManager.clearFocus()
+                        onExerciseSelected(exercise)
                     }
+                ) {
+                    Text(text = exercise.name)
                 }
+            }
         }
     }
 }
@@ -237,7 +213,7 @@ private fun ExerciseSelector(
 @Composable
 private fun PreviewEditSetScreen() {
     EditRoundScreen(
-        state = EditRoundState.Loaded(
+        state = EditRoundState(
             round = TrainingPreviewData.round,
             exercises = TrainingPreviewData.exercises,
         ),

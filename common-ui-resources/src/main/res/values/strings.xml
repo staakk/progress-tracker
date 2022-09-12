@@ -43,8 +43,20 @@
 
     <string name="trainings_title">Your trainings</string>
 
-    <plurals name="n_sets">
-        <item quantity="one">$1%d set</item>
-        <item quantity="many">$1%d sets</item>
+    <string name="common_delete_permanently_dialog_text">This operation cannot be undone.</string>
+    <string name="common_delete_permanently_dialog_confirm">Delete</string>
+    <string name="common_delete_permanently_dialog_cancel">Cancel</string>
+    <string name="common_weight_kg">kg</string>
+
+    <plurals name="trainings_n_sets">
+        <item quantity="one">%1$d set</item>
+        <item quantity="other">%1$d sets</item>
     </plurals>
+    <string name="trainings_training_card_title">EEEE HH:mm, dd MMM yyyy</string>
+
+    <string name="training_delete_dialog_title">Delete training permanently?</string>
+    <string name="training_date_first_line_format">EEEE HH:mm</string>
+    <string name="training_date_second_line_format">dd MMM yyyy</string>
+
+    <string name="edit_round_delete_dialog_title">Delete round permanently?</string>
 </resources>

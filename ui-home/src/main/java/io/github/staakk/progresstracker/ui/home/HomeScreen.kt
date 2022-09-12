@@ -57,5 +57,5 @@ fun HomeScreen(
 @Preview
 @Composable
 fun PreviewHomeScreen() {
-    HomeScreen(openExercisesList = { /*TODO*/ }, openJournal = { /*TODO*/ })
+    HomeScreen(openExercisesList = {}, openJournal = {})
 }

@@ -3,6 +3,7 @@ package io.github.staakk.progresstracker.ui.round
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.staakk.common.ui.compose.deletedialog.DialogState
 import io.github.staakk.progresstracker.common.coroutines.coLet
 import io.github.staakk.progresstracker.data.Id
 import io.github.staakk.progresstracker.data.exercise.Exercise
@@ -22,7 +23,7 @@ class EditRoundViewModel @Inject constructor(
     private val createSet: CreateSet,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow<EditRoundState>(EditRoundState.Loading)
+    private val _state = MutableStateFlow(EditRoundState())
 
     val state: StateFlow<EditRoundState> = _state
 
@@ -40,22 +41,19 @@ class EditRoundViewModel @Inject constructor(
     }
 
     private fun onDeleteRoundConsumed() {
-        _state.update { EditRoundState.Loading }
+        _state.update { EditRoundState() }
     }
 
     private fun onCreateSet() {
         Timber.d("Create new set")
         viewModelScope.launch {
             _state.value
-                .roundOrNull()
+                .round
                 ?.coLet(createSet)
                 ?.fold(
                     { Timber.e(it.toString()) },
                     { (_, set) ->
-                        _state.update { state ->
-                            if (state is EditRoundState.Loaded) state.copy(newSetId = set.id)
-                            else state
-                        }
+                        _state.update { state -> state.copy(newSetId = set.id) }
                     }
                 )
         }
@@ -64,7 +62,7 @@ class EditRoundViewModel @Inject constructor(
     private fun onExerciseUpdated(exercise: Exercise) {
         viewModelScope.launch {
             _state.value.let { state ->
-                if (state !is EditRoundState.Loaded) return@launch
+                if (state.round == null) return@launch
                 updateRound(state.round.copy(exercise = exercise))
                     .fold(
                         {},
@@ -81,7 +79,12 @@ class EditRoundViewModel @Inject constructor(
             val exercises = getExercises()
             observeRound(roundId)
                 .onEach { round ->
-                    _state.update { EditRoundState.Loaded(round = round, exercises = exercises) }
+                    _state.update {
+                        EditRoundState(
+                            round = round,
+                            exercises = exercises
+                        )
+                    }
                 }
                 .collect()
         }
@@ -90,26 +93,20 @@ class EditRoundViewModel @Inject constructor(
     private fun onDeleteRound() {
         viewModelScope.launch {
             _state.value
-                .roundOrNull()
+                .round
                 ?.coLet(deleteRound)
                 ?.fold(
                     {},
-                    { _state.update { EditRoundState.RoundDeleted } }
+                    { _state.update { it.copy(roundDeleted = true) } }
                 )
         }
     }
 
     private fun onNewSetIdConsumed() {
-        _state.update {
-            if (it is EditRoundState.Loaded) it.copy(newSetId = null)
-            else it
-        }
+        _state.update { it.copy(newSetId = null) }
     }
 
     private fun updateDialogState(dialogState: DialogState) {
-        _state.update {
-            if (it is EditRoundState.Loaded) it.copy(deleteDialogState = dialogState)
-            else it
-        }
+        _state.update { it.copy(deleteDialogState = dialogState) }
     }
 }
