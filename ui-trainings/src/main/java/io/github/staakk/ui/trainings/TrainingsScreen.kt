@@ -69,6 +69,7 @@ fun TrainingsScreen(
         LazyColumn(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(vertical = 8.dp)
         ) {
             items(items = trainings, itemContent = {
                 TrainingItem(
@@ -85,29 +86,27 @@ fun TrainingItem(
     editTraining: (Id) -> Unit,
     training: Training,
 ) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Box(
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = 4.dp
+    ) {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
                 .clickable(
                     onClick = { editTraining(training.id) },
                     indication = rememberRipple(),
                     interactionSource = remember { MutableInteractionSource() }
                 )
+                .fillMaxWidth()
+                .padding(16.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                TrainingTitle(training = training)
+            TrainingTitle(training = training)
 
-                training.rounds.forEach {
-                    Text(
-                        modifier = Modifier.padding(top = 4.dp, bottom = 4.dp),
-                        text = it.summaryText()
-                    )
-                }
+            training.rounds.forEach {
+                Text(
+                    modifier = Modifier.padding(top = 4.dp, bottom = 4.dp),
+                    text = it.summaryText()
+                )
             }
         }
     }
