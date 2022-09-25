@@ -14,6 +14,8 @@ activity-compose = { module = "androidx.activity:activity-compose", version = "1
 
 android-pluginGradle = { module = "com.android.tools.build:gradle", version = "7.0.4" }
 
+android-material-components = { module = "com.google.android.material:material", version = "1.6.1" }
+
 androidx-core = { module = "androidx.core:core-ktx", version = "1.7.0" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.4.1" }
 androidx-testRunner = { module = "androidx.test:runner", version = "1.4.0" }

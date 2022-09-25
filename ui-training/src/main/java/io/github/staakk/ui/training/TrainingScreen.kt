@@ -8,11 +8,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.DeleteForever
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material.icons.outlined.EditCalendar
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -22,14 +22,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import io.github.staakk.common.ui.compose.SimpleIconButton
+import io.github.staakk.common.ui.compose.datetime.DatePickerDialog
+import io.github.staakk.common.ui.compose.datetime.TimePickerDialog
 import io.github.staakk.common.ui.compose.deletedialog.DeletePermanentlyDialog
 import io.github.staakk.common.ui.compose.deletedialog.DialogState
 import io.github.staakk.common.ui.compose.layout.StandardScreen
 import io.github.staakk.common.ui.compose.theme.ProgressTrackerTheme
+import io.github.staakk.progresstracker.common.time.TimeOfDay
 import io.github.staakk.progresstracker.data.Id
 import io.github.staakk.progresstracker.data.training.Round
 import io.github.staakk.progresstracker.data.training.RoundSet
 import io.github.staakk.progresstracker.domain.training.TrainingPreviewData
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -87,39 +91,85 @@ private fun Content(
             )
         }
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it)
-                .padding(16.dp)
-        ) {
-            Text(
-                style = MaterialTheme.typography.h5,
-                text = state.dateFirstLine(),
-            )
-            Text(
-                style = MaterialTheme.typography.subtitle1,
-                text = state.dateSecondLine(),
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            LazyColumn {
-                itemsIndexed(items = state.getRounds()) { index, item ->
-                    RoundItem(
-                        onClick = { editRound(item.id) },
-                        round = item
-                    )
-                    if (index != state.getRounds().lastIndex) Divider()
-                }
+        Box {
+            var showDatePicker: Boolean by remember { mutableStateOf(false) }
+            var showTimePicker: Boolean by remember { mutableStateOf(false) }
+            Row(
+                modifier = Modifier.align(Alignment.TopEnd)
+                    .padding(4.dp)
+            ) {
+                SimpleIconButton(
+                    onClick = { showDatePicker = true },
+                    imageVector = Icons.Outlined.EditCalendar,
+                    tint = MaterialTheme.colors.secondary,
+                    contentDescription = "Edit date",
+                )
+                SimpleIconButton(
+                    onClick = { showTimePicker = true },
+                    imageVector = Icons.Outlined.AccessTime,
+                    tint = MaterialTheme.colors.secondary,
+                    contentDescription = "Edit time"
+                )
             }
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it)
+                    .padding(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.Top,
+                ) {
+                    Column {
+                        Text(
+                            style = MaterialTheme.typography.h5,
+                            text = state.dateFirstLine(),
+                        )
+                        Text(
+                            style = MaterialTheme.typography.subtitle1,
+                            text = state.dateSecondLine(),
+                        )
+                    }
+                }
 
-            DeletePermanentlyDialog(
-                dialogState = state.dialogState,
-                title = stringResource(R.string.training_delete_dialog_title),
-                onDismiss = { dispatch(TrainingEvent.CloseDeleteDialog) },
-                onConfirm = { dispatch(TrainingEvent.DeleteTraining) },
-            )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                LazyColumn {
+                    itemsIndexed(items = state.getRounds()) { index, item ->
+                        RoundItem(
+                            onClick = { editRound(item.id) },
+                            round = item
+                        )
+                        if (index != state.getRounds().lastIndex) Divider()
+                    }
+                }
+
+                DatePickerDialog(
+                    date = state.trainingDate(),
+                    show = showDatePicker,
+                    onDismiss = { showDatePicker = false },
+                    onDateSelected = { date ->
+                        dispatch(TrainingEvent.UpdateTrainingDate(date))
+                    }
+                )
+
+                TimePickerDialog(
+                    time = state.trainingTime(),
+                    show = showTimePicker,
+                    onDismiss = { showTimePicker = false },
+                    onTimeSelected = { time ->
+                        dispatch(TrainingEvent.UpdateTrainingTime(time))
+                    }
+                )
+
+                DeletePermanentlyDialog(
+                    dialogState = state.dialogState,
+                    title = stringResource(R.string.training_delete_dialog_title),
+                    onDismiss = { dispatch(TrainingEvent.CloseDeleteDialog) },
+                    onConfirm = { dispatch(TrainingEvent.DeleteTraining) },
+                )
+            }
         }
     }
 }
@@ -184,6 +234,14 @@ private fun TrainingState.dateSecondLine() = training
 private fun TrainingState.getRounds(): List<Round> = training
     ?.rounds
     ?: emptyList()
+
+private fun TrainingState.trainingDate(): LocalDate? = training
+    ?.date
+    ?.toLocalDate()
+
+private fun TrainingState.trainingTime(): TimeOfDay? = training
+    ?.date
+    ?.let { TimeOfDay(it.hour, it.minute) }
 
 @Preview
 @Composable

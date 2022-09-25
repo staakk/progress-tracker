@@ -89,6 +89,8 @@ dependencies {
     implementation(libs.espresso.idlingResources)
     androidTestImplementation(libs.espresso.core)
 
+    implementation(libs.android.material.components)
+
     implementation(project(":common"))
     implementation(project(":common-android"))
     implementation(project(":common-ui-compose"))

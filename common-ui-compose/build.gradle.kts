@@ -65,6 +65,8 @@ dependencies {
     androidTestImplementation(libs.bundles.hilt.androidTest)
     kaptAndroidTest(libs.bundles.hilt.kapt)
 
+    implementation(libs.android.material.components)
+
     implementation(libs.timber)
     implementation(project(":common"))
     implementation(project(":common-ui-resources"))

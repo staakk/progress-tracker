@@ -5,12 +5,15 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.staakk.common.ui.compose.deletedialog.DialogState
 import io.github.staakk.progresstracker.common.coroutines.coLet
+import io.github.staakk.progresstracker.common.time.TimeOfDay
 import io.github.staakk.progresstracker.data.Id
 import io.github.staakk.progresstracker.domain.training.CreateRound
 import io.github.staakk.progresstracker.domain.training.DeleteTraining
 import io.github.staakk.progresstracker.domain.training.ObserveTraining
+import io.github.staakk.progresstracker.domain.training.SaveTraining
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,6 +21,7 @@ class TrainingViewModel @Inject constructor(
     private val observeTraining: ObserveTraining,
     private val createRound: CreateRound,
     private val deleteTraining: DeleteTraining,
+    private val saveTraining: SaveTraining,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TrainingState())
@@ -32,6 +36,8 @@ class TrainingViewModel @Inject constructor(
             is TrainingEvent.CloseDeleteDialog -> updateDialogState(DialogState.Closed)
             is TrainingEvent.DeleteTraining -> onDeleteTraining()
             is TrainingEvent.DeleteTrainingConsumed -> onDeleteTrainingConsumed()
+            is TrainingEvent.UpdateTrainingDate -> onUpdateTrainingDate(event.date)
+            is TrainingEvent.UpdateTrainingTime -> onUpdateTrainingTime(event.time)
         }
     }
 
@@ -80,6 +86,30 @@ class TrainingViewModel @Inject constructor(
                     {},
                     { (_, round) -> _state.update { it.copy(newRoundId = round.id) } }
                 )
+        }
+    }
+
+    private fun onUpdateTrainingDate(date: LocalDate) {
+        val training = state.value.training ?: return
+
+        viewModelScope.launch {
+            val updatedTraining = training.copy(
+                date = training.date.with(date)
+            )
+            saveTraining(updatedTraining)
+        }
+    }
+
+    private fun onUpdateTrainingTime(time: TimeOfDay) {
+        val training = state.value.training ?: return
+
+        viewModelScope.launch {
+            val updatedTraining = training.copy(
+                date = training.date
+                    .withHour(time.hour)
+                    .withMinute(time.minute)
+            )
+            saveTraining(updatedTraining)
         }
     }
 }
