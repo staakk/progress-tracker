@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 class ObserveRound @Inject constructor(
     private val trainingDataSource: TrainingDataSource,
-) : (Id) -> Flow<Round> {
+) {
 
-    override fun invoke(id: Id): Flow<Round> = trainingDataSource.observeRound(id)
+    operator fun invoke(id: Id): Flow<Round> = trainingDataSource.observeRound(id)
 }

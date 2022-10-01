@@ -49,9 +49,9 @@ class EditRoundViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value
                 .round
-                ?.coLet(createSet)
+                ?.coLet(createSet::invoke)
                 ?.fold(
-                    { Timber.e(it.toString()) },
+                    { },
                     { (_, set) ->
                         _state.update { state -> state.copy(newSetId = set.id) }
                     }
@@ -94,7 +94,7 @@ class EditRoundViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value
                 .round
-                ?.coLet(deleteRound)
+                ?.coLet(deleteRound::invoke)
                 ?.fold(
                     {},
                     { _state.update { it.copy(roundDeleted = true) } }

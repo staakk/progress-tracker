@@ -16,5 +16,4 @@ class FindExerciseByName @Inject constructor(
             .map { exercises -> exercises.sortedBy { it.name } }
 
     }
-
 }

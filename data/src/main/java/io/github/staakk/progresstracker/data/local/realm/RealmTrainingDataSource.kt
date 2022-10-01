@@ -1,6 +1,8 @@
 package io.github.staakk.progresstracker.data.local.realm
 
-import io.github.staakk.progresstracker.common.functional.*
+import arrow.core.Either
+import arrow.core.Option
+import io.github.staakk.progresstracker.common.functional.toOptionWithLog
 import io.github.staakk.progresstracker.data.Id
 import io.github.staakk.progresstracker.data.local.realm.RealmRound.Companion.toDomain
 import io.github.staakk.progresstracker.data.local.realm.RealmRound.Companion.toRealm
@@ -18,7 +20,6 @@ import io.realm.kotlin.ext.query
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
-import timber.log.Timber
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
@@ -26,30 +27,24 @@ class RealmTrainingDataSource(
     val realm: Realm,
 ) : TrainingDataSource {
 
-    override suspend fun saveTraining(training: Training): Either<TrainingDataSource.Error.RoundNotFound, Training> {
-        return try {
+    override suspend fun saveTraining(training: Training): Option<Training> {
+        return Either.catch {
             realm.writeBlocking {
-                copyToRealm(training.toRealm(), UpdatePolicy.ALL).toDomain().right()
+                copyToRealm(training.toRealm(), UpdatePolicy.ALL).toDomain()
             }
-        } catch (e: IllegalStateException) {
-            Timber.e(e)
-            TrainingDataSource.Error.RoundNotFound.left()
-        }
+        }.toOptionWithLog("Cannot save training $training")
     }
 
-    override suspend fun deleteTraining(training: Training): Either<TrainingDataSource.Error.RoundNotFound, Training> {
-        return try {
+    override suspend fun deleteTraining(training: Training): Option<Training> {
+        return Either.catch {
             val realmTraining = training.toRealm()
             for (round in training.rounds) deleteRound(round)
             realm.writeBlocking {
                 queryAndDelete<RealmTraining>(realmTraining.id)
-                    ?.let { training.copy(id = Id.Empty).right() }
-                    ?: TrainingDataSource.Error.RoundNotFound.left()
+                    ?.let { training.copy(id = Id.Empty) }
             }
-        } catch (e: IllegalStateException) {
-            Timber.e(e)
-            TrainingDataSource.Error.RoundNotFound.left()
         }
+            .toOptionWithLog("Cannot delete training $training")
     }
 
     override fun observeTraining(id: Id): Flow<Training> {
@@ -81,72 +76,51 @@ class RealmTrainingDataSource(
             .filterNotNull()
     }
 
-    override suspend fun saveRound(round: Round): Either<TrainingDataSource.Error.RoundNotFound, Round> {
-        return try {
+    override suspend fun saveRound(round: Round): Option<Round> {
+        return Either.catch {
             val realmRound = round.toRealm()
             realm
                 .writeBlocking { copyToRealm(realmRound, UpdatePolicy.ALL) }
                 .toDomain()
-                .right()
-        } catch (e: IllegalStateException) {
-            Timber.e(e)
-            TrainingDataSource.Error.RoundNotFound.left()
-        }
+        }.toOptionWithLog("Cannot save round $round")
     }
 
-    override suspend fun deleteRound(round: Round): Either<TrainingDataSource.Error.RoundNotFound, Round> {
-        return try {
+    override suspend fun deleteRound(round: Round): Option<Round> {
+        return Either.catch {
             val realmRound = round.toRealm()
             for (set in round.roundSets) deleteSet(set)
             realm.writeBlocking {
                 queryAndDelete<RealmRound>(realmRound.id)
-                    ?.let { round.copy(id = Id.Empty).right() }
-                    ?: TrainingDataSource.Error.RoundNotFound.left()
+                    ?.let { round.copy(id = Id.Empty) }
             }
-        } catch (e: IllegalStateException) {
-            Timber.e(e)
-            TrainingDataSource.Error.RoundNotFound.left()
-        }
+        }.toOptionWithLog("Cannot delete round $round")
     }
 
-    override suspend fun getSetById(
-        setId: Id
-    ): Either<TrainingDataSource.Error.RoundNotFound, RoundSet> {
-        return Try { realm.queryById<RealmSet>(setId.asRealmObjectId()) }
-            .flatMap { it?.right() ?: TrainingDataSource.Error.RoundNotFound.left() }
-            .mapLeft { TrainingDataSource.Error.RoundNotFound }
-            .map { it.toDomain() }
-
+    override suspend fun getSetById(setId: Id): Option<RoundSet> {
+        return Either.catch { realm.queryById<RealmSet>(setId.asRealmObjectId()) }
+            .map { it?.toDomain() }
+            .toOptionWithLog("Set with id `$setId` not found")
     }
 
     override suspend fun saveSet(
         roundSet: RoundSet,
-    ): Either<TrainingDataSource.Error.CreateSetError, RoundSet> {
-        return try {
+    ): Option<RoundSet> {
+        return Either.catch {
             val realmSet = roundSet.toRealm()
             realm.writeBlocking {
                 copyToRealm(realmSet, UpdatePolicy.ALL)
             }
-            realmSet.toDomain().right()
-        } catch (e: IllegalStateException) {
-            Timber.e(e)
-            TrainingDataSource.Error.CreateSetError.RoundNotFound.left()
-        }
+            realmSet.toDomain()
+        }.toOptionWithLog("Cannot save set $roundSet")
     }
 
-    override suspend fun deleteSet(
-        roundSet: RoundSet
-    ): Either<TrainingDataSource.Error.DeleteSetError, RoundSet> {
-        return try {
+    override suspend fun deleteSet(roundSet: RoundSet): Option<RoundSet> {
+        return Either.catch {
             val realmSet = roundSet.toRealm()
             realm.writeBlocking {
                 queryAndDelete<RealmSet>(realmSet.id)
-                    ?.let { roundSet.copy(id = Id.Empty).right() }
-                    ?: TrainingDataSource.Error.DeleteSetError.SetNotFound.left()
+                    ?.let { roundSet.copy(id = Id.Empty) }
             }
-        } catch (e: IllegalStateException) {
-            Timber.e(e)
-            TrainingDataSource.Error.DeleteSetError.SetNotFound.left()
-        }
+        }.toOptionWithLog("Cannot delete set $roundSet")
     }
 }

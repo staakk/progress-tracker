@@ -59,7 +59,7 @@ class TrainingViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value
                 .training
-                ?.coLet(deleteTraining)
+                ?.coLet(deleteTraining::invoke)
                 ?.fold(
                     {},
                     { _state.update { it.copy(trainingDeleted = true) } }

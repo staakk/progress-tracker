@@ -1,8 +1,7 @@
 package io.github.staakk.progresstracker.domain.exercise
 
-import io.github.staakk.progresstracker.common.functional.Either
-import io.github.staakk.progresstracker.common.functional.Right
-import io.github.staakk.progresstracker.common.functional.left
+import arrow.core.Either
+import arrow.core.left
 import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.data.exercise.ExerciseDataSource
 import javax.inject.Inject
@@ -16,7 +15,7 @@ class SaveExercise @Inject constructor(
             exercise.nameExists() -> Error.NameAlreadyExists.left()
             else -> exerciseDataSource
                 .save(exercise)
-                .mapLeft { Error.ExerciseNotFound }
+                .toEither { Error.ExerciseNotFound }
         }
     }
 
@@ -26,7 +25,6 @@ class SaveExercise @Inject constructor(
 
     sealed class Error {
         object NameAlreadyExists: Error()
-        object ExerciseAlreadyExists: Error()
         object ExerciseNotFound: Error()
     }
 }

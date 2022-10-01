@@ -5,8 +5,12 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.staakk.progresstracker.common.coroutines.coLet
 import io.github.staakk.progresstracker.data.Id
-import io.github.staakk.progresstracker.domain.training.*
-import kotlinx.coroutines.flow.*
+import io.github.staakk.progresstracker.domain.training.DeleteSet
+import io.github.staakk.progresstracker.domain.training.GetSetById
+import io.github.staakk.progresstracker.domain.training.UpdateSet
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -41,7 +45,7 @@ class EditSetViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value
                 .setOrNull()
-                ?.coLet(deleteSet)
+                ?.coLet(deleteSet::invoke)
                 ?.fold(
                     {},
                     { _state.update { EditSetState.SetDeleted } }
@@ -56,7 +60,7 @@ class EditSetViewModel @Inject constructor(
             state
                 .set
                 .copy(reps = reps.toIntOrNull() ?: 0, weight = weight.toIntOrNull() ?: 0)
-                .coLet(updateSet)
+                .coLet(updateSet::invoke)
                 .fold(
                     {},
                     { _state.update { EditSetState.SetUpdated } }

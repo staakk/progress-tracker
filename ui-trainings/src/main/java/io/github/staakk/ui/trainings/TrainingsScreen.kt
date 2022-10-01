@@ -65,16 +65,22 @@ fun TrainingsScreen(
     StandardScreen(
         navigateUp = navigateUp,
         onFabClick = { dispatch(TrainingsEvent.CreateNewTraining) }
-    ) {
+    ) { padding ->
         LazyColumn(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .padding(
+                    top = 16.dp,
+                    start = 16.dp,
+                    end = 16.dp
+                )
+                .padding(padding),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(vertical = 8.dp)
         ) {
-            items(items = trainings, itemContent = {
+            items(items = trainings, itemContent = { item ->
                 TrainingItem(
                     editTraining = editTraining,
-                    training = it
+                    training = item
                 )
             })
         }

@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 class ObserveTraining @Inject constructor(
     private val trainingDataSource: TrainingDataSource
-) : (Id) -> Flow<Training> {
+) {
 
-    override fun invoke(id: Id): Flow<Training> = trainingDataSource.observeTraining(id)
+    operator fun invoke(id: Id): Flow<Training> = trainingDataSource.observeTraining(id)
 }

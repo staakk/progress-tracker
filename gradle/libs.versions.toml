@@ -6,6 +6,7 @@ hilt = "2.38.1"
 kotlin = "1.6.10"
 lifecycle = "2.4.0"
 realm = "1.0.1"
+arrowkt = "1.1.2"
 
 [plugins]
 
@@ -74,6 +75,8 @@ robolectric = { module = "org.robolectric:robolectric", version = "4.8.1" }
 
 realm-pluginGradle = { module = "io.realm.kotlin:gradle-plugin", version.ref = "realm" }
 realm-lib = { module = "io.realm.kotlin:library-base", version.ref = "realm" }
+
+arrowkt = { module = "io.arrow-kt:arrow-core", version.ref = "arrowkt"}
 
 [bundles]
 compose-libs = [

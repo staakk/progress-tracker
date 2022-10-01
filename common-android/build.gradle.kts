@@ -41,4 +41,5 @@ android {
 
 dependencies {
     implementation(libs.espresso.idlingResources)
+    api(libs.timber)
 }
