@@ -10,10 +10,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import io.github.staakk.common.ui.compose.Header
-import io.github.staakk.common.ui.compose.testTag
 import io.github.staakk.progresstracker.data.Id
 import io.github.staakk.progresstracker.data.exercise.Exercise
-import io.github.staakk.progresstracker.ui.exercise.EditExerciseEvent.*
+import io.github.staakk.progresstracker.ui.exercise.EditExerciseViewModel.Event.*
 import io.github.staakk.progresstracker.ui.exercise.EditExerciseScreenTags.NameField
 import io.github.staakk.progresstracker.ui.exercise.EditExerciseScreenTags.ProgressIndicator
 
@@ -28,13 +27,13 @@ fun EditExercise(
     navigateUp: () -> Unit,
 ) {
     val viewModel: EditExerciseViewModel = hiltViewModel()
-    LaunchedEffect(viewModel) {
-        viewModel.dispatch(ScreenOpened(exerciseId))
+    LaunchedEffect(viewModel, exerciseId) {
+        with(viewModel) { dispatch(ScreenOpened(exerciseId)) }
     }
     val state by viewModel.state.collectAsState()
     EditExerciseScreen(
         state,
-        viewModel::dispatch,
+        { with(viewModel) { dispatch(it) } },
         navigateUp
     )
 }
@@ -42,7 +41,7 @@ fun EditExercise(
 @Composable
 internal fun EditExerciseScreen(
     state: EditExerciseState,
-    dispatch: (EditExerciseEvent) -> Unit,
+    dispatch: (EditExerciseViewModel.Event) -> Unit,
     navigateUp: () -> Unit,
 ) {
     when (state) {
@@ -65,7 +64,7 @@ internal fun EditExerciseScreen(
 @Composable
 private fun Editing(
     state: EditExerciseState.Editing,
-    dispatch: (EditExerciseEvent) -> Unit,
+    dispatch: (EditExerciseViewModel.Event) -> Unit,
     navigateUp: () -> Unit,
 ) {
     Column(

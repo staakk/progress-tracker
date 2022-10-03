@@ -27,6 +27,8 @@ import io.github.staakk.progresstracker.data.Id
 import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.data.training.RoundSet
 import io.github.staakk.progresstracker.domain.training.TrainingPreviewData
+import io.github.staakk.progresstracker.ui.round.EditRoundViewModel.*
+import io.github.staakk.progresstracker.ui.round.EditRoundViewModel.Event.*
 
 @Composable
 fun EditRound(
@@ -37,7 +39,7 @@ fun EditRound(
     val viewModel: EditRoundViewModel = hiltViewModel()
 
     LaunchedEffect(viewModel, roundId) {
-        viewModel.dispatch(EditRoundEvent.ScreenOpened(roundId))
+        viewModel.dispatch(ScreenOpened(roundId))
     }
 
     val state by viewModel.state.collectAsState()
@@ -45,14 +47,14 @@ fun EditRound(
     state.newSetId
         ?.let { id ->
             LaunchedEffect(id) {
-                viewModel.dispatch(EditRoundEvent.NewSetIdConsumed)
+                viewModel.dispatch(NewSetIdConsumed)
                 editSet(id)
             }
         }
 
     if (state.roundDeleted) {
         LaunchedEffect(roundId) {
-            viewModel.dispatch(EditRoundEvent.DeleteRoundConsumed)
+            viewModel.dispatch(DeleteRoundConsumed)
             navigateUp()
         }
     }
@@ -69,15 +71,15 @@ fun EditRound(
 private fun EditRoundScreen(
     navigateUp: () -> Unit,
     state: EditRoundState,
-    dispatch: (EditRoundEvent) -> Unit,
+    dispatch: (Event) -> Unit,
     editSet: (Id) -> Unit,
 ) {
     StandardScreen(
         navigateUp = navigateUp,
-        onFabClick = { dispatch(EditRoundEvent.CreateSet) },
+        onFabClick = { dispatch(CreateSet) },
         actionsEnd = {
             SimpleIconButton(
-                onClick = { dispatch(EditRoundEvent.OpenDeleteDialog) },
+                onClick = { dispatch(OpenDeleteDialog) },
                 imageVector = Icons.Outlined.DeleteForever,
                 tint = MaterialTheme.colors.onPrimary,
                 contentDescription = null
@@ -97,7 +99,7 @@ private fun EditRoundScreen(
 private fun Content(
     modifier: Modifier,
     state: EditRoundState,
-    dispatch: (EditRoundEvent) -> Unit,
+    dispatch: (Event) -> Unit,
     editSet: (Id) -> Unit,
 ) {
     Column(
@@ -107,7 +109,7 @@ private fun Content(
     ) {
         ExerciseSelector(
             state = state,
-            onExerciseSelected = { dispatch(EditRoundEvent.UpdateExercise(it)) }
+            onExerciseSelected = { dispatch(UpdateExercise(it)) }
         )
         LazyColumn(
             modifier = Modifier.padding(top = Dimensions.padding),
@@ -123,8 +125,8 @@ private fun Content(
         DeletePermanentlyDialog(
             dialogState = state.deleteDialogState,
             title = stringResource(R.string.edit_round_delete_dialog_title),
-            onDismiss = { dispatch(EditRoundEvent.CloseDeleteDialog) },
-            onConfirm = { dispatch(EditRoundEvent.DeleteRound) },
+            onDismiss = { dispatch(CloseDeleteDialog) },
+            onConfirm = { dispatch(DeleteRound) },
         )
     }
 }

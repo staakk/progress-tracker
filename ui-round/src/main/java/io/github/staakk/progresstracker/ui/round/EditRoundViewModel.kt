@@ -1,17 +1,17 @@
 package io.github.staakk.progresstracker.ui.round
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.staakk.common.ui.compose.deletedialog.DialogState
+import io.github.staakk.progresstracker.common.android.viewmodel.Action
+import io.github.staakk.progresstracker.common.android.viewmodel.ViewModelEvent
+import io.github.staakk.progresstracker.common.android.viewmodel.viewModelDispatch
 import io.github.staakk.progresstracker.common.coroutines.coLet
 import io.github.staakk.progresstracker.data.Id
 import io.github.staakk.progresstracker.data.exercise.Exercise
 import io.github.staakk.progresstracker.domain.exercise.GetExercises
 import io.github.staakk.progresstracker.domain.training.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,55 +27,16 @@ class EditRoundViewModel @Inject constructor(
 
     val state: StateFlow<EditRoundState> = _state
 
-    fun dispatch(event: EditRoundEvent) {
-        when (event) {
-            is EditRoundEvent.ScreenOpened -> onScreenOpened(event.roundId)
-            is EditRoundEvent.UpdateExercise -> onExerciseUpdated(event.exercise)
-            is EditRoundEvent.CreateSet -> onCreateSet()
-            is EditRoundEvent.NewSetIdConsumed -> onNewSetIdConsumed()
-            is EditRoundEvent.OpenDeleteDialog -> updateDialogState(DialogState.Open)
-            is EditRoundEvent.CloseDeleteDialog -> updateDialogState(DialogState.Closed)
-            is EditRoundEvent.DeleteRound -> onDeleteRound()
-            is EditRoundEvent.DeleteRoundConsumed -> onDeleteRoundConsumed()
-        }
+    fun dispatch(event: Event) = viewModelDispatch(event)
+
+    private fun updateDialogState(dialogState: DialogState) {
+        _state.update { it.copy(deleteDialogState = dialogState) }
     }
 
-    private fun onDeleteRoundConsumed() {
-        _state.update { EditRoundState() }
-    }
-
-    private fun onCreateSet() {
-        Timber.d("Create new set")
-        viewModelScope.launch {
-            _state.value
-                .round
-                ?.coLet(createSet::invoke)
-                ?.fold(
-                    { },
-                    { (_, set) ->
-                        _state.update { state -> state.copy(newSetId = set.id) }
-                    }
-                )
-        }
-    }
-
-    private fun onExerciseUpdated(exercise: Exercise) {
-        viewModelScope.launch {
-            _state.value.let { state ->
-                if (state.round == null) return@launch
-                updateRound(state.round.copy(exercise = exercise))
-                    .fold(
-                        {},
-                        { round -> _state.update { state.copy(round = round) } }
-                    )
-            }
-        }
-    }
-
-    private fun onScreenOpened(roundId: Id) {
-        Timber.d("Load round with id $roundId")
-
-        viewModelScope.launch {
+    sealed class Event(
+        action: Action<EditRoundViewModel>
+    ) : ViewModelEvent<EditRoundViewModel>(action) {
+        data class ScreenOpened(val roundId: Id) : Event({
             val exercises = getExercises()
             observeRound(roundId)
                 .onEach { round ->
@@ -87,26 +48,45 @@ class EditRoundViewModel @Inject constructor(
                     }
                 }
                 .collect()
-        }
-    }
+        })
 
-    private fun onDeleteRound() {
-        viewModelScope.launch {
-            _state.value
-                .round
+        data class UpdateExercise(val exercise: Exercise) : Event({
+            _state.value.let { state ->
+                if (state.round == null) return@let
+                updateRound(state.round.copy(exercise = exercise))
+                    .fold(
+                        {},
+                        { round -> _state.update { state.copy(round = round) } }
+                    )
+            }
+        })
+
+        object CreateSet : Event({
+            _state.value.round
+                ?.coLet(createSet::invoke)
+                ?.fold(
+                    { },
+                    { (_, set) ->
+                        _state.update { state -> state.copy(newSetId = set.id) }
+                    }
+                )
+        })
+
+        object NewSetIdConsumed : Event({ _state.update { it.copy(newSetId = null) } })
+
+        object OpenDeleteDialog : Event({ updateDialogState(DialogState.Open) })
+
+        object CloseDeleteDialog : Event({ updateDialogState(DialogState.Closed) })
+
+        object DeleteRound : Event({
+            _state.value.round
                 ?.coLet(deleteRound::invoke)
                 ?.fold(
                     {},
                     { _state.update { it.copy(roundDeleted = true) } }
                 )
-        }
-    }
+        })
 
-    private fun onNewSetIdConsumed() {
-        _state.update { it.copy(newSetId = null) }
-    }
-
-    private fun updateDialogState(dialogState: DialogState) {
-        _state.update { it.copy(deleteDialogState = dialogState) }
+        object DeleteRoundConsumed : Event({ _state.update { EditRoundState() } })
     }
 }

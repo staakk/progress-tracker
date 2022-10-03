@@ -33,6 +33,7 @@ import io.github.staakk.progresstracker.data.Id
 import io.github.staakk.progresstracker.data.training.Round
 import io.github.staakk.progresstracker.data.training.RoundSet
 import io.github.staakk.progresstracker.domain.training.TrainingPreviewData
+import io.github.staakk.ui.training.TrainingViewModel.Event.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -44,13 +45,13 @@ fun TrainingScreen(
 ) {
     val viewModel: TrainingViewModel = hiltViewModel()
     LaunchedEffect(viewModel) {
-        viewModel.dispatch(TrainingEvent.LoadTraining(id))
+        viewModel.dispatch(LoadTraining(id))
     }
 
     val state by viewModel.state.collectAsState()
     if (state.trainingDeleted) {
         LaunchedEffect(id) {
-            viewModel.dispatch(TrainingEvent.DeleteTrainingConsumed)
+            viewModel.dispatch(DeleteTrainingConsumed)
             navigateUp()
         }
     }
@@ -58,7 +59,7 @@ fun TrainingScreen(
     state.let {
         if (it.newRoundId != null) {
             LaunchedEffect(it.newRoundId) {
-                viewModel.dispatch(TrainingEvent.NewRoundIdConsumed)
+                viewModel.dispatch(NewRoundIdConsumed)
                 editRound(it.newRoundId)
             }
         }
@@ -75,16 +76,16 @@ fun TrainingScreen(
 @Composable
 private fun Content(
     state: TrainingState,
-    dispatch: (TrainingEvent) -> Unit,
+    dispatch: (TrainingViewModel.Event) -> Unit,
     editRound: (Id) -> Unit,
     navigateUp: () -> Unit,
 ) {
     StandardScreen(
         navigateUp = navigateUp,
-        onFabClick = { dispatch(TrainingEvent.CreateRound) },
+        onFabClick = { dispatch(CreateRound) },
         actionsEnd = {
             SimpleIconButton(
-                onClick = { dispatch(TrainingEvent.OpenDeleteDialog) },
+                onClick = { dispatch(OpenDeleteDialog) },
                 imageVector = Icons.Outlined.DeleteForever,
                 tint = MaterialTheme.colors.onPrimary,
                 contentDescription = null
@@ -150,7 +151,7 @@ private fun Content(
                     show = showDatePicker,
                     onDismiss = { showDatePicker = false },
                     onDateSelected = { date ->
-                        dispatch(TrainingEvent.UpdateTrainingDate(date))
+                        dispatch(UpdateTrainingDate(date))
                     }
                 )
 
@@ -159,15 +160,15 @@ private fun Content(
                     show = showTimePicker,
                     onDismiss = { showTimePicker = false },
                     onTimeSelected = { time ->
-                        dispatch(TrainingEvent.UpdateTrainingTime(time))
+                        dispatch(UpdateTrainingTime(time))
                     }
                 )
 
                 DeletePermanentlyDialog(
                     dialogState = state.dialogState,
                     title = stringResource(R.string.training_delete_dialog_title),
-                    onDismiss = { dispatch(TrainingEvent.CloseDeleteDialog) },
-                    onConfirm = { dispatch(TrainingEvent.DeleteTraining) },
+                    onDismiss = { dispatch(CloseDeleteDialog) },
+                    onConfirm = { dispatch(DeleteTraining) },
                 )
             }
         }

@@ -41,5 +41,7 @@ android {
 
 dependencies {
     implementation(libs.espresso.idlingResources)
+    implementation(libs.lifecycle.viewmodel)
+    implementation(project(":common"))
     api(libs.timber)
 }

@@ -20,6 +20,7 @@ import io.github.staakk.common.ui.compose.SimpleIconButton
 import io.github.staakk.common.ui.compose.layout.StandardScreen
 import io.github.staakk.progresstracker.data.Id
 import io.github.staakk.progresstracker.domain.training.TrainingPreviewData
+import io.github.staakk.progresstracker.ui.set.EditSetViewModel.Event.*
 
 @Composable
 fun EditSet(
@@ -29,7 +30,7 @@ fun EditSet(
     val viewModel: EditSetViewModel = hiltViewModel()
 
     LaunchedEffect(viewModel, setId) {
-        viewModel.dispatch(EditSetEvent.ScreenOpened(setId))
+        viewModel.dispatch(ScreenOpened(setId))
     }
 
     val state by viewModel.state.collectAsState()
@@ -38,7 +39,7 @@ fun EditSet(
         is EditSetState.SetDeleted,
         is EditSetState.SetUpdated,
         -> LaunchedEffect(setId) {
-            viewModel.dispatch(EditSetEvent.TerminalEventConsumed)
+            viewModel.dispatch(TerminalEventConsumed)
             navigateUp()
         }
         else -> EditSetScreen(
@@ -51,7 +52,7 @@ fun EditSet(
 @Composable
 fun EditSetScreen(
     state: EditSetState,
-    dispatch: (EditSetEvent) -> Unit,
+    dispatch: (EditSetViewModel.Event) -> Unit,
 ) {
     var repsFieldValue by remember(state) {
         mutableStateOf(
@@ -68,7 +69,7 @@ fun EditSetScreen(
             SimpleIconButton(
                 onClick = {
                     dispatch(
-                        EditSetEvent.SaveSet(
+                        SaveSet(
                             reps = repsFieldValue.text,
                             weight = weightFieldValue.text,
                         )
@@ -81,7 +82,7 @@ fun EditSetScreen(
         },
         actionsEnd = {
             SimpleIconButton(
-                onClick = { dispatch(EditSetEvent.OpenDeleteDialog) },
+                onClick = { dispatch(OpenDeleteDialog) },
                 imageVector = Icons.Outlined.DeleteForever,
                 tint = MaterialTheme.colors.onPrimary,
                 contentDescription = null
@@ -104,16 +105,16 @@ fun EditSetScreen(
 
         if (state.isDeleteDialogOpen()) {
             AlertDialog(
-                onDismissRequest = { dispatch(EditSetEvent.CloseDeleteDialog) },
+                onDismissRequest = { dispatch(CloseDeleteDialog) },
                 title = { Text(text = "Delete set?") },
                 text = { Text(text = "You're about to delete this set. This operation cannot be undone.") },
                 confirmButton = {
-                    Button(onClick = { dispatch(EditSetEvent.DeleteSet) }) {
+                    Button(onClick = { dispatch(DeleteSet) }) {
                         Text("Delete")
                     }
                 },
                 dismissButton = {
-                    OutlinedButton(onClick = { dispatch(EditSetEvent.CloseDeleteDialog) }) {
+                    OutlinedButton(onClick = { dispatch(CloseDeleteDialog) }) {
                         Text("Cancel")
                     }
                 },

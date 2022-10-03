@@ -1,15 +1,15 @@
 package io.github.staakk.ui.trainings
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.staakk.progresstracker.common.android.viewmodel.Action
+import io.github.staakk.progresstracker.common.android.viewmodel.ViewModelEvent
+import io.github.staakk.progresstracker.common.android.viewmodel.viewModelDispatch
 import io.github.staakk.progresstracker.data.training.Training
 import io.github.staakk.progresstracker.domain.training.DeleteTraining
 import io.github.staakk.progresstracker.domain.training.ObserveTrainings
 import io.github.staakk.progresstracker.domain.training.SaveTraining
-import io.github.staakk.ui.trainings.TrainingsEvent.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -23,27 +23,19 @@ class TrainingsViewModel @Inject constructor(
     private val _trainings = MutableStateFlow(TrainingsState())
     val trainings: StateFlow<TrainingsState> = _trainings
 
-    fun dispatch(event: TrainingsEvent) {
-        when (event) {
-            is ScreenOpened -> onScreenOpened()
-            is CreateNewTraining -> onCreateNewTraining()
-            is TrainingsEvent.DeleteTraining -> onDeleteTraining(event.training)
-            is NewTrainingIdConsumed -> onNewTrainingIdConsumed()
-        }
-    }
+    fun dispatch(event: Event) = viewModelDispatch(event)
 
-    private fun onNewTrainingIdConsumed() {
-        _trainings.update { it.copy(newTrainingId = null) }
-    }
+    sealed class Event(
+        action: Action<TrainingsViewModel>,
+    ) : ViewModelEvent<TrainingsViewModel>(action) {
 
-    private fun onScreenOpened() {
-        observeTrainings(ObserveTrainings.Criteria.All)
-            .onEach { trainings -> _trainings.update { it.copy(trainings = trainings) } }
-            .launchIn(viewModelScope)
-    }
+        object ScreenOpened : Event({
+            observeTrainings(ObserveTrainings.Criteria.All)
+                .onEach { trainings -> _trainings.update { it.copy(trainings = trainings) } }
+                .collect()
+        })
 
-    private fun onCreateNewTraining() {
-        viewModelScope.launch {
+        object CreateNewTraining : Event({
             saveTraining(Training(date = LocalDateTime.now()))
                 .fold(
                     {},
@@ -53,12 +45,12 @@ class TrainingsViewModel @Inject constructor(
                         }
                     }
                 )
-        }
-    }
+        })
 
-    private fun onDeleteTraining(training: Training) {
-        viewModelScope.launch {
-            deleteTraining(training)
-        }
+        data class DeleteTraining(val training: Training) : Event({ deleteTraining(training) })
+
+        object NewTrainingIdConsumed : Event({
+            _trainings.update { it.copy(newTrainingId = null) }
+        })
     }
 }

@@ -28,6 +28,7 @@ import io.github.staakk.progresstracker.data.Id
 import io.github.staakk.progresstracker.data.training.Round
 import io.github.staakk.progresstracker.data.training.Training
 import io.github.staakk.progresstracker.domain.training.TrainingPreviewData
+import io.github.staakk.ui.trainings.TrainingsViewModel.Event.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -38,12 +39,12 @@ fun Trainings(
 ) {
     val viewModel: TrainingsViewModel = hiltViewModel()
     LaunchedEffect(viewModel) {
-        viewModel.dispatch(TrainingsEvent.ScreenOpened)
+        viewModel.dispatch(ScreenOpened)
     }
     val state by viewModel.trainings.collectAsState()
     state.newTrainingId?.let {
         LaunchedEffect(state.newTrainingId) {
-            viewModel.dispatch(TrainingsEvent.NewTrainingIdConsumed)
+            viewModel.dispatch(NewTrainingIdConsumed)
             editTraining(it)
         }
     }
@@ -58,13 +59,13 @@ fun Trainings(
 @Composable
 fun TrainingsScreen(
     trainings: List<Training>,
-    dispatch: (TrainingsEvent) -> Unit,
+    dispatch: (TrainingsViewModel.Event) -> Unit,
     editTraining: (Id) -> Unit,
     navigateUp: () -> Unit,
 ) {
     StandardScreen(
         navigateUp = navigateUp,
-        onFabClick = { dispatch(TrainingsEvent.CreateNewTraining) }
+        onFabClick = { dispatch(CreateNewTraining) }
     ) { padding ->
         LazyColumn(
             modifier = Modifier
