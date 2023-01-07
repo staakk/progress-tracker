@@ -11,4 +11,5 @@ android {
         minSdk = minSdkVersion
         targetSdk = sdkVersion
     }
+    namespace = "io.github.staakk.progresstracker.common.ui.resources"
 }

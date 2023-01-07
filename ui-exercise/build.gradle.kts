@@ -54,6 +54,7 @@ android {
             isReturnDefaultValues = true
         }
     }
+    namespace = "io.github.staakk.progresstracker.ui.exercise"
 }
 
 dependencies {
