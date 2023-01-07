@@ -18,7 +18,6 @@ data class Round(
      */
     val roundSets: List<RoundSet> = emptyList(),
 ) {
-
     fun withPositionSortedSets() = copy(
         roundSets = roundSets.sortedBy { it.ordinal }
     )

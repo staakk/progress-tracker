@@ -11,14 +11,19 @@ class ObserveTrainings @Inject constructor(
 ) {
 
     operator fun invoke(criteria: Criteria): Flow<List<Training>> =
-        trainingDataSource.queryTrainingByDate(criteria.fromDate, criteria.toDate)
+        trainingDataSource.queryTrainingByDate(
+            criteria.exerciseQuery,
+            criteria.fromDate,
+            criteria.toDate,
+        )
 
     data class Criteria(
+        val exerciseQuery: String,
         val fromDate: LocalDateTime,
         val toDate: LocalDateTime,
     ) {
         companion object {
-            val All = Criteria(LocalDateTime.MIN, LocalDateTime.MAX)
+            val All = Criteria("", LocalDateTime.MIN, LocalDateTime.MAX)
         }
     }
 }

@@ -14,6 +14,7 @@ interface TrainingDataSource {
     fun observeTraining(id: Id): Flow<Training>
 
     fun queryTrainingByDate(
+        exerciseQuery: String,
         startDate: LocalDateTime,
         endDate: LocalDateTime
     ): Flow<List<Training>>

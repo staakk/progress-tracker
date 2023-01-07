@@ -77,7 +77,7 @@ robolectric = { module = "org.robolectric:robolectric", version = "4.8.1" }
 realm-pluginGradle = { module = "io.realm.kotlin:gradle-plugin", version.ref = "realm" }
 realm-lib = { module = "io.realm.kotlin:library-base", version.ref = "realm" }
 
-arrowkt = { module = "io.arrow-kt:arrow-core", version.ref = "arrowkt"}
+arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrowkt" }
 
 [bundles]
 compose-libs = [

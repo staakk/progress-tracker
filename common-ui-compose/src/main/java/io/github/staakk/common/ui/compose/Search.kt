@@ -11,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -21,13 +20,13 @@ import androidx.compose.ui.unit.sp
 fun SearchField(
     modifier: Modifier = Modifier,
     initialValue: String,
-    onValueChanged: (String) -> Unit
+    onValueChanged: (String) -> Unit,
+    hint: String,
 ) {
     var text by remember { mutableStateOf(TextFieldValue(initialValue)) }
     TextField(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
             .then(modifier),
         value = text,
         leadingIcon = {
@@ -49,7 +48,7 @@ fun SearchField(
                     .fillMaxWidth()
                     .padding(end = 24.dp)
                     .alpha(0.6f),
-                text = stringResource(id = R.string.exercises_list_search_label),
+                text = hint,
                 textAlign = TextAlign.Center,
                 fontSize = 18.sp
             )

@@ -43,8 +43,7 @@ class RealmTrainingDataSource(
                 queryAndDelete<RealmTraining>(realmTraining.id)
                     ?.let { training.copy(id = Id.Empty) }
             }
-        }
-            .toOptionWithLog("Cannot delete training $training")
+        }.toOptionWithLog("Cannot delete training $training")
     }
 
     override fun observeTraining(id: Id): Flow<Training> {
@@ -55,15 +54,26 @@ class RealmTrainingDataSource(
     }
 
     override fun queryTrainingByDate(
+        exerciseQuery: String,
         startDate: LocalDateTime,
         endDate: LocalDateTime,
     ): Flow<List<Training>> {
         val startDateSeconds = startDate.toEpochSecond(ZoneOffset.UTC)
         val endDateSeconds = endDate.toEpochSecond(ZoneOffset.UTC)
         return realm.query<RealmTraining>(
-            "date >= $0 AND date <= $1 SORT(date DESC)",
+            """
+                date >= $0 
+                AND date <= $1 
+                AND (
+                    rounds.exercise.name CONTAINS[c] $2 
+                    OR rounds.@count == 0 
+                    OR ${ "SUBQUERY(rounds, \$round, \$round.exercise == nil).@count == rounds.@count" }
+                )
+                SORT(date DESC)
+            """.trimIndent(),
             startDateSeconds,
-            endDateSeconds
+            endDateSeconds,
+            exerciseQuery,
         )
             .asFlow()
             .map { change -> change.list.map { it.toDomain() } }

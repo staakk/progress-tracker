@@ -9,5 +9,5 @@ java {
 }
 
 dependencies {
-    api(libs.arrowkt)
+    api(libs.arrow.core)
 }
