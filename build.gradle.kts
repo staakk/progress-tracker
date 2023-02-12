@@ -33,7 +33,7 @@ tasks.register("clean").configure {
     delete("build")
 }
 
-extra["sdkVersion"] = 31
+extra["sdkVersion"] = 33
 extra["minSdkVersion"] = 21
 
 extra["appVersionCode"] = 1
